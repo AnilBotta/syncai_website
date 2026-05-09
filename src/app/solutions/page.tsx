@@ -8,13 +8,13 @@ export default function SolutionsPage() {
     <PageShell
       eyebrow="Solutions"
       title="AI consulting that turns into implemented systems."
-      description="SyncAi Technologies starts with strategy, then builds the AI website, agent, automation, or workflow that best addresses the business pain point."
+      description="SyncAi Technologies starts with strategy, then builds the AI website, agent, automation, or workflow that best addresses the business challenge."
     >
       <section className="bg-white py-20 sm:py-28">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
           {services.map((service) => (
             <article key={service.title} className="rounded-[2rem] border border-slate-200 p-7 shadow-sm">
-              <service.icon className="size-8 text-cyan-700" />
+              <service.icon className="size-8 text-purple-700" />
               <h2 className="mt-5 text-2xl font-black text-slate-950">{service.title}</h2>
               <p className="mt-3 leading-7 text-slate-600">{service.description}</p>
             </article>

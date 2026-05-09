@@ -138,7 +138,7 @@ export function AdminDashboard() {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
-            <p className="text-sm font-black uppercase tracking-[.22em] text-cyan-700">SyncAi Admin</p>
+            <p className="text-sm font-black uppercase tracking-[.22em] text-purple-700">SyncAi Admin</p>
             <h1 className="mt-1 text-3xl font-black text-slate-950">Lead Dashboard</h1>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -166,14 +166,14 @@ export function AdminDashboard() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="h-12 w-full rounded-full border border-slate-200 pl-11 pr-4 text-sm outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                className="h-12 w-full rounded-full border border-slate-200 pl-11 pr-4 text-sm outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
                 placeholder="Search leads"
               />
             </label>
             <select
               value={status}
               onChange={(event) => setStatus(event.target.value)}
-              className="h-12 rounded-full border border-slate-200 px-4 text-sm font-semibold outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+              className="h-12 rounded-full border border-slate-200 px-4 text-sm font-semibold outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
             >
               <option value="all">All statuses</option>
               {leadStatuses.map((item) => (
@@ -205,7 +205,7 @@ export function AdminDashboard() {
                   key={lead.id}
                   onClick={() => setSelected(lead)}
                   className={`rounded-3xl border p-4 text-left transition ${
-                    selected?.id === lead.id ? "border-cyan-500 bg-cyan-50" : "border-slate-200 hover:border-slate-300"
+                    selected?.id === lead.id ? "border-purple-600 bg-purple-50" : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -239,7 +239,7 @@ export function AdminDashboard() {
                 <select
                   name="status"
                   defaultValue={selected.status}
-                  className="h-11 rounded-full border border-slate-200 px-4 text-sm font-bold capitalize outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="h-11 rounded-full border border-slate-200 px-4 text-sm font-bold capitalize outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
                 >
                   {leadStatuses.map((item) => (
                     <option key={item.value} value={item.value}>
@@ -259,12 +259,12 @@ export function AdminDashboard() {
               </div>
 
               <div className="mt-6 rounded-3xl bg-slate-100 p-5">
-                <p className="text-sm font-black text-slate-950">Pain point</p>
+                <p className="text-sm font-black text-slate-950">Business challenge</p>
                 <p className="mt-2 leading-7 text-slate-700">{selected.pain_point}</p>
               </div>
 
               {selected.demo_summary ? (
-                <div className="mt-4 rounded-3xl bg-cyan-50 p-5">
+                <div className="mt-4 rounded-3xl bg-purple-50 p-5">
                   <p className="text-sm font-black text-slate-950">Demo summary</p>
                   <p className="mt-2 whitespace-pre-line leading-7 text-slate-700">{selected.demo_summary}</p>
                 </div>
@@ -276,7 +276,7 @@ export function AdminDashboard() {
                   name="notes"
                   defaultValue={selected.notes || ""}
                   rows={7}
-                  className="resize-none rounded-3xl border border-slate-200 p-4 text-sm font-normal leading-7 text-slate-700 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="resize-none rounded-3xl border border-slate-200 p-4 text-sm font-normal leading-7 text-slate-700 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
                   placeholder="Add follow-up notes, call outcome, or proposal context."
                 />
               </label>

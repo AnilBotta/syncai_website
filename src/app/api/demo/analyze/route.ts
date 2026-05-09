@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   const parsed = analyzeSchema.safeParse(await request.json());
 
   if (!parsed.success) {
-    return NextResponse.json({ error: "Please describe the business and pain point." }, { status: 400 });
+    return NextResponse.json({ error: "Please describe the business and challenge." }, { status: 400 });
   }
 
   if (!process.env.OPENAI_API_KEY) {

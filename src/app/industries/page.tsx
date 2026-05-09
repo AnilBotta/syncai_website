@@ -13,7 +13,7 @@ export default function IndustriesPage() {
           {industries.map((industry) => (
             <article key={industry.title} className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-sm">
               <div className="flex flex-col gap-5 md:flex-row md:items-start">
-                <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-cyan-50 text-cyan-700">
+                <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-purple-50 text-purple-700">
                   <industry.icon className="size-7" />
                 </span>
                 <div>

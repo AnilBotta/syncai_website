@@ -70,7 +70,7 @@ export function DemoAnalyzer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
           <div>
-            <p className="inline-flex rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-bold text-cyan-800">
+            <p className="inline-flex rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-bold text-purple-800">
               Live AI demo
             </p>
             <h2 className="mt-5 max-w-2xl text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
@@ -78,7 +78,7 @@ export function DemoAnalyzer() {
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
               This demo shows the kind of AI experience your site can use to educate a prospect,
-              reveal their pain point, and convert them into a qualified lead.
+              reveal their business challenge, and convert them into a qualified lead.
             </p>
 
             <form action={runDemo} className="mt-8 grid gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
@@ -87,17 +87,17 @@ export function DemoAnalyzer() {
                 <input
                   name="businessType"
                   required
-                  className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
                   placeholder="Dental clinic, real estate team, service business"
                 />
               </label>
               <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                Current pain point
+                Current challenge
                 <textarea
                   name="currentProblem"
                   required
                   rows={4}
-                  className="resize-none rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                  className="resize-none rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
                   placeholder="Tell us what slows the business down or where leads are being lost."
                 />
               </label>
@@ -109,7 +109,7 @@ export function DemoAnalyzer() {
                     type="number"
                     min="0"
                     defaultValue="50"
-                    className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                    className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
                   />
                 </label>
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
@@ -119,14 +119,14 @@ export function DemoAnalyzer() {
                     type="number"
                     min="0"
                     defaultValue="8"
-                    className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+                    className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
                   />
                 </label>
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-cyan-300 px-6 text-sm font-black text-slate-950 transition hover:bg-slate-950 hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-purple-600 px-6 text-sm font-black text-white transition hover:bg-slate-950 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
                 Generate AI Opportunity Map
@@ -139,24 +139,24 @@ export function DemoAnalyzer() {
             <div className="rounded-[1.5rem] border border-white/10 bg-white/[.04] p-5">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <span className="grid size-11 place-items-center rounded-2xl bg-cyan-300 text-slate-950">
+                  <span className="grid size-11 place-items-center rounded-2xl bg-purple-600 text-white">
                     <Bot className="size-5" />
                   </span>
                   <div>
-                    <p className="text-sm font-bold text-cyan-100">SyncAi Advisor</p>
+                    <p className="text-sm font-bold text-purple-100">SyncAi Advisor</p>
                     <p className="text-xs text-slate-400">AI opportunity map</p>
                   </div>
                 </div>
-                <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-bold text-emerald-200">
+                <span className="rounded-full border border-purple-300/30 bg-purple-500/10 px-3 py-1 text-xs font-bold text-purple-100">
                   Live preview
                 </span>
               </div>
 
               <div className="mt-6 rounded-3xl bg-white p-5 text-slate-950">
                 <div className="flex items-start gap-3">
-                  <ClipboardList className="mt-1 size-5 text-cyan-700" />
+                  <ClipboardList className="mt-1 size-5 text-purple-700" />
                   <div>
-                    <p className="text-sm font-black uppercase tracking-[.18em] text-cyan-700">Summary</p>
+                    <p className="text-sm font-black uppercase tracking-[.18em] text-purple-700">Summary</p>
                     <p className="mt-2 text-lg font-bold leading-7">{analysis.summary}</p>
                   </div>
                 </div>
@@ -176,7 +176,7 @@ export function DemoAnalyzer() {
 
               <div className="mt-5 rounded-3xl bg-white p-5">
                 <div className="mb-4 flex items-center gap-2 text-sm font-black text-slate-950">
-                  <ArrowRight className="size-4 text-cyan-700" />
+                  <ArrowRight className="size-4 text-purple-700" />
                   Send this opportunity to SyncAi
                 </div>
                 <LeadForm source="ai-demo" compact demoSummary={demoSummary} />
@@ -196,7 +196,7 @@ function ResultList({ title, items }: { title: string; items: string[] }) {
       <ul className="mt-3 grid gap-2">
         {items.map((item) => (
           <li key={item} className="flex gap-2 text-sm leading-6 text-slate-700">
-            <span className="mt-2 size-1.5 rounded-full bg-cyan-600" />
+            <span className="mt-2 size-1.5 rounded-full bg-purple-600" />
             <span>{item}</span>
           </li>
         ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { navItems } from "@/lib/site-data";
@@ -10,15 +11,19 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#061018]/92 text-white backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/92 text-white backdrop-blur-xl">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex items-center gap-3" aria-label="SyncAi Technologies home">
-          <span className="grid size-10 place-items-center rounded-2xl border border-cyan-300/40 bg-cyan-300/10 text-sm font-black text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,.18)]">
-            SA
-          </span>
-          <span className="flex flex-col leading-none">
-            <span className="text-base font-semibold tracking-wide">SyncAi</span>
-            <span className="text-[11px] uppercase tracking-[0.28em] text-cyan-100/70">Technologies</span>
+          <Image
+            src="/brand/syncai-logo-dark.png"
+            alt="SyncAi logo"
+            width={154}
+            height={50}
+            priority
+            className="h-10 w-auto"
+          />
+          <span className="hidden text-[11px] font-bold uppercase tracking-[0.28em] text-purple-100/75 sm:inline">
+            Technologies
           </span>
         </Link>
 
@@ -27,7 +32,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-slate-200 transition hover:text-cyan-200"
+              className="text-sm font-medium text-slate-200 transition hover:text-purple-200"
             >
               {item.label}
             </Link>
@@ -43,7 +48,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/contact"
-            className="rounded-full bg-cyan-300 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-[0_16px_40px_rgba(34,211,238,.25)] transition hover:bg-white"
+            className="rounded-full bg-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-[0_16px_40px_rgba(126,34,206,.28)] transition hover:bg-white hover:text-slate-950"
           >
             Book AI Strategy Call
           </Link>
@@ -74,7 +79,7 @@ export function SiteHeader() {
           ))}
           <Link
             href="/contact"
-            className="mt-2 rounded-2xl bg-cyan-300 px-4 py-3 text-center text-sm font-bold text-slate-950"
+            className="mt-2 rounded-2xl bg-purple-600 px-4 py-3 text-center text-sm font-bold text-white"
             onClick={() => setOpen(false)}
           >
             Book AI Strategy Call

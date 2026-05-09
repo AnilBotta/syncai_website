@@ -17,13 +17,13 @@ export default function ContactPage() {
               Canada-based AI strategy and implementation from Brampton, Ontario.
             </p>
             <div className="mt-8 grid gap-3 text-sm text-slate-200">
-              <a href={`mailto:${contact.email}`} className="hover:text-cyan-200">
+              <a href={`mailto:${contact.email}`} className="hover:text-purple-200">
                 {contact.email}
               </a>
-              <a href={`tel:${contact.phonePrimary.replaceAll(" ", "")}`} className="hover:text-cyan-200">
+              <a href={`tel:${contact.phonePrimary.replaceAll(" ", "")}`} className="hover:text-purple-200">
                 {contact.phonePrimary}
               </a>
-              <a href={`tel:${contact.phoneSecondary.replaceAll(" ", "")}`} className="hover:text-cyan-200">
+              <a href={`tel:${contact.phoneSecondary.replaceAll(" ", "")}`} className="hover:text-purple-200">
                 {contact.phoneSecondary}
               </a>
               <span>{contact.location}</span>

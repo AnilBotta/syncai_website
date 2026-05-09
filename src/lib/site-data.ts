@@ -34,7 +34,7 @@ export const services = [
   {
     title: "AI Strategy and Consulting",
     description:
-      "We map business pain points, score AI opportunities, and turn the best ones into a practical implementation roadmap.",
+      "We map business challenges, score AI opportunities, and turn the best ones into a practical implementation roadmap.",
     icon: Sparkles,
   },
   {
@@ -89,7 +89,7 @@ export const proofPoints = [
   },
   {
     value: "Strategy first",
-    label: "Every build starts with the pain point, not the technology trend.",
+    label: "Every build starts with the business challenge, not the technology trend.",
     icon: ClipboardCheck,
   },
   {
@@ -161,7 +161,7 @@ export const faqs = [
   {
     question: "Can you work with businesses that are new to AI?",
     answer:
-      "Yes. The process is designed for business owners who know the pain point but do not yet know the best technical solution.",
+      "Yes. The process is designed for business owners who know the challenge but do not yet know the best technical solution.",
   },
   {
     question: "Will pricing be public?",

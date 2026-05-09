@@ -74,7 +74,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
           <input
             name="name"
             required
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
             placeholder="Your name"
           />
         </label>
@@ -84,7 +84,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
             name="email"
             type="email"
             required
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
             placeholder="you@company.com"
           />
         </label>
@@ -92,7 +92,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
           Phone
           <input
             name="phone"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
             placeholder="+1"
           />
         </label>
@@ -100,7 +100,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
           Company
           <input
             name="company"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
             placeholder="Business name"
           />
         </label>
@@ -108,7 +108,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
           Industry
           <select
             name="industry"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
             defaultValue=""
           >
             <option value="" disabled>
@@ -123,7 +123,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
           Interest
           <select
             name="interest"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
             defaultValue=""
           >
             <option value="" disabled>
@@ -137,12 +137,12 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
       </div>
 
       <label className="grid gap-2 text-sm font-semibold text-slate-700">
-        What business pain point should AI help solve?
+        What business challenge should AI help solve?
         <textarea
           name="painPoint"
           required
           rows={compact ? 4 : 5}
-          className="resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          className="resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
           placeholder="Example: We miss calls after hours, spend too much time on intake, and need better follow-up for new leads."
         />
       </label>
@@ -150,14 +150,14 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
       <button
         type="submit"
         disabled={status === "loading"}
-        className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-slate-950 px-6 text-sm font-bold text-white shadow-[0_16px_40px_rgba(15,23,42,.2)] transition hover:bg-cyan-600 disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-slate-950 px-6 text-sm font-bold text-white shadow-[0_16px_40px_rgba(15,23,42,.2)] transition hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {status === "loading" ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
         Request AI Strategy Call
       </button>
 
       {message ? (
-        <p className={`flex items-center gap-2 text-sm ${status === "success" ? "text-emerald-700" : "text-red-600"}`}>
+        <p className={`flex items-center gap-2 text-sm ${status === "success" ? "text-purple-700" : "text-red-600"}`}>
           {status === "success" ? <CheckCircle2 className="size-4" /> : null}
           {message}
         </p>

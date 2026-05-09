@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SyncAi Technologies",
     description:
-      "AI strategy and implementation for businesses that want practical AI systems tied to real pain points.",
+      "AI strategy and implementation for businesses that want practical AI systems tied to real challenges.",
     url: "https://www.syncai.tech",
     siteName: "SyncAi Technologies",
     locale: "en_CA",

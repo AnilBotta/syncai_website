@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { contact, navItems } from "@/lib/site-data";
 
 export function SiteFooter() {
@@ -7,16 +8,20 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_.7fr_.7fr] lg:px-8">
         <div>
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-2xl bg-slate-950 text-sm font-black text-cyan-200">
-              SA
-            </span>
+            <Image
+              src="/brand/syncai-logo-light.png"
+              alt="SyncAi logo"
+              width={154}
+              height={50}
+              className="h-9 w-auto"
+            />
             <div>
-              <p className="font-bold text-slate-950">SyncAi Technologies</p>
+              <p className="font-bold text-slate-950">Technologies</p>
               <p className="text-sm text-slate-500">Canada-based AI strategy and implementation.</p>
             </div>
           </div>
           <p className="mt-5 max-w-xl text-sm leading-6 text-slate-600">
-            Built from Brampton, Ontario for businesses that want AI systems tied to real pain points,
+            Built from Brampton, Ontario for businesses that want AI systems tied to real challenges,
             measurable workflows, and qualified leads.
           </p>
         </div>
