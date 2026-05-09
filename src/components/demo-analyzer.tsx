@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Bot, ClipboardList, Loader2, Sparkles } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
@@ -66,77 +67,93 @@ export function DemoAnalyzer() {
   ].join("\n");
 
   return (
-    <section id="demo" className="bg-[#f7fbfb] py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="demo" className="relative overflow-hidden bg-black py-20 text-white sm:py-28">
+      <Image
+        src="/brand/syncai-hero-ai-workflow.png"
+        alt=""
+        width={1792}
+        height={1024}
+        className="absolute inset-0 h-full w-full object-cover object-center opacity-20 [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_72%,transparent)]"
+      />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(147,51,234,.3),transparent_34%),linear-gradient(135deg,rgba(0,0,0,.93),rgba(18,0,31,.9)_46%,rgba(0,0,0,.94))]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
           <div>
-            <p className="inline-flex rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-bold text-purple-800">
+            <p className="inline-flex rounded-full border border-purple-300/20 bg-white/[.06] px-4 py-2 text-sm font-bold text-purple-100 backdrop-blur">
               Live AI demo
             </p>
-            <h2 className="mt-5 max-w-2xl text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
-              Give visitors a reason to start a serious business conversation.
+            <h2 className="mt-5 max-w-2xl text-3xl font-black tracking-tight text-white sm:text-5xl">
+              Let prospects experience your AI strategy before the call.
             </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
               This demo shows the kind of AI experience your site can use to educate a prospect,
               reveal their business challenge, and convert them into a qualified lead.
             </p>
 
-            <form action={runDemo} className="mt-8 grid gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-              <label className="grid gap-2 text-sm font-semibold text-slate-700">
+            <div className="mt-7 grid gap-3 sm:grid-cols-3">
+              {["Instant audit", "Qualified context", "Lead handoff"].map((item) => (
+                <div key={item} className="rounded-2xl border border-white/10 bg-white/[.055] px-4 py-3 text-sm font-bold text-purple-100 backdrop-blur">
+                  {item}
+                </div>
+              ))}
+            </div>
+
+            <form action={runDemo} className="mt-8 grid gap-4 rounded-[2rem] border border-white/10 bg-white/[.075] p-5 shadow-2xl shadow-black/25 backdrop-blur-xl">
+              <label className="grid gap-2 text-sm font-semibold text-purple-100">
                 Business type
                 <input
                   name="businessType"
                   required
-                  className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+                  className="h-12 rounded-2xl border border-white/10 bg-white px-4 text-slate-950 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-500/20"
                   placeholder="Dental clinic, real estate team, service business"
                 />
               </label>
-              <label className="grid gap-2 text-sm font-semibold text-slate-700">
+              <label className="grid gap-2 text-sm font-semibold text-purple-100">
                 Current challenge
                 <textarea
                   name="currentProblem"
                   required
                   rows={4}
-                  className="resize-none rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+                  className="resize-none rounded-2xl border border-white/10 bg-white px-4 py-3 text-slate-950 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-500/20"
                   placeholder="Tell us what slows the business down or where leads are being lost."
                 />
               </label>
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="grid gap-2 text-sm font-semibold text-slate-700">
+                <label className="grid gap-2 text-sm font-semibold text-purple-100">
                   Monthly leads
                   <input
                     name="monthlyLeads"
                     type="number"
                     min="0"
                     defaultValue="50"
-                    className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+                    className="h-12 rounded-2xl border border-white/10 bg-white px-4 text-slate-950 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-500/20"
                   />
                 </label>
-                <label className="grid gap-2 text-sm font-semibold text-slate-700">
+                <label className="grid gap-2 text-sm font-semibold text-purple-100">
                   Admin hours lost weekly
                   <input
                     name="hoursLostWeekly"
                     type="number"
                     min="0"
                     defaultValue="8"
-                    className="h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100"
+                    className="h-12 rounded-2xl border border-white/10 bg-white px-4 text-slate-950 outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-500/20"
                   />
                 </label>
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-purple-600 px-6 text-sm font-black text-white transition hover:bg-slate-950 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-purple-600 px-6 text-sm font-black text-white shadow-[0_18px_50px_rgba(147,51,234,.28)] transition hover:bg-white hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
                 Generate AI Opportunity Map
               </button>
-              {error ? <p className="text-sm text-red-600">{error}</p> : null}
+              {error ? <p className="text-sm text-red-200">{error}</p> : null}
             </form>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-slate-950 p-4 text-white shadow-2xl shadow-slate-950/15">
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/[.04] p-5">
+          <div className="rounded-[2.25rem] border border-white/10 bg-[#050719]/95 p-4 text-white shadow-2xl shadow-purple-950/30">
+            <div className="rounded-[1.65rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <span className="grid size-11 place-items-center rounded-2xl bg-purple-600 text-white">
@@ -152,7 +169,7 @@ export function DemoAnalyzer() {
                 </span>
               </div>
 
-              <div className="mt-6 rounded-3xl bg-white p-5 text-slate-950">
+              <div className="mt-6 rounded-3xl bg-white p-5 text-slate-950 shadow-xl shadow-black/20">
                 <div className="flex items-start gap-3">
                   <ClipboardList className="mt-1 size-5 text-purple-700" />
                   <div>
@@ -174,7 +191,7 @@ export function DemoAnalyzer() {
                 </div>
               </div>
 
-              <div className="mt-5 rounded-3xl bg-white p-5">
+              <div className="mt-5 rounded-3xl bg-white p-5 shadow-xl shadow-black/20">
                 <div className="mb-4 flex items-center gap-2 text-sm font-black text-slate-950">
                   <ArrowRight className="size-4 text-purple-700" />
                   Send this opportunity to SyncAi
