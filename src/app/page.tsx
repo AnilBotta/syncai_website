@@ -1,11 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   CheckCircle2,
   MousePointerClick,
   PhoneCall,
   PlayCircle,
-  TrendingUp,
 } from "lucide-react";
 import { DemoAnalyzer } from "@/components/demo-analyzer";
 import { LeadForm } from "@/components/lead-form";
@@ -18,17 +18,20 @@ export default function Home() {
     <>
       <SiteHeader />
       <main>
-        <section className="relative overflow-hidden bg-[#030303] text-white">
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(126,34,206,.28),transparent_34%),radial-gradient(circle_at_75%_15%,rgba(168,85,247,.22),transparent_28%)]" />
-          <div className="relative mx-auto grid min-h-[calc(100svh-72px)] max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:px-8">
-            <div>
-              <p className="inline-flex rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm font-bold text-purple-100">
+        <section className="relative overflow-hidden bg-black text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(147,51,234,.32),transparent_34%),linear-gradient(115deg,#050007_0%,#130021_46%,#020003_100%)]" />
+          <div className="relative mx-auto grid min-h-[calc(100svh-72px)] max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[.98fr_1.02fr] lg:items-center lg:px-8 xl:py-20">
+            <div className="relative z-10">
+              <p className="inline-flex rounded-full border border-purple-300/25 bg-white/5 px-4 py-2 text-sm font-bold text-purple-100 shadow-[0_0_40px_rgba(147,51,234,.16)] backdrop-blur">
                 Canada-based AI strategy and implementation from Brampton, Ontario
               </p>
-              <h1 className="mt-7 max-w-4xl text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl">
-                AI systems that solve business challenges and turn ordinary websites into AI websites and lead machines.
+              <h1 className="mt-7 max-w-3xl text-4xl font-black leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.45rem] xl:text-[3.75rem]">
+                AI systems that solve business challenges and turn ordinary sites into{" "}
+                <span className="bg-gradient-to-r from-white via-purple-100 to-fuchsia-300 bg-clip-text text-transparent">
+                  AI websites and lead machines.
+                </span>
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+              <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
                 SyncAi Technologies helps businesses identify the right AI opportunities, then builds the
                 websites, agents, automations, and workflows that capture leads and reduce manual work.
               </p>
@@ -48,9 +51,9 @@ export default function Home() {
                   Try the AI Demo
                 </Link>
               </div>
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              <div className="mt-9 grid gap-3 sm:grid-cols-3">
                 {["AI roadmaps", "Lead agents", "Workflow automation"].map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-sm font-semibold text-slate-200">
+                  <div key={item} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[.04] px-3 py-2 text-sm font-semibold text-slate-200 backdrop-blur">
                     <CheckCircle2 className="size-4 text-purple-200" />
                     {item}
                   </div>
@@ -58,52 +61,32 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="rounded-[2rem] border border-white/12 bg-white/[.06] p-4 shadow-2xl shadow-purple-950/40 backdrop-blur">
-                <div className="rounded-[1.5rem] bg-white p-5 text-slate-950">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-black uppercase tracking-[.2em] text-purple-700">
-                        AI opportunity board
-                      </p>
-                      <h2 className="mt-2 text-2xl font-black">From challenge to working system</h2>
-                    </div>
-                    <span className="grid size-12 place-items-center rounded-2xl bg-slate-950 text-purple-200">
-                      <TrendingUp className="size-6" />
-                    </span>
+            <div className="relative min-h-[420px] lg:min-h-[500px]">
+              <div className="absolute inset-0 rounded-[3rem] bg-purple-600/20 blur-3xl" />
+              <Image
+                src="/brand/syncai-hero-ai-workflow.png"
+                alt="AI workflow connecting website, voice, CRM, calendar, and lead systems"
+                width={1792}
+                height={1024}
+                priority
+                className="absolute inset-0 h-full w-full rounded-[2.5rem] object-cover object-center opacity-95 shadow-2xl shadow-purple-950/40"
+              />
+              <div className="absolute inset-0 rounded-[2.5rem] bg-[linear-gradient(90deg,rgba(0,0,0,.18),transparent_42%),linear-gradient(0deg,rgba(0,0,0,.45),transparent_52%)]" />
+              <div className="absolute left-4 right-4 top-4 rounded-[1.5rem] border border-white/14 bg-black/35 px-5 py-4 shadow-2xl backdrop-blur-md sm:left-6 sm:right-auto sm:max-w-sm">
+                <p className="text-xs font-black uppercase tracking-[.24em] text-purple-200">AI growth system</p>
+                <p className="mt-2 text-lg font-black">Website, agents, automation, and leads connected.</p>
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 grid gap-3 rounded-[1.5rem] border border-white/14 bg-black/42 p-4 backdrop-blur-md sm:left-6 sm:right-6 sm:grid-cols-3">
+                {[
+                  ["24/7", "lead capture"],
+                  ["1", "admin dashboard"],
+                  ["3", "launch demos"],
+                ].map(([value, label]) => (
+                  <div key={label} className="border-white/10 px-4 py-3 sm:border-r sm:last:border-r-0">
+                    <p className="text-2xl font-black text-white">{value}</p>
+                    <p className="text-xs font-semibold text-purple-100">{label}</p>
                   </div>
-
-                  <div className="mt-6 grid gap-3">
-                    {[
-                      ["Missed calls", "Voice agent qualifies and routes urgent inquiries"],
-                      ["Slow intake", "AI form extracts needs and creates a clean lead record"],
-                      ["Manual follow-up", "Automation sends next steps and updates the pipeline"],
-                    ].map(([pain, solution], index) => (
-                      <div key={pain} className="grid gap-3 rounded-3xl border border-slate-200 p-4 sm:grid-cols-[.8fr_1.2fr]">
-                        <div className="flex items-center gap-3">
-                          <span className="grid size-9 place-items-center rounded-2xl bg-purple-50 text-sm font-black text-purple-700">
-                            {index + 1}
-                          </span>
-                          <p className="font-bold">{pain}</p>
-                        </div>
-                        <p className="text-sm leading-6 text-slate-600">{solution}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 grid gap-3 rounded-3xl bg-slate-950 p-5 text-white sm:grid-cols-3">
-                    {[
-                      ["24/7", "lead capture"],
-                      ["1", "admin dashboard"],
-                      ["3", "launch demos"],
-                    ].map(([value, label]) => (
-                      <div key={label}>
-                        <p className="text-3xl font-black text-purple-200">{value}</p>
-                        <p className="text-sm text-slate-300">{label}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
