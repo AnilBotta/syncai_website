@@ -150,6 +150,32 @@ export function DemoAnalyzer() {
               </button>
               {error ? <p className="text-sm text-red-200">{error}</p> : null}
             </form>
+
+            <div className="mt-8 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.065] shadow-2xl shadow-black/20 backdrop-blur-xl">
+              <div className="relative h-72">
+                <Image
+                  src="/brand/syncai-hero-ai-workflow.png"
+                  alt="AI workflow preview connecting website, voice, calendar, CRM, and lead systems"
+                  width={1792}
+                  height={1024}
+                  className="h-full w-full object-cover object-center opacity-90"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.74),rgba(0,0,0,.12)),linear-gradient(0deg,rgba(0,0,0,.66),transparent_58%)]" />
+                <div className="absolute left-5 top-5 rounded-2xl border border-white/10 bg-black/45 px-4 py-3 backdrop-blur-md">
+                  <p className="text-xs font-black uppercase tracking-[.22em] text-purple-100">Workflow preview</p>
+                  <p className="mt-2 max-w-xs text-lg font-black leading-6 text-white">
+                    Turn one visitor input into a qualified lead record.
+                  </p>
+                </div>
+                <div className="absolute bottom-5 left-5 right-5 grid gap-3 sm:grid-cols-3">
+                  {["Website", "AI agent", "Admin lead"].map((item) => (
+                    <div key={item} className="rounded-2xl border border-white/10 bg-white/[.09] px-4 py-3 text-sm font-bold text-purple-50 backdrop-blur-md">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="rounded-[2.25rem] border border-white/10 bg-[#050719]/95 p-4 text-white shadow-2xl shadow-purple-950/30">
