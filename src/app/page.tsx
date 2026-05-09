@@ -104,26 +104,55 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-slate-950 py-20 text-white sm:py-28">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+        <section id="services" className="relative overflow-hidden bg-black py-20 text-white sm:py-28">
+          <Image
+            src="/brand/syncai-hero-ai-workflow.png"
+            alt=""
+            width={1792}
+            height={1024}
+            className="absolute right-0 top-0 h-full w-full object-cover object-center opacity-30 [mask-image:linear-gradient(to_left,black_34%,transparent_100%)] lg:w-[66%]"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(147,51,234,.24),transparent_32%),linear-gradient(180deg,rgba(0,0,0,.88),rgba(10,0,18,.82)_48%,rgba(0,0,0,.95))]" />
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-10 lg:grid-cols-[.82fr_1.18fr] lg:items-end">
               <div>
-                <p className="text-sm font-black uppercase tracking-[.25em] text-purple-200">Services</p>
-                <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
-                  Strategy first. Technology second. Business result always.
+                <p className="inline-flex rounded-full border border-purple-300/20 bg-white/[.06] px-4 py-2 text-sm font-black uppercase tracking-[.25em] text-purple-100 backdrop-blur">
+                  Services
+                </p>
+                <h2 className="mt-5 max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">
+                  Strategy first. Systems next. Business results always.
                 </h2>
               </div>
-              <p className="text-lg leading-8 text-slate-300">
-                Most businesses do not need random AI tools. They need a practical system designed around their
-                customer journey, team capacity, and revenue goals.
-              </p>
+              <div className="rounded-[2rem] border border-white/10 bg-white/[.055] p-5 backdrop-blur-md">
+                <p className="text-lg leading-8 text-slate-200">
+                  Most businesses do not need random AI tools. They need a practical system designed around their
+                  customer journey, team capacity, and revenue goals.
+                </p>
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  {["Diagnose", "Design", "Deploy"].map((item) => (
+                    <div key={item} className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
+                      <p className="text-sm font-black text-purple-100">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="mt-12 grid gap-5 md:grid-cols-2">
-              {services.map((service) => (
-                <div key={service.title} className="rounded-[2rem] border border-white/10 bg-white/[.04] p-6">
-                  <service.icon className="size-7 text-purple-200" />
-                  <h3 className="mt-5 text-xl font-black">{service.title}</h3>
-                  <p className="mt-3 leading-7 text-slate-300">{service.description}</p>
+              {services.map((service, index) => (
+                <div
+                  key={service.title}
+                  className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[.07] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl transition hover:border-purple-300/35 hover:bg-white/[.09]"
+                >
+                  <div className="absolute right-5 top-4 text-6xl font-black text-white/[.035]">
+                    0{index + 1}
+                  </div>
+                  <div className="relative">
+                    <span className="grid size-12 place-items-center rounded-2xl border border-purple-300/20 bg-purple-500/15 text-purple-100 shadow-[0_0_32px_rgba(147,51,234,.22)]">
+                      <service.icon className="size-6" />
+                    </span>
+                    <h3 className="mt-6 text-xl font-black">{service.title}</h3>
+                    <p className="mt-3 leading-7 text-slate-300">{service.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
