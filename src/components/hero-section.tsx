@@ -75,8 +75,8 @@ export function HeroSection() {
 
           <div className="relative h-full w-full overflow-hidden rounded-xl bg-[#0e0e0e]">
             <Image
-              src="/brand/syncai-hero-ai-workflow.png"
-              alt="AI workflow connecting website, voice, CRM, calendar, and lead systems"
+              src="/brand/stunning_3d_ai_operations_hub_visualization_for_a_premium_saas_website._central.png"
+              alt="AI operations hub visualization"
               width={1792}
               height={1024}
               priority
