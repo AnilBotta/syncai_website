@@ -1,78 +1,137 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, PlayCircle, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Sparkles, Headphones, Bot, Globe, MessageSquareText, PhoneCall } from "lucide-react";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#0f0f1a] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(75,0,130,0.32),transparent_34%),linear-gradient(115deg,#0f0f1a_0%,#1a0033_46%,#0f0f1a_100%)]" />
-      <div className="relative mx-auto grid min-h-screen max-w-7xl gap-10 px-4 pt-28 pb-14 sm:px-6 lg:grid-cols-[.98fr_1.02fr] lg:items-center lg:px-8 xl:py-32">
-        <div className="relative z-10">
-          <p className="inline-flex rounded-full border border-[#9400D3]/25 bg-white/5 px-4 py-2 text-sm font-bold text-[#D9A0FF] shadow-[0_0_40px_rgba(148,0,211,.16)] backdrop-blur">
-            Canada-based AI strategy and implementation from Brampton, Ontario
-          </p>
-          <h1 className="mt-7 max-w-3xl text-4xl font-black leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.45rem] xl:text-[3.75rem]">
-            AI Solutions That{" "}
-            <span className="bg-gradient-to-r from-[#9400D3] via-[#6F00AA] to-[#4B0082] bg-clip-text text-transparent">
-              Actually Deliver ROI
-            </span>
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-            SyncAI builds custom AI systems — smart websites, voice agents, and workflow automation — that cut costs, capture leads, and grow revenue.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/contact"
-              className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-6 text-sm font-black text-white shadow-[0_18px_60px_rgba(75,0,130,0.32)] transition hover:opacity-90"
-            >
-              Book a Strategy Call
-              <ArrowRight className="size-4" />
-            </Link>
-            <Link
-              href="#demo"
-              className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full border border-white/15 px-6 text-sm font-bold text-white transition hover:bg-white/10"
-            >
-              <PlayCircle className="size-4" />
-              Try the AI Demo
-            </Link>
-          </div>
-          <div className="mt-9 grid gap-3 sm:grid-cols-3">
-            {["AI roadmaps", "Lead agents", "Workflow automation"].map((item) => (
-              <div key={item} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[.04] px-3 py-2 text-sm font-semibold text-slate-200 backdrop-blur">
-                <CheckCircle2 className="size-4 text-[#9400D3]" />
-                {item}
+    <section className="relative min-h-screen overflow-hidden bg-[#131313] text-white">
+      <div className="pointer-events-none absolute inset-0 hero-bg-pattern" />
+      <style>{`.hero-bg-pattern { background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 32px 32px; }`}</style>
+
+      {/* Ambient light orbs */}
+      <div className="pointer-events-none absolute -top-20 -left-20 size-[600px] rounded-full bg-[radial-gradient(circle,rgba(160,120,255,0.15)_0%,rgba(19,19,19,0)_70%)] blur-[60px]" />
+      <div className="pointer-events-none absolute top-1/2 -right-40 size-[600px] rounded-full bg-[radial-gradient(circle,rgba(96,1,209,0.15)_0%,rgba(19,19,19,0)_70%)] blur-[60px]" />
+
+      <div className="relative mx-auto grid min-h-screen max-w-7xl gap-12 px-5 pt-32 pb-14 sm:px-8 lg:grid-cols-2 lg:items-center lg:px-12 xl:py-32">
+        {/* Left column */}
+        <div className="flex flex-col gap-8">
+          {/* Trust chips */}
+          <div className="flex flex-wrap gap-3">
+            {[
+              { icon: null, label: "Canada-Based", dot: true },
+              { icon: "briefcase", label: "Built for SMBs" },
+              { icon: "code", label: "Custom AI Systems" },
+            ].map((chip) => (
+              <div
+                key={chip.label}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#131313]/60 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#cbc3d7] backdrop-blur-md"
+              >
+                {chip.dot && <span className="size-2 animate-pulse rounded-full bg-[#d0bcff]" />}
+                {chip.label}
               </div>
             ))}
+          </div>
+
+          {/* Headlines */}
+          <div className="flex flex-col gap-4">
+            <h1 className="text-[clamp(2rem,5vw,4.5rem)] font-bold leading-[1.1] tracking-tighter text-white">
+              AI Systems That Turn Business Chaos Into{" "}
+              <span className="bg-gradient-to-r from-[#e5e2e1] to-[#d0bcff] bg-clip-text text-transparent">
+                Growth
+              </span>
+            </h1>
+            <p className="text-xl font-semibold text-[#d0bcff]">
+              Automate. Capture Leads. Grow Faster.
+            </p>
+            <p className="max-w-[600px] text-lg leading-relaxed text-[#cbc3d7]">
+              SyncAI designs and implements custom AI websites, voice agents, chatbots, and workflow
+              automations that help businesses save time, respond faster, and generate more revenue.
+            </p>
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-col gap-4 pt-4 sm:flex-row">
+            <Link
+              href="/contact"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#6001d1] to-[#a078ff] px-8 py-4 text-sm font-semibold text-white shadow-[0_0_20px_rgba(160,120,255,0)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(160,120,255,0.4)]"
+            >
+              Book a Strategy Call
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              href="/solutions"
+              className="glass-panel-hover inline-flex items-center justify-center gap-2 rounded-full border border-[#494454] bg-[#131313]/60 px-8 py-4 text-sm font-semibold text-white backdrop-blur-md transition-all hover:text-[#d0bcff]"
+            >
+              <Sparkles className="size-4" />
+              Explore AI Solutions
+            </Link>
           </div>
         </div>
 
-        <div className="relative min-h-[420px] lg:min-h-[500px]">
-          <div className="absolute inset-0 rounded-[3rem] bg-[#4B0082]/20 blur-3xl" />
-          <Image
-            src="/brand/syncai-hero-ai-workflow.png"
-            alt="AI workflow connecting website, voice, CRM, calendar, and lead systems"
-            width={1792}
-            height={1024}
-            priority
-            className="absolute inset-0 h-full w-full rounded-[2.5rem] object-cover object-center opacity-95 shadow-2xl shadow-[#0f0f1a]/40"
-          />
-          <div className="absolute inset-0 rounded-[2.5rem] bg-[linear-gradient(90deg,rgba(0,0,0,.18),transparent_42%),linear-gradient(0deg,rgba(0,0,0,.45),transparent_52%)]" />
-          <div className="absolute left-4 right-4 top-4 rounded-[1.5rem] border border-white/14 bg-black/35 px-5 py-4 shadow-2xl backdrop-blur-md sm:left-6 sm:right-auto sm:max-w-sm">
-            <p className="text-xs font-black uppercase tracking-[.24em] text-[#D9A0FF]">AI growth system</p>
-            <p className="mt-2 text-lg font-black">Website, agents, automation, and leads connected.</p>
+        {/* Right column: image container */}
+        <div className="group relative aspect-square w-full overflow-hidden rounded-2xl border border-white/10 bg-[#131313]/40 p-2 backdrop-blur-md md:aspect-[4/3] lg:aspect-square">
+          {/* Hover glow ring */}
+          <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl border border-[#d0bcff]/20 transition-colors duration-500 group-hover:border-[#d0bcff]/40" />
+
+          <div className="relative h-full w-full overflow-hidden rounded-xl bg-[#0e0e0e]">
+            <Image
+              src="/brand/syncai-hero-ai-workflow.png"
+              alt="AI workflow connecting website, voice, CRM, calendar, and lead systems"
+              width={1792}
+              height={1024}
+              priority
+              className="h-full w-full object-cover opacity-90 transition-all duration-500 ease-out group-hover:scale-105 group-hover:opacity-100"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent opacity-80" />
           </div>
-          <div className="absolute bottom-4 left-4 right-4 grid gap-3 rounded-[1.5rem] border border-white/14 bg-black/42 p-4 backdrop-blur-md sm:left-6 sm:right-6 sm:grid-cols-3">
-            {[
-              ["24/7", "lead capture"],
-              ["1", "admin dashboard"],
-              ["3", "launch demos"],
-            ].map(([value, label]) => (
-              <div key={label} className="border-white/10 px-4 py-3 sm:border-r sm:last:border-r-0">
-                <p className="text-2xl font-black text-white">{value}</p>
-                <p className="text-xs font-semibold text-[#D9A0FF]">{label}</p>
+
+          {/* Floating UI cards */}
+          <div className="absolute left-3 top-6 animate-[bounce_4s_infinite] rounded-lg border border-white/10 bg-[#131313]/60 px-4 py-2 backdrop-blur-md sm:left-4 sm:top-8">
+            <div className="flex items-center gap-3">
+              <span className="flex size-8 items-center justify-center rounded-full bg-[#d0bcff]/20">
+                <Headphones className="size-4 text-[#d0bcff]" />
+              </span>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#cbc3d7]">Voice Agent Active</p>
+                <p className="text-sm text-white">Processing...</p>
               </div>
-            ))}
+            </div>
           </div>
+
+          <div className="absolute bottom-10 right-3 animate-[bounce_5s_infinite_reverse] rounded-lg border border-white/10 bg-[#131313]/60 px-4 py-2 backdrop-blur-md sm:bottom-12 sm:right-4">
+            <div className="flex items-center gap-3">
+              <span className="flex size-8 items-center justify-center rounded-full bg-[#4cd7f6]/20">
+                <MessageSquareText className="size-4 text-[#4cd7f6]" />
+              </span>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#cbc3d7]">Lead Capture</p>
+                <p className="text-sm text-[#4cd7f6]">+34% Efficiency</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats strip */}
+      <div className="relative z-10 mx-auto -mt-10 max-w-7xl px-5 pb-20 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-2 gap-6 rounded-2xl border border-white/10 bg-[#131313]/60 p-6 backdrop-blur-md md:grid-cols-4 md:p-8">
+          {[
+            { icon: PhoneCall, value: "24/7", label: "Customer Response", color: "#d0bcff" },
+            { icon: Bot, value: "100%", label: "Automated Lead Capture", color: "#d2bbff" },
+            { icon: Globe, value: "3x", label: "Faster Follow-Ups", color: "#4cd7f6" },
+            { icon: ArrowRight, value: "-80%", label: "Lower Manual Work", color: "#ffb4ab" },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col items-center gap-2 text-center">
+              <span
+                className="flex size-10 items-center justify-center rounded-full bg-[#201f1f] transition-colors hover:bg-[#d0bcff]/10"
+                style={{ color: stat.color }}
+              >
+                <stat.icon className="size-5" />
+              </span>
+              <p className="text-3xl font-semibold tracking-tight text-white">{stat.value}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#cbc3d7]">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
