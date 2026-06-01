@@ -15,17 +15,17 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.syncai.tech"),
   title: {
-    default: "SyncAi Technologies | AI Strategy and Consulting in Canada",
-    template: "%s | SyncAi Technologies",
+    default: "SyncAI Technology | AI Solutions That Deliver ROI",
+    template: "%s | SyncAI Technology",
   },
   description:
-    "Canada-based AI strategy, AI websites, agents, and automation for clinics, real estate teams, and small businesses.",
+    "SyncAI builds custom AI systems — smart websites, voice agents, and workflow automation — that cut costs, capture leads, and grow revenue for Canadian businesses.",
   openGraph: {
-    title: "SyncAi Technologies",
+    title: "SyncAI Technology",
     description:
-      "AI strategy and implementation for businesses that want practical AI systems tied to real challenges.",
+      "AI solutions that actually deliver ROI. Custom websites, agents, and automation for Canadian businesses.",
     url: "https://www.syncai.tech",
-    siteName: "SyncAi Technologies",
+    siteName: "SyncAI Technology",
     locale: "en_CA",
     type: "website",
   },

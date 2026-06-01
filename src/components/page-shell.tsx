@@ -14,9 +14,9 @@ export function PageShell({ eyebrow, title, description, children }: PageShellPr
     <>
       <SiteHeader />
       <main>
-        <section className="bg-slate-950 px-4 py-20 text-white sm:px-6 sm:py-28 lg:px-8">
+        <section className="bg-[#0f0f1a] px-4 pt-28 pb-20 text-white sm:px-6 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-5xl">
-            <p className="text-sm font-black uppercase tracking-[.25em] text-purple-200">{eyebrow}</p>
+            <p className="text-sm font-black uppercase tracking-[.25em] text-[#9400D3]">{eyebrow}</p>
             <h1 className="mt-5 text-4xl font-black tracking-tight sm:text-6xl">{title}</h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300">{description}</p>
           </div>
