@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export const navItems = [
-  { label: "Solutions", href: "/solutions" },
+  { label: "Solutions", href: "/demos" },
   { label: "Demos", href: "/demos" },
   { label: "Industries", href: "/industries" },
   { label: "Process", href: "/process" },

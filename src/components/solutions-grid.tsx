@@ -69,10 +69,10 @@ export function SolutionsGrid() {
         </div>
         <div className="mt-10 text-center">
           <Link
-            href="/solutions"
+            href="/demos"
             className="inline-flex h-12 items-center gap-2 rounded-full border border-white/15 px-6 text-sm font-bold text-white transition hover:bg-white/10"
           >
-            View All Solutions <ArrowRight className="size-4" />
+            View All Demos <ArrowRight className="size-4" />
           </Link>
         </div>
       </div>
