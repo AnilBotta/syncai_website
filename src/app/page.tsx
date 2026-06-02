@@ -2,7 +2,6 @@ import { HeroSection } from "@/components/hero-section";
 import { TrustBar } from "@/components/trust-bar";
 import { WhatWeDo } from "@/components/what-we-do";
 import { SolutionsGrid } from "@/components/solutions-grid";
-import { ProcessSteps } from "@/components/process-steps";
 import { IndustriesGrid } from "@/components/industries-grid";
 import { ResultsMetrics } from "@/components/results-metrics";
 import { DemoAnalyzer } from "@/components/demo-analyzer";
@@ -21,7 +20,6 @@ export default function Home() {
         <TrustBar />
         <WhatWeDo />
         <SolutionsGrid />
-        <ProcessSteps />
         <IndustriesGrid />
         <ResultsMetrics />
         <DemoAnalyzer />
