@@ -175,6 +175,16 @@ export const faqs = [
   },
 ];
 
+export type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
+
+export const appointmentStatuses: { value: AppointmentStatus; label: string }[] = [
+  { value: "pending", label: "Pending" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "no_show", label: "No Show" },
+];
+
 export type LeadStatus = "new" | "contacted" | "qualified" | "proposal" | "won" | "lost";
 
 export const leadStatuses: { value: LeadStatus; label: string }[] = [

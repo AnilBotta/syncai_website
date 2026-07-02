@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, Sparkles, Headphones, Bot, Globe, MessageSquareText, PhoneCall } from "lucide-react";
+import { HeroCanvas } from "@/components/three/hero-canvas";
 
 export function HeroSection() {
   return (
@@ -52,14 +52,14 @@ export function HeroSection() {
           {/* CTAs */}
           <div className="flex flex-col gap-4 pt-4 sm:flex-row">
             <Link
-              href="/contact"
+              href="/book"
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#6001d1] to-[#a078ff] px-8 py-4 text-sm font-semibold text-white shadow-[0_0_20px_rgba(160,120,255,0)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(160,120,255,0.4)]"
             >
               Book a Strategy Call
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
-              href="/solutions"
+              href="/demos"
               className="glass-panel-hover inline-flex items-center justify-center gap-2 rounded-full border border-[#494454] bg-[#131313]/60 px-8 py-4 text-sm font-semibold text-white backdrop-blur-md transition-all hover:text-[#d0bcff]"
             >
               <Sparkles className="size-4" />
@@ -74,15 +74,7 @@ export function HeroSection() {
           <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl border border-[#d0bcff]/20 transition-colors duration-500 group-hover:border-[#d0bcff]/40" />
 
           <div className="relative h-full w-full overflow-hidden rounded-xl bg-[#0e0e0e]">
-            <Image
-              src="/brand/stunning_3d_ai_operations_hub_visualization_for_a_premium_saas_website._central.png"
-              alt="AI operations hub visualization"
-              width={1792}
-              height={1024}
-              priority
-              className="h-full w-full object-cover opacity-90 transition-all duration-500 ease-out group-hover:scale-105 group-hover:opacity-100"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent opacity-80" />
+            <HeroCanvas />
           </div>
 
           {/* Floating UI cards */}

@@ -7,9 +7,11 @@ import { leadStatuses } from "@/lib/site-data";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import type { Lead } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
+import { AdminAppointments } from "@/components/admin-appointments";
 
 export function AdminDashboard() {
   const router = useRouter();
+  const [view, setView] = useState<"leads" | "appointments">("leads");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selected, setSelected] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
@@ -139,17 +141,37 @@ export function AdminDashboard() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
             <p className="text-sm font-black uppercase tracking-[.22em] text-purple-700">SyncAi Admin</p>
-            <h1 className="mt-1 text-3xl font-black text-slate-950">Lead Dashboard</h1>
+            <h1 className="mt-1 text-3xl font-black text-slate-950">
+              {view === "leads" ? "Lead Dashboard" : "Appointments"}
+            </h1>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <button onClick={loadLeads} className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700">
-              <RefreshCcw className="size-4" />
-              Refresh
-            </button>
-            <button onClick={exportCsv} className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700">
-              <Download className="size-4" />
-              CSV
-            </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex rounded-full border border-slate-200 bg-white p-1">
+              {(["leads", "appointments"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setView(tab)}
+                  className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${
+                    view === tab ? "bg-slate-950 text-white" : "text-slate-600"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+            {view === "leads" ? (
+              <>
+                <button onClick={loadLeads} className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700">
+                  <RefreshCcw className="size-4" />
+                  Refresh
+                </button>
+                <button onClick={exportCsv} className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700">
+                  <Download className="size-4" />
+                  CSV
+                </button>
+              </>
+            ) : null}
             <button onClick={signOut} className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-bold text-white">
               <LogOut className="size-4" />
               Sign out
@@ -158,7 +180,9 @@ export function AdminDashboard() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[.95fr_1.05fr] lg:px-8">
+      {view === "appointments" ? <AdminAppointments getToken={getToken} /> : null}
+
+      <main className={view === "leads" ? "mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[.95fr_1.05fr] lg:px-8" : "hidden"}>
         <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
             <label className="relative">

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { LeadForm } from "@/components/lead-form";
 import { MousePointerClick, PhoneCall } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 
 export function CtaSection() {
   return (
@@ -14,7 +15,7 @@ export function CtaSection() {
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(75,0,130,.15),transparent_60%)]" />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:px-8">
-        <div>
+        <Reveal>
           <p className="text-sm font-black uppercase tracking-[.25em] text-[#9400D3]">Get started</p>
           <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
             Ready to transform your business with AI?
@@ -33,10 +34,10 @@ export function CtaSection() {
               SyncAI can follow up using the contact details you provide.
             </div>
           </div>
-        </div>
-        <div className="rounded-[2rem] bg-white p-6 text-[#161616]">
+        </Reveal>
+        <Reveal delay={0.12} className="rounded-[2rem] bg-white p-6 text-[#161616]">
           <LeadForm source="homepage" />
-        </div>
+        </Reveal>
       </div>
     </section>
   );
