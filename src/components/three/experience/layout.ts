@@ -54,15 +54,15 @@ const LOOK_OFFSETS: Record<ChapterId, number> = {
   voice: 2.4, // copy right → waveform left
   workflow: -2.4, // copy left → pipeline right
   strategy: 2.4, // copy right → core left
-  results: 0,
-  cta: 0,
+  results: -2.4, // copy left → bar columns right
+  cta: 2.4, // copy right → core left
 };
 
 /** Vertical framing offsets (looking above a station pushes it down-screen). */
 const LOOK_OFFSETS_Y: Partial<Record<ChapterId, number>> = {
   websites: 0.5, // screens sat too high in frame
-  results: 0.8,
-  cta: 1.4, // center copy → core glows low behind the CTA buttons
+  results: 0.3,
+  cta: 0.3,
 };
 
 export const lookCurve = new THREE.CatmullRomCurve3(
