@@ -9,6 +9,7 @@ import { CHAPTER_COUNT } from "@/components/three/experience/layout";
 import { StaticHome } from "./static-home";
 import { ProgressRail } from "./hud/progress-rail";
 import { SkipTour } from "./hud/skip-tour";
+import { ChapterSnap } from "./hud/chapter-snap";
 
 const ExperienceCanvas = dynamic(() => import("@/components/three/experience/experience-canvas"), {
   ssr: false,
@@ -55,6 +56,7 @@ export function HomeExperience({ children }: HomeExperienceProps) {
 
         <ProgressRail targetRef={wrapperRef} />
         <SkipTour targetRef={wrapperRef} />
+        <ChapterSnap targetRef={wrapperRef} />
       </div>
     </>
   );

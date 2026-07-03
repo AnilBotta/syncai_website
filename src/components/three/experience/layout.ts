@@ -60,6 +60,7 @@ const LOOK_OFFSETS: Record<ChapterId, number> = {
 
 /** Vertical framing offsets (looking above a station pushes it down-screen). */
 const LOOK_OFFSETS_Y: Partial<Record<ChapterId, number>> = {
+  websites: 0.5, // screens sat too high in frame
   results: 0.8,
   cta: 1.4, // center copy → core glows low behind the CTA buttons
 };
