@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { PointMaterial, Sphere, MeshDistortMaterial } from "@react-three/drei";
 import * as random from "maath/random";
 import type { Group, Points } from "three";
@@ -11,7 +11,11 @@ const OUTER_COUNT = 2200;
 const INNER_COUNT = 900;
 const LINK_COUNT = 600;
 
-function NeuralOrb() {
+/**
+ * The SyncAI neural core — ported from the original hero scene. Slow spin +
+ * breathing; the camera rig provides the parallax now.
+ */
+export function HeroOrbStation() {
   const group = useRef<Group>(null);
   const outer = useRef<Points>(null);
   const inner = useRef<Points>(null);
@@ -25,14 +29,12 @@ function NeuralOrb() {
     []
   );
 
-  // Nearest-neighbour "synapses", computed once.
   const linePositions = useMemo(() => {
     const lines = new Float32Array(LINK_COUNT * 6);
     for (let i = 0; i < LINK_COUNT; i += 1) {
       const a = Math.floor((i * 137) % OUTER_COUNT);
       let best = -1;
       let bestDistance = Infinity;
-      // Sample a small window of candidates instead of a full O(n^2) pass.
       for (let j = 1; j <= 24; j += 1) {
         const candidate = (a + j * 41) % OUTER_COUNT;
         const dx = outerPositions[a * 3] - outerPositions[candidate * 3];
@@ -54,18 +56,7 @@ function NeuralOrb() {
 
   useFrame((state, delta) => {
     if (group.current) {
-      // Slow idle spin plus gentle pointer-follow.
       group.current.rotation.y += delta * 0.08;
-      group.current.rotation.x = THREE.MathUtils.lerp(
-        group.current.rotation.x,
-        state.pointer.y * 0.18,
-        0.04
-      );
-      group.current.rotation.z = THREE.MathUtils.lerp(
-        group.current.rotation.z,
-        state.pointer.x * 0.12,
-        0.04
-      );
       const breathe = 1 + Math.sin(state.clock.elapsedTime * 0.6) * 0.02;
       group.current.scale.setScalar(breathe);
     }
@@ -124,7 +115,7 @@ function NeuralOrb() {
         <MeshDistortMaterial
           color="#4B0082"
           emissive="#6001d1"
-          emissiveIntensity={0.9}
+          emissiveIntensity={1.4}
           roughness={0.25}
           metalness={0.4}
           distort={0.35}
@@ -132,25 +123,5 @@ function NeuralOrb() {
         />
       </Sphere>
     </group>
-  );
-}
-
-type HeroSceneProps = {
-  paused?: boolean;
-};
-
-export default function HeroScene({ paused = false }: HeroSceneProps) {
-  return (
-    <Canvas
-      dpr={[1, 1.75]}
-      frameloop={paused ? "never" : "always"}
-      gl={{ antialias: false, powerPreference: "high-performance", alpha: true }}
-      camera={{ position: [0, 0, 6], fov: 45 }}
-      className="!bg-transparent"
-    >
-      <ambientLight intensity={0.5} />
-      <pointLight position={[4, 3, 5]} intensity={40} color="#a078ff" />
-      <NeuralOrb />
-    </Canvas>
   );
 }

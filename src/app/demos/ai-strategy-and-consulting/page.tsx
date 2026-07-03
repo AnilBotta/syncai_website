@@ -47,36 +47,36 @@ export default function AiStrategyPage() {
       description="We map business challenges, score AI opportunities, and turn the best ones into a practical roadmap that improves ROI and frees your team."
     >
       {/* Workflow section */}
-      <section className="bg-[#f8f9fc] py-20 sm:py-28">
+      <section className="bg-bg-base py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-black tracking-tight text-[#161616] sm:text-5xl">
+            <h2 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
               From discovery to deployment
             </h2>
-            <p className="mt-5 text-lg leading-8 text-slate-600">
+            <p className="mt-5 text-lg leading-8 text-muted">
               Our proven 4-step process takes your business from identifying bottlenecks to running AI systems that deliver measurable results.
             </p>
           </div>
 
           <div className="mt-16 grid gap-8">
             {workflowSteps.map((step, index) => (
-              <div key={step.number} className="relative grid gap-6 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm md:grid-cols-[.4fr_1fr]">
+              <div key={step.number} className="relative grid gap-6 rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-8 shadow-sm md:grid-cols-[.4fr_1fr]">
                 <div>
                   <div className="flex items-center gap-4">
-                    <span className="flex size-14 items-center justify-center rounded-2xl bg-[#4B0082]/10 text-[#4B0082]">
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-deep/20 text-brand-glow-text">
                       <step.icon className="size-7" />
                     </span>
                     <div>
-                      <p className="text-sm font-black text-[#9400D3]">Step {step.number}</p>
-                      <h3 className="text-2xl font-black text-[#161616]">{step.title}</h3>
+                      <p className="text-sm font-black text-brand-soft">Step {step.number}</p>
+                      <h3 className="text-2xl font-black text-foreground">{step.title}</h3>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <p className="text-lg leading-8 text-slate-600">{step.description}</p>
+                  <p className="text-lg leading-8 text-muted">{step.description}</p>
                   <ul className="mt-5 flex flex-wrap gap-3">
                     {step.outcomes.map((o) => (
-                      <li key={o} className="rounded-full bg-[#4B0082]/10 px-4 py-2 text-sm font-bold text-[#4B0082]">
+                      <li key={o} className="rounded-full bg-brand-deep/20 px-4 py-2 text-sm font-bold text-brand-glow-text">
                         {o}
                       </li>
                     ))}
@@ -89,10 +89,10 @@ export default function AiStrategyPage() {
       </section>
 
       {/* Impact section */}
-      <section className="bg-white py-20 sm:py-28">
+      <section className="bg-bg-elevated py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-black tracking-tight text-[#161616] sm:text-5xl">
+            <h2 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
               What this delivers
             </h2>
           </div>
@@ -114,12 +114,12 @@ export default function AiStrategyPage() {
                 description: "A practical AI roadmap that grows with your business. New systems integrate with existing workflows without disruption.",
               },
             ].map((item) => (
-              <div key={item.title} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-[#4B0082]/10 text-[#4B0082]">
+              <div key={item.title} className="rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-6 shadow-sm">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-deep/20 text-brand-glow-text">
                   <item.icon className="size-6" />
                 </span>
-                <h3 className="mt-5 text-xl font-black text-[#161616]">{item.title}</h3>
-                <p className="mt-3 leading-7 text-slate-600">{item.description}</p>
+                <h3 className="mt-5 text-xl font-black text-foreground">{item.title}</h3>
+                <p className="mt-3 leading-7 text-muted">{item.description}</p>
               </div>
             ))}
           </div>
@@ -127,15 +127,15 @@ export default function AiStrategyPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#0f0f1a] py-20 text-center text-white">
+      <section className="bg-bg-deep py-20 text-center text-white">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-black sm:text-5xl">Start with a strategy call</h2>
-          <p className="mt-5 text-lg text-slate-300">
+          <p className="mt-5 text-lg text-muted">
             The first conversation is about finding the right AI use case for your business — no pressure, no sales pitch.
           </p>
           <Link
             href="/contact"
-            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-6 text-sm font-bold text-white shadow-[0_8px_24px_rgba(75,0,130,0.35)]"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.3)]"
           >
             Book a Strategy Call <ArrowRight className="size-4" />
           </Link>

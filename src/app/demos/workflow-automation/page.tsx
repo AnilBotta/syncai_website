@@ -16,13 +16,13 @@ export default function WorkflowAutomationPage() {
       description="Automations across forms, calendars, email, CRMs, and internal handoffs so teams spend less time on repetitive work."
     >
       {/* Video demos */}
-      <section className="bg-[#0f0f1a] py-20 text-white sm:py-28">
+      <section className="bg-bg-deep py-20 text-white sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-black tracking-tight sm:text-5xl">
               See automation in action
             </h2>
-            <p className="mt-5 text-lg leading-8 text-slate-300">
+            <p className="mt-5 text-lg leading-8 text-muted">
               Watch how SyncAI automations eliminate repetitive tasks and connect your tools.
             </p>
           </div>
@@ -49,18 +49,18 @@ export default function WorkflowAutomationPage() {
                 duration: "2:45",
               },
             ].map((video) => (
-              <div key={video.title} className="group rounded-[2rem] border border-white/10 bg-white/[.07] p-6 backdrop-blur-xl transition hover:border-[#9400D3]/35">
-                <div className="relative mb-5 aspect-video w-full rounded-xl border border-white/10 bg-[#0f0f1a]/80">
+              <div key={video.title} className="group rounded-[2rem] border border-border-subtle bg-surface p-6 backdrop-blur-xl transition hover:border-brand-soft/40">
+                <div className="relative mb-5 aspect-video w-full rounded-xl border border-border-subtle bg-bg-deep/80">
                   <div className="flex h-full flex-col items-center justify-center text-center">
-                    <span className="flex size-16 items-center justify-center rounded-full bg-[#9400D3]/20 text-[#9400D3] transition group-hover:scale-110">
+                    <span className="flex size-16 items-center justify-center rounded-full bg-brand/25 text-brand-soft transition group-hover:scale-110">
                       <Play className="size-8 fill-current" />
                     </span>
-                    <p className="mt-3 text-xs text-slate-500">{video.duration}</p>
-                    <p className="mt-2 text-xs text-slate-500">[Video embed placeholder]</p>
+                    <p className="mt-3 text-xs text-muted">{video.duration}</p>
+                    <p className="mt-2 text-xs text-muted">[Video embed placeholder]</p>
                   </div>
                 </div>
                 <h3 className="text-xl font-black">{video.title}</h3>
-                <p className="mt-3 leading-7 text-slate-300">{video.description}</p>
+                <p className="mt-3 leading-7 text-muted">{video.description}</p>
               </div>
             ))}
           </div>
@@ -68,10 +68,10 @@ export default function WorkflowAutomationPage() {
       </section>
 
       {/* Integration list */}
-      <section className="bg-[#f8f9fc] py-20 sm:py-28">
+      <section className="bg-bg-base py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-black tracking-tight text-[#161616] sm:text-5xl">
+            <h2 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
               What we automate
             </h2>
           </div>
@@ -82,12 +82,12 @@ export default function WorkflowAutomationPage() {
               { icon: Database, title: "CRM Sync", description: "Two-way data sync between web forms, chat, and your CRM." },
               { icon: Workflow, title: "Internal Handoffs", description: "Auto-route leads, tasks, and notifications to the right person." },
             ].map((item) => (
-              <div key={item.title} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-[#4B0082]/10 text-[#4B0082]">
+              <div key={item.title} className="rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-6 shadow-sm">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-deep/20 text-brand-glow-text">
                   <item.icon className="size-6" />
                 </span>
-                <h3 className="mt-5 text-xl font-black text-[#161616]">{item.title}</h3>
-                <p className="mt-3 leading-7 text-slate-600">{item.description}</p>
+                <h3 className="mt-5 text-xl font-black text-foreground">{item.title}</h3>
+                <p className="mt-3 leading-7 text-muted">{item.description}</p>
               </div>
             ))}
           </div>
@@ -95,13 +95,13 @@ export default function WorkflowAutomationPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#0f0f1a] py-20 text-center text-white">
+      <section className="bg-bg-deep py-20 text-center text-white">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-black sm:text-5xl">Ready to automate your workflows?</h2>
-          <p className="mt-5 text-lg text-slate-300">Let&apos;s find the automations that save your team the most time.</p>
+          <p className="mt-5 text-lg text-muted">Let&apos;s find the automations that save your team the most time.</p>
           <Link
             href="/contact"
-            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-6 text-sm font-bold text-white shadow-[0_8px_24px_rgba(75,0,130,0.35)]"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.3)]"
           >
             Book a Strategy Call <ArrowRight className="size-4" />
           </Link>

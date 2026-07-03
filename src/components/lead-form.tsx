@@ -69,46 +69,46 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
   return (
     <form action={submitLead} className="grid gap-4">
       <div className={compact ? "grid gap-4" : "grid gap-4 md:grid-cols-2"}>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-muted">
           Name
           <input
             name="name"
             required
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+            className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             placeholder="Your name"
           />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-muted">
           Email
           <input
             name="email"
             type="email"
             required
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+            className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             placeholder="you@company.com"
           />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-muted">
           Phone
           <input
             name="phone"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+            className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             placeholder="+1"
           />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-muted">
           Company
           <input
             name="company"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+            className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             placeholder="Business name"
           />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-muted">
           Industry
           <select
             name="industry"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+            className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             defaultValue=""
           >
             <option value="" disabled>
@@ -119,11 +119,11 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
             ))}
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-muted">
           Interest
           <select
             name="interest"
-            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+            className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             defaultValue=""
           >
             <option value="" disabled>
@@ -136,13 +136,13 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
         </label>
       </div>
 
-      <label className="grid gap-2 text-sm font-semibold text-slate-700">
+      <label className="grid gap-2 text-sm font-semibold text-muted">
         What business challenge should AI help solve?
         <textarea
           name="painPoint"
           required
           rows={compact ? 4 : 5}
-          className="resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+          className="resize-none rounded-2xl border border-border-subtle bg-bg-elevated px-4 py-3 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
           placeholder="Example: We miss calls after hours, spend too much time on intake, and need better follow-up for new leads."
         />
       </label>
@@ -150,14 +150,14 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
       <button
         type="submit"
         disabled={status === "loading"}
-        className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-[#0f0f1a] px-6 text-sm font-bold text-white shadow-[0_16px_40px_rgba(15,15,26,.2)] transition hover:bg-[#4B0082] disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {status === "loading" ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
         Request AI Strategy Call
       </button>
 
       {message ? (
-        <p className={`flex items-center gap-2 text-sm ${status === "success" ? "text-[#4B0082]" : "text-red-600"}`}>
+        <p className={`flex items-center gap-2 text-sm ${status === "success" ? "text-brand-glow-text" : "text-red-300"}`}>
           {status === "success" ? <CheckCircle2 className="size-4" /> : null}
           {message}
         </p>

@@ -36,14 +36,14 @@ export function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-12 text-white">
+    <div className="min-h-screen bg-brand-deep px-4 py-12 text-white">
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-md items-center">
-        <form action={login} className="w-full rounded-[2rem] border border-white/10 bg-white/[.06] p-6 shadow-2xl backdrop-blur">
-          <span className="grid size-[52px] place-items-center rounded-2xl bg-purple-600 text-white">
+        <form action={login} className="w-full rounded-[2rem] border border-border-subtle bg-bg-elevated/[.06] p-6 shadow-2xl backdrop-blur">
+          <span className="grid size-[52px] place-items-center rounded-2xl bg-gradient-to-r from-brand-electric to-brand text-white">
             <LockKeyhole className="size-6" />
           </span>
           <h1 className="mt-6 text-3xl font-black">SyncAi Admin</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-300">
+          <p className="mt-2 text-sm leading-6 text-muted">
             Sign in with the private Supabase admin account to manage website leads.
           </p>
 
@@ -54,22 +54,22 @@ export function AdminLogin() {
           ) : null}
 
           <div className="mt-6 grid gap-4">
-            <label className="grid gap-2 text-sm font-semibold text-slate-200">
+            <label className="grid gap-2 text-sm font-semibold text-foreground/90">
               Email
               <input
                 name="email"
                 type="email"
                 required
-                className="h-12 rounded-2xl border border-white/10 bg-white px-4 text-slate-950 outline-none focus:ring-4 focus:ring-purple-500/20"
+                className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none focus:ring-4 focus:ring-purple-500/20"
               />
             </label>
-            <label className="grid gap-2 text-sm font-semibold text-slate-200">
+            <label className="grid gap-2 text-sm font-semibold text-foreground/90">
               Password
               <input
                 name="password"
                 type="password"
                 required
-                className="h-12 rounded-2xl border border-white/10 bg-white px-4 text-slate-950 outline-none focus:ring-4 focus:ring-purple-500/20"
+                className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none focus:ring-4 focus:ring-purple-500/20"
               />
             </label>
           </div>
@@ -77,7 +77,7 @@ export function AdminLogin() {
           <button
             type="submit"
             disabled={loading || !configured}
-            className="mt-6 inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-purple-600 px-6 text-sm font-black text-white transition hover:bg-white hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-black text-white transition hover:bg-bg-elevated hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? <Loader2 className="size-4 animate-spin" /> : null}
             Sign in

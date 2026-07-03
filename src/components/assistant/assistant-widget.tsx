@@ -17,10 +17,10 @@ export function AssistantWidget() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label={open ? "Close SyncAI assistant" : "Open SyncAI assistant"}
-        className="fixed bottom-5 right-5 z-[60] flex size-15 items-center justify-center rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] text-white shadow-[0_8px_30px_rgba(75,0,130,0.45)] transition hover:scale-105 sm:bottom-6 sm:right-6"
+        className="fixed bottom-5 right-5 z-[60] flex size-15 items-center justify-center rounded-full bg-gradient-to-r from-brand-electric to-brand-soft text-white shadow-[0_8px_30px_rgba(75,0,130,0.45)] transition hover:scale-105 sm:bottom-6 sm:right-6"
       >
         {!open ? (
-          <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#9400D3]/40" />
+          <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-brand/40" />
         ) : null}
         {open ? <X className="size-6" /> : <Bot className="size-7" />}
       </button>
@@ -33,31 +33,31 @@ export function AssistantWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-0 z-[59] flex flex-col overflow-hidden bg-white shadow-2xl sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[380px] sm:rounded-[1.75rem] sm:border sm:border-slate-200"
+            className="fixed inset-0 z-[59] flex flex-col overflow-hidden bg-bg-elevated shadow-2xl sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[380px] sm:rounded-[1.75rem] sm:border sm:border-border-subtle"
           >
             {/* Header */}
-            <div className="flex items-center justify-between gap-3 bg-[#0f0f1a] px-5 py-4 text-white">
+            <div className="flex items-center justify-between gap-3 bg-bg-deep px-5 py-4 text-foreground">
               <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3]">
+                <span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-r from-brand-electric to-brand-soft">
                   <Bot className="size-5" />
                 </span>
                 <div>
                   <p className="text-sm font-black">SyncAI Assistant</p>
-                  <p className="text-xs text-slate-400">Ask anything or book a call</p>
+                  <p className="text-xs text-muted">Ask anything or book a call</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close assistant"
-                className="grid size-9 place-items-center rounded-full text-slate-400 transition hover:bg-white/10 hover:text-white sm:hidden"
+                className="grid size-9 place-items-center rounded-full text-muted transition hover:bg-bg-elevated/10 hover:text-white sm:hidden"
               >
                 <X className="size-5" />
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-slate-200 bg-white">
+            <div className="flex border-b border-border-subtle bg-bg-elevated">
               {(
                 [
                   { value: "chat", label: "Chat", icon: MessageSquareText },
@@ -70,8 +70,8 @@ export function AssistantWidget() {
                   onClick={() => setTab(item.value)}
                   className={`flex flex-1 items-center justify-center gap-2 py-3 text-sm font-bold transition ${
                     tab === item.value
-                      ? "border-b-2 border-[#4B0082] text-[#4B0082]"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? "border-b-2 border-[#4B0082] text-brand-glow-text"
+                      : "text-muted hover:text-foreground/90"
                   }`}
                 >
                   <item.icon className="size-4" />
