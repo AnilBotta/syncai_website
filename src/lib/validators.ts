@@ -25,5 +25,41 @@ export const leadUpdateSchema = z.object({
   notes: z.string().max(4000).optional(),
 });
 
+export const appointmentSchema = z.object({
+  name: z.string().min(2).max(120),
+  email: z.string().email().max(180),
+  phone: z.string().max(40).optional().or(z.literal("")),
+  company: z.string().max(140).optional().or(z.literal("")),
+  service: z.string().max(120).optional().or(z.literal("")),
+  notes: z.string().max(2000).optional().or(z.literal("")),
+  startsAt: z.string().datetime({ offset: true }),
+  timezone: z.string().max(60).default("America/Toronto"),
+  source: z.string().max(80).default("booking_page"),
+});
+
+export const appointmentUpdateSchema = z.object({
+  id: z.string().min(1),
+  status: z.enum(["pending", "confirmed", "completed", "cancelled", "no_show"]).optional(),
+  notes: z.string().max(4000).optional(),
+});
+
+export const availabilityQuerySchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
+
+export const chatRequestSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1).max(4000),
+      })
+    )
+    .min(1)
+    .max(30),
+});
+
 export type LeadInput = z.infer<typeof leadSchema>;
 export type AnalyzeInput = z.infer<typeof analyzeSchema>;
+export type AppointmentInput = z.infer<typeof appointmentSchema>;
+export type ChatRequestInput = z.infer<typeof chatRequestSchema>;

@@ -20,6 +20,23 @@ export type Lead = {
   notes?: string | null;
 };
 
+export type Appointment = {
+  id: string;
+  created_at: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  company?: string | null;
+  service?: string | null;
+  notes?: string | null;
+  starts_at: string;
+  ends_at: string;
+  timezone: string;
+  status: "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
+  source: string;
+  lead_id?: string | null;
+};
+
 export function hasSupabasePublicConfig() {
   return Boolean(supabaseUrl && supabaseAnonKey);
 }

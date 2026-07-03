@@ -56,7 +56,7 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            href="/contact"
+            href="/book"
             className="inline-flex h-11 items-center rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-5 text-sm font-bold text-white shadow-[0_8px_24px_rgba(75,0,130,0.35)] transition hover:opacity-90"
           >
             Book a Strategy Call
@@ -87,7 +87,7 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            href="/contact"
+            href="/book"
             className="mt-2 rounded-2xl bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-4 py-3 text-center text-sm font-bold text-white"
             onClick={() => setOpen(false)}
           >
