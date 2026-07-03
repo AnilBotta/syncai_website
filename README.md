@@ -4,8 +4,8 @@ Premium AI agency website for SyncAI Technologies, built with Next.js, TypeScrip
 
 ## Features
 
-- Interactive 3D hero — a mouse-reactive neural orb rendered with React Three Fiber (phones, reduced-motion users, and non-WebGL browsers automatically get the static brand image instead)
-- Scroll reveals, parallax, and 3D tilt cards across every section
+- **Immersive 3D homepage tour** — a persistent React Three Fiber scene where scrolling flies a cinematic camera through service "stations" (neural orb, AI website screens, voice waveform ring, workflow pipeline, strategy core, results, CTA), with inertia scrolling (Lenis), quality-gated Bloom, a chapter progress rail, and a skip-tour control. Phones, reduced-motion users, and non-WebGL browsers automatically get a static dark homepage instead.
+- **Full dark cinematic design system** — Modern Dark Cinema tokens in `globals.css` (`@theme`), glass cards, glow buttons, scroll reveals, parallax, and 3D tilt cards across every page
 - **SyncAI Assistant** — a site-wide chat + voice widget:
   - Chat tab: streaming AI answers grounded in the site's services, industries, process, and FAQs; can capture leads and book appointments mid-conversation
   - Voice tab: real-time voice conversations via the OpenAI Realtime API (WebRTC) that can answer questions and book appointments hands-free

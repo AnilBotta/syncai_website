@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/page-shell";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Reveal } from "@/components/motion/reveal";
 import { ArrowRight, Calendar, Clock } from "lucide-react";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -46,21 +47,31 @@ export default function BlogPage() {
       title="AI insights for Canadian businesses"
       description="Practical guides, case studies, and thought leadership on AI strategy, automation, and digital transformation."
     >
-      <section className="bg-[#f8f9fc] py-20 sm:py-28">
+      <section className="bg-bg-base py-20 sm:py-28">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          {posts.map((post) => (
-            <article key={post.title} className="group rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:border-[#4B0082]/20">
-              <div className="flex items-center gap-3 text-xs text-slate-500">
-                <span className="rounded-full bg-[#4B0082]/10 px-3 py-1 font-bold text-[#4B0082]">{post.category}</span>
-                <span className="flex items-center gap-1"><Calendar className="size-3" /> {post.date}</span>
-                <span className="flex items-center gap-1"><Clock className="size-3" /> {post.readTime}</span>
-              </div>
-              <h2 className="mt-4 text-xl font-black text-[#161616] group-hover:text-[#4B0082]">{post.title}</h2>
-              <p className="mt-3 leading-7 text-slate-600">{post.excerpt}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[#4B0082]">
-                Read More <ArrowRight className="size-3" />
-              </span>
-            </article>
+          {posts.map((post, index) => (
+            <Reveal key={post.title} delay={(index % 2) * 0.08}>
+              <GlassCard className="group h-full p-6">
+                <div className="flex items-center gap-3 text-xs text-muted">
+                  <span className="rounded-full border border-brand/25 bg-brand-deep/20 px-3 py-1 font-bold text-brand-glow-text">
+                    {post.category}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Calendar className="size-3" /> {post.date}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="size-3" /> {post.readTime}
+                  </span>
+                </div>
+                <h2 className="mt-4 text-xl font-black text-foreground transition group-hover:text-brand-glow-text">
+                  {post.title}
+                </h2>
+                <p className="mt-3 leading-7 text-muted">{post.excerpt}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-glow-text">
+                  Read More <ArrowRight className="size-3" />
+                </span>
+              </GlassCard>
+            </Reveal>
           ))}
         </div>
       </section>

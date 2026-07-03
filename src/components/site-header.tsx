@@ -7,11 +7,11 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { label: "What We Do", href: "/#what-we-do" },
-  { label: "Solutions", href: "/#solutions" },
   { label: "Showcase", href: "/demos" },
-  { label: "Results", href: "/#results" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Industries", href: "/industries" },
+  { label: "Process", href: "/process" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function SiteHeader() {
@@ -29,7 +29,7 @@ export function SiteHeader() {
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-300",
         scrolled
-          ? "bg-[#0f0f1a]/85 shadow-lg shadow-black/20 backdrop-blur-xl"
+          ? "bg-bg-deep/85 shadow-lg shadow-black/40 backdrop-blur-xl"
           : "bg-transparent",
       )}
     >
@@ -50,14 +50,14 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-slate-300 transition hover:text-[#9400D3]"
+              className="text-sm font-medium text-muted transition hover:text-brand-glow-text"
             >
               {item.label}
             </Link>
           ))}
           <Link
             href="/book"
-            className="inline-flex h-11 items-center rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-5 text-sm font-bold text-white shadow-[0_8px_24px_rgba(75,0,130,0.35)] transition hover:opacity-90"
+            className="inline-flex h-11 items-center rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)]"
           >
             Book a Strategy Call
           </Link>
@@ -80,7 +80,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-100 hover:bg-white/10"
+              className="rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-surface"
               onClick={() => setOpen(false)}
             >
               {item.label}
@@ -88,7 +88,7 @@ export function SiteHeader() {
           ))}
           <Link
             href="/book"
-            className="mt-2 rounded-2xl bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-4 py-3 text-center text-sm font-bold text-white"
+            className="mt-2 rounded-2xl bg-gradient-to-r from-brand-electric to-brand-soft px-4 py-3 text-center text-sm font-bold text-white"
             onClick={() => setOpen(false)}
           >
             Book a Strategy Call

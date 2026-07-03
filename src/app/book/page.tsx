@@ -35,26 +35,26 @@ export default function BookPage() {
       title="Book your free AI strategy call"
       description="Pick a day and time that works for you. Calls run on Eastern Time from Brampton, Ontario."
     >
-      <section className="bg-white py-20 sm:py-28">
+      <section className="bg-bg-elevated py-20 sm:py-28">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr] lg:px-8">
           <div className="grid content-start gap-6">
             {expectations.map((item) => (
-              <div key={item.title} className="flex gap-4 rounded-[1.5rem] border border-slate-200 p-5">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#4B0082]/10 text-[#4B0082]">
+              <div key={item.title} className="flex gap-4 rounded-[1.5rem] border border-border-subtle p-5">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand-deep/20 text-brand-glow-text">
                   <item.icon className="size-6" />
                 </span>
                 <div>
-                  <h2 className="text-lg font-black text-[#161616]">{item.title}</h2>
-                  <p className="mt-1 leading-7 text-slate-600">{item.description}</p>
+                  <h2 className="text-lg font-black text-foreground">{item.title}</h2>
+                  <p className="mt-1 leading-7 text-muted">{item.description}</p>
                 </div>
               </div>
             ))}
-            <p className="text-sm leading-6 text-slate-500">
+            <p className="text-sm leading-6 text-muted">
               Prefer to talk first? Call {contact.phonePrimary} or email {contact.email}.
             </p>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-6 shadow-sm sm:p-8">
             <BookingWidget />
           </div>
         </div>

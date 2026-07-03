@@ -201,7 +201,7 @@ export function ChatPanel() {
     <>
       <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {demoMode ? (
-          <p className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <p className="rounded-2xl border border-amber-300/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-200">
             Demo mode — add an OpenAI API key for live AI answers.
           </p>
         ) : null}
@@ -211,13 +211,13 @@ export function ChatPanel() {
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6 ${
                 message.role === "user"
-                  ? "bg-gradient-to-r from-[#4B0082] to-[#9400D3] text-white"
-                  : "bg-slate-100 text-slate-800"
+                  ? "bg-gradient-to-r from-brand-electric to-brand-soft text-white"
+                  : "bg-surface text-foreground/90"
               }`}
             >
               {message.content ||
                 (message.role === "assistant" && busy && index === messages.length - 1 ? (
-                  <span className="inline-flex items-center gap-2 text-slate-500">
+                  <span className="inline-flex items-center gap-2 text-muted">
                     <Loader2 className="size-3.5 animate-spin" /> Thinking…
                   </span>
                 ) : null)}
@@ -225,7 +225,7 @@ export function ChatPanel() {
               {message.tools?.map((tool, toolIndex) => (
                 <div key={toolIndex} className="mt-2">
                   {tool.status === "running" ? (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#4B0082]">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-bg-elevated px-3 py-1 text-xs font-semibold text-brand-glow-text">
                       <Loader2 className="size-3 animate-spin" />
                       {toolLabel(tool.name)}
                     </span>
@@ -239,7 +239,7 @@ export function ChatPanel() {
                           type="button"
                           disabled={busy}
                           onClick={() => send(`Let's book ${slot.label} on ${tool.slotDate}.`)}
-                          className="rounded-full border border-[#4B0082]/30 bg-white px-3 py-1 text-xs font-bold text-[#4B0082] transition hover:bg-[#4B0082] hover:text-white disabled:opacity-60"
+                          className="rounded-full border border-brand/30 bg-surface px-3 py-1 text-xs font-bold text-brand-glow-text transition hover:bg-brand hover:text-white disabled:opacity-60"
                         >
                           {slot.label}
                         </button>
@@ -248,7 +248,7 @@ export function ChatPanel() {
                   ) : null}
 
                   {tool.bookedTime ? (
-                    <div className="mt-1 flex items-center gap-2 rounded-xl border border-[#4B0082]/20 bg-white px-3 py-2 text-xs font-bold text-[#4B0082]">
+                    <div className="mt-1 flex items-center gap-2 rounded-xl border border-brand/25 bg-surface px-3 py-2 text-xs font-bold text-brand-glow-text">
                       <CalendarCheck className="size-4" />
                       Booked: {tool.bookedTime}
                       {tool.demoMode ? " (demo)" : ""}
@@ -267,7 +267,7 @@ export function ChatPanel() {
                 key={reply}
                 type="button"
                 onClick={() => send(reply)}
-                className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-[#4B0082]/40 hover:text-[#4B0082]"
+                className="rounded-full border border-border-subtle bg-bg-elevated px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-brand-soft/40 hover:text-brand-glow-text"
               >
                 {reply}
               </button>
@@ -281,19 +281,19 @@ export function ChatPanel() {
           event.preventDefault();
           send(input);
         }}
-        className="flex items-center gap-2 border-t border-slate-200 bg-white p-3"
+        className="flex items-center gap-2 border-t border-border-subtle bg-bg-elevated p-3"
       >
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Ask about our AI services…"
-          className="h-11 flex-1 rounded-full border border-slate-200 bg-white px-4 text-sm text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+          className="h-11 flex-1 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm text-foreground outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
         />
         <button
           type="submit"
           disabled={busy || !input.trim()}
           aria-label="Send message"
-          className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] text-white transition hover:opacity-90 disabled:opacity-50"
+          className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-r from-brand-electric to-brand-soft text-white transition hover:opacity-90 disabled:opacity-50"
         >
           {busy ? <Loader2 className="size-4 animate-spin" /> : <SendHorizonal className="size-4" />}
         </button>

@@ -1,34 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore, type RefObject } from "react";
 import { useReducedMotion } from "framer-motion";
-
-const HeroScene = dynamic(() => import("./hero-scene"), {
-  ssr: false,
-  loading: () => <HeroImageFallback />,
-});
-
-function HeroImageFallback() {
-  return (
-    <div className="relative h-full w-full">
-      <Image
-        src="/brand/stunning_3d_ai_operations_hub_visualization_for_a_premium_saas_website._central.png"
-        alt="AI operations hub visualization"
-        width={1792}
-        height={1024}
-        priority
-        className="h-full w-full object-cover opacity-90"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent opacity-80" />
-    </div>
-  );
-}
 
 let webglCache: boolean | null = null;
 
-function supportsWebGL() {
+export function supportsWebGL() {
   if (typeof document === "undefined") {
     return false;
   }
@@ -51,27 +28,31 @@ function subscribeToMobile(callback: () => void) {
   return () => media.removeEventListener("change", callback);
 }
 
-function useIsMobile() {
+export function useIsMobile() {
   return useSyncExternalStore(
     subscribeToMobile,
     () => window.matchMedia(MOBILE_QUERY).matches,
-    // Server snapshot: assume mobile so SSR/hydration show the safe fallback.
+    // Server snapshot: assume mobile so SSR/hydration render the safe fallback.
     () => true
   );
 }
 
 /**
- * Gates the WebGL hero scene: phones, reduced-motion users, and browsers
- * without WebGL get the static brand image instead. The frameloop pauses
- * when the hero is off-screen or the tab is hidden.
+ * Single gate for all WebGL experiences: false on mobile, reduced motion,
+ * or missing WebGL. SSR always returns false (static fallback is the
+ * server-rendered output).
  */
-export function HeroCanvas() {
+export function useWebglGate() {
   const reduceMotion = useReducedMotion();
   const isMobile = useIsMobile();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [paused, setPaused] = useState(false);
+  return !isMobile && !reduceMotion && supportsWebGL();
+}
 
-  const enabled = !isMobile && !reduceMotion && supportsWebGL();
+/**
+ * True when rendering should pause: container off-screen or tab hidden.
+ */
+export function useFrameloopPause(containerRef: RefObject<HTMLElement | null>, enabled: boolean) {
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     if (!enabled || !containerRef.current) {
@@ -101,11 +82,7 @@ export function HeroCanvas() {
       observer.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [enabled]);
+  }, [enabled, containerRef]);
 
-  return (
-    <div ref={containerRef} className="h-full w-full">
-      {enabled ? <HeroScene paused={paused} /> : <HeroImageFallback />}
-    </div>
-  );
+  return paused;
 }

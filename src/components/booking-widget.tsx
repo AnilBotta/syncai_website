@@ -117,17 +117,17 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
   }
 
   const inputClass =
-    "h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20";
+    "h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25";
 
   if (submitStatus === "success") {
     return (
-      <div className="grid place-items-center gap-4 rounded-[2rem] border border-[#4B0082]/20 bg-[#f8f9fc] p-10 text-center">
-        <span className="flex size-16 items-center justify-center rounded-full bg-[#4B0082]/10 text-[#4B0082]">
+      <div className="grid place-items-center gap-4 rounded-[2rem] border border-brand/25 bg-surface backdrop-blur-md p-10 text-center">
+        <span className="flex size-16 items-center justify-center rounded-full bg-brand-deep/20 text-brand-glow-text">
           <CalendarCheck className="size-8" />
         </span>
-        <h3 className="text-2xl font-black text-[#161616]">Strategy call booked</h3>
-        <p className="text-lg font-semibold text-[#4B0082]">{confirmedTime}</p>
-        <p className="max-w-md text-sm leading-6 text-slate-600">{message}</p>
+        <h3 className="text-2xl font-black text-foreground">Strategy call booked</h3>
+        <p className="text-lg font-semibold text-brand-glow-text">{confirmedTime}</p>
+        <p className="max-w-md text-sm leading-6 text-muted">{message}</p>
       </div>
     );
   }
@@ -136,9 +136,9 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
     <div className="grid gap-6">
       {/* Step 1: pick a day */}
       <div className="grid gap-3">
-        <p className="text-sm font-black uppercase tracking-wider text-slate-500">1. Pick a day</p>
+        <p className="text-sm font-black uppercase tracking-wider text-muted">1. Pick a day</p>
         {loadingDays ? (
-          <p className="flex items-center gap-2 text-sm text-slate-500">
+          <p className="flex items-center gap-2 text-sm text-muted">
             <Loader2 className="size-4 animate-spin" /> Loading availability…
           </p>
         ) : (
@@ -150,8 +150,8 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
                 onClick={() => loadSlots(day)}
                 className={`shrink-0 rounded-2xl border px-4 py-3 text-sm font-bold transition ${
                   selectedDay?.date === day.date
-                    ? "border-[#4B0082] bg-[#4B0082] text-white"
-                    : "border-slate-200 bg-white text-[#161616] hover:border-[#4B0082]/40"
+                    ? "border-brand-soft bg-gradient-to-r from-brand-electric to-brand text-white shadow-[0_0_16px_rgba(160,120,255,0.35)]"
+                    : "border-border-subtle bg-surface text-foreground hover:border-brand-soft/40"
                 }`}
               >
                 {day.label}
@@ -164,15 +164,15 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
       {/* Step 2: pick a slot */}
       {selectedDay ? (
         <div className="grid gap-3">
-          <p className="text-sm font-black uppercase tracking-wider text-slate-500">
-            2. Pick a time <span className="normal-case text-slate-400">(Eastern Time)</span>
+          <p className="text-sm font-black uppercase tracking-wider text-muted">
+            2. Pick a time <span className="normal-case text-muted">(Eastern Time)</span>
           </p>
           {loadingSlots ? (
-            <p className="flex items-center gap-2 text-sm text-slate-500">
+            <p className="flex items-center gap-2 text-sm text-muted">
               <Loader2 className="size-4 animate-spin" /> Checking open slots…
             </p>
           ) : slots.length === 0 ? (
-            <p className="text-sm text-slate-500">No open times that day — try another day.</p>
+            <p className="text-sm text-muted">No open times that day — try another day.</p>
           ) : (
             <div className={`grid gap-2 ${compact ? "grid-cols-3" : "grid-cols-3 sm:grid-cols-4 md:grid-cols-6"}`}>
               {slots.map((slot) => (
@@ -182,8 +182,8 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
                   onClick={() => setSelectedSlot(slot)}
                   className={`inline-flex items-center justify-center gap-1 rounded-xl border px-2 py-2.5 text-sm font-bold transition ${
                     selectedSlot?.startsAt === slot.startsAt
-                      ? "border-[#4B0082] bg-[#4B0082] text-white"
-                      : "border-slate-200 bg-white text-[#161616] hover:border-[#4B0082]/40"
+                      ? "border-brand-soft bg-gradient-to-r from-brand-electric to-brand text-white shadow-[0_0_16px_rgba(160,120,255,0.35)]"
+                      : "border-border-subtle bg-surface text-foreground hover:border-brand-soft/40"
                   }`}
                 >
                   <Clock className="size-3.5" />
@@ -193,7 +193,7 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
             </div>
           )}
           {demoMode ? (
-            <p className="text-xs text-slate-400">Demo availability — connect Supabase for live scheduling.</p>
+            <p className="text-xs text-muted">Demo availability — connect Supabase for live scheduling.</p>
           ) : null}
         </div>
       ) : null}
@@ -201,21 +201,21 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
       {/* Step 3: details */}
       {selectedSlot ? (
         <form action={submitBooking} className="grid gap-4">
-          <p className="text-sm font-black uppercase tracking-wider text-slate-500">3. Your details</p>
+          <p className="text-sm font-black uppercase tracking-wider text-muted">3. Your details</p>
           <div className={compact ? "grid gap-4" : "grid gap-4 md:grid-cols-2"}>
-            <label className="grid gap-2 text-sm font-semibold text-slate-700">
+            <label className="grid gap-2 text-sm font-semibold text-muted">
               Name
               <input name="name" required className={inputClass} placeholder="Your name" />
             </label>
-            <label className="grid gap-2 text-sm font-semibold text-slate-700">
+            <label className="grid gap-2 text-sm font-semibold text-muted">
               Email
               <input name="email" type="email" required className={inputClass} placeholder="you@company.com" />
             </label>
-            <label className="grid gap-2 text-sm font-semibold text-slate-700">
+            <label className="grid gap-2 text-sm font-semibold text-muted">
               Phone
               <input name="phone" className={inputClass} placeholder="+1" />
             </label>
-            <label className="grid gap-2 text-sm font-semibold text-slate-700">
+            <label className="grid gap-2 text-sm font-semibold text-muted">
               Service
               <select name="service" className={inputClass} defaultValue="">
                 <option value="" disabled>
@@ -227,12 +227,12 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
               </select>
             </label>
           </div>
-          <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          <label className="grid gap-2 text-sm font-semibold text-muted">
             Anything we should know before the call?
             <textarea
               name="notes"
               rows={compact ? 3 : 4}
-              className="resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+              className="resize-none rounded-2xl border border-border-subtle bg-bg-elevated px-4 py-3 text-foreground outline-none transition focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               placeholder="Optional — your business, the challenge, or what you want to see."
             />
           </label>
@@ -241,7 +241,7 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
             <button
               type="submit"
               disabled={submitStatus === "loading"}
-              className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-[#0f0f1a] px-6 text-sm font-bold text-white shadow-[0_16px_40px_rgba(15,15,26,.2)] transition hover:bg-[#4B0082] disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {submitStatus === "loading" ? (
                 <Loader2 className="size-4 animate-spin" />
@@ -253,17 +253,17 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
             <button
               type="button"
               onClick={() => setSelectedSlot(null)}
-              className="inline-flex items-center gap-1 text-sm font-bold text-slate-500 transition hover:text-[#4B0082]"
+              className="inline-flex items-center gap-1 text-sm font-bold text-muted transition hover:text-brand-glow-text"
             >
               <ArrowLeft className="size-3.5" /> Change time
             </button>
           </div>
 
           {message && submitStatus === "error" ? (
-            <p className="text-sm text-red-600">{message}</p>
+            <p className="text-sm text-red-300">{message}</p>
           ) : null}
           {message && submitStatus !== "error" ? (
-            <p className="flex items-center gap-2 text-sm text-[#4B0082]">
+            <p className="flex items-center gap-2 text-sm text-brand-glow-text">
               <CheckCircle2 className="size-4" /> {message}
             </p>
           ) : null}

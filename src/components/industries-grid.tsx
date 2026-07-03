@@ -2,6 +2,8 @@ import Link from "next/link";
 import { HeartPulse, Home, Store, Building2, GraduationCap, Truck, Scale, Stethoscope } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
+import { SectionShell } from "@/components/ui/section-shell";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 const industries = [
   { name: "Healthcare & Clinics", icon: HeartPulse, href: "/industries" },
@@ -16,40 +18,39 @@ const industries = [
 
 export function IndustriesGrid() {
   return (
-    <section className="bg-[#f8f9fc] py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-black uppercase tracking-[.25em] text-[#4B0082]">Industries</p>
-          <h2 className="mt-4 text-3xl font-black tracking-tight text-[#161616] sm:text-5xl">
-            AI solutions for every industry
-          </h2>
-          <p className="mt-5 text-lg leading-8 text-slate-600">
-            Tailored AI systems that understand your industry workflows, compliance needs, and growth goals.
-          </p>
-        </Reveal>
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {industries.map((industry, index) => (
-            <Reveal key={industry.name} delay={(index % 4) * 0.06}>
-              <TiltCard className="h-full rounded-2xl">
-                <Link
-                  href={industry.href}
-                  className="group flex h-full items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#4B0082]/20 hover:shadow-md"
-                >
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#4B0082]/10 text-[#4B0082]">
-                    <industry.icon className="size-5" />
-                  </span>
-                  <span className="text-sm font-bold text-[#161616] group-hover:text-[#4B0082]">{industry.name}</span>
-                </Link>
-              </TiltCard>
-            </Reveal>
-          ))}
-        </div>
-        <div className="mt-10 text-center">
-          <p className="text-sm text-slate-500">
-            Not sure where AI fits? <Link href="/contact" className="font-bold text-[#4B0082] underline">Let&apos;s talk.</Link>
-          </p>
-        </div>
+    <SectionShell tier="elevated" glow="right">
+      <SectionHeading
+        eyebrow="Industries"
+        title="AI solutions for every industry"
+        description="Tailored AI systems that understand your industry workflows, compliance needs, and growth goals."
+      />
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {industries.map((industry, index) => (
+          <Reveal key={industry.name} delay={(index % 4) * 0.06}>
+            <TiltCard className="h-full rounded-[16px]">
+              <Link
+                href={industry.href}
+                className="group flex h-full items-center gap-4 rounded-[16px] border border-border-subtle bg-surface p-5 backdrop-blur-md transition hover:border-brand-soft/40"
+              >
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+                  <industry.icon className="size-5" />
+                </span>
+                <span className="text-sm font-bold text-foreground transition group-hover:text-brand-glow-text">
+                  {industry.name}
+                </span>
+              </Link>
+            </TiltCard>
+          </Reveal>
+        ))}
       </div>
-    </section>
+      <div className="mt-10 text-center">
+        <p className="text-sm text-muted">
+          Not sure where AI fits?{" "}
+          <Link href="/contact" className="font-bold text-brand-glow-text underline transition hover:text-brand-soft">
+            Let&apos;s talk.
+          </Link>
+        </p>
+      </div>
+    </SectionShell>
   );
 }

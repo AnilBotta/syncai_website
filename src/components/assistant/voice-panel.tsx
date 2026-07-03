@@ -25,10 +25,10 @@ export function VoicePanel({ active }: VoicePanelProps) {
   const connecting = status === "connecting";
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-between gap-6 overflow-y-auto bg-[#0f0f1a] px-6 py-8 text-white">
+    <div className="flex flex-1 flex-col items-center justify-between gap-6 overflow-y-auto bg-bg-deep px-6 py-8 text-foreground">
       <div className="text-center">
-        <p className="text-sm font-black uppercase tracking-[.2em] text-[#9400D3]">Voice Assistant</p>
-        <p className="mt-2 text-sm leading-6 text-slate-400">
+        <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">Voice Assistant</p>
+        <p className="mt-2 text-sm leading-6 text-muted">
           {live
             ? "Listening — ask about our services or book a call."
             : connecting
@@ -62,7 +62,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
                 ? { duration: 1.6, repeat: Infinity, ease: "linear" }
                 : {}
           }
-          className="grid size-28 place-items-center rounded-full border border-[#d0bcff]/30 bg-gradient-to-br from-[#4B0082] to-[#9400D3] shadow-[0_0_60px_rgba(148,0,211,0.45)]"
+          className="grid size-28 place-items-center rounded-full border border-brand-glow-text/30 bg-gradient-to-br from-brand-deep to-brand shadow-[0_0_60px_rgba(148,0,211,0.45)]"
         >
           {connecting ? (
             <Loader2 className="size-8 animate-spin text-white" />
@@ -79,7 +79,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
         ) : null}
 
         {booking ? (
-          <div className="mx-auto mt-3 flex w-fit items-center gap-2 rounded-xl border border-[#d0bcff]/30 bg-white/5 px-4 py-2 text-xs font-bold text-[#d0bcff]">
+          <div className="mx-auto mt-3 flex w-fit items-center gap-2 rounded-xl border border-[#d0bcff]/30 bg-bg-elevated/5 px-4 py-2 text-xs font-bold text-[#d0bcff]">
             <CalendarCheck className="size-4" />
             Booked: {booking.humanTime}
             {booking.demoMode ? " (demo)" : ""}
@@ -112,7 +112,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
               className={`grid size-13 place-items-center rounded-full border transition ${
                 muted
                   ? "border-amber-300/50 bg-amber-400/20 text-amber-200"
-                  : "border-white/20 bg-white/10 text-white hover:bg-white/20"
+                  : "border-white/20 bg-bg-elevated/10 text-white hover:bg-bg-elevated/20"
               }`}
             >
               {muted ? <MicOff className="size-5" /> : <Mic className="size-5" />}
@@ -131,7 +131,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
             type="button"
             onClick={start}
             disabled={connecting}
-            className="inline-flex h-13 items-center gap-2 rounded-full bg-gradient-to-r from-[#4B0082] to-[#9400D3] px-8 text-sm font-bold text-white shadow-[0_8px_30px_rgba(148,0,211,0.4)] transition hover:opacity-90 disabled:opacity-60"
+            className="inline-flex h-13 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-8 text-sm font-bold text-white shadow-[0_8px_30px_rgba(148,0,211,0.4)] transition hover:opacity-90 disabled:opacity-60"
           >
             <Phone className="size-4" />
             {status === "ended" ? "Start another session" : "Start voice session"}
