@@ -59,6 +59,13 @@ export const chatRequestSchema = z.object({
     .max(30),
 });
 
+export const toolSubmissionSchema = z.object({
+  type: z.enum(["ai-readiness", "conversion-audit"]),
+  email: z.string().email().max(180),
+  url: z.string().url().max(300).optional().or(z.literal("")),
+  summary: z.string().min(12).max(1200),
+});
+
 export type LeadInput = z.infer<typeof leadSchema>;
 export type AnalyzeInput = z.infer<typeof analyzeSchema>;
 export type AppointmentInput = z.infer<typeof appointmentSchema>;

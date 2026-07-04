@@ -29,10 +29,13 @@ export function SiteFooter() {
         <div>
           <p className="font-semibold text-foreground">Explore</p>
           <div className="mt-4 grid gap-3 text-sm">
-            <Link href="/demos" className="text-muted transition hover:text-brand-glow-text">Solutions</Link>
+            <Link href="/services" className="text-muted transition hover:text-brand-glow-text">Services</Link>
+            <Link href="/tools" className="text-muted transition hover:text-brand-glow-text">Tools</Link>
+            <Link href="/demos" className="text-muted transition hover:text-brand-glow-text">Demos</Link>
             <Link href="/case-studies" className="text-muted transition hover:text-brand-glow-text">Case Studies</Link>
             <Link href="/industries" className="text-muted transition hover:text-brand-glow-text">Industries</Link>
             <Link href="/process" className="text-muted transition hover:text-brand-glow-text">Process</Link>
+            <Link href="/#faq" className="text-muted transition hover:text-brand-glow-text">FAQ</Link>
             <Link href="/blog" className="text-muted transition hover:text-brand-glow-text">Blog</Link>
             <Link href="/contact" className="text-muted transition hover:text-brand-glow-text">Contact</Link>
           </div>
