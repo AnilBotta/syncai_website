@@ -63,11 +63,11 @@ export default function AiStrategyPage() {
               <div key={step.number} className="relative grid gap-6 rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-8 shadow-sm md:grid-cols-[.4fr_1fr]">
                 <div>
                   <div className="flex items-center gap-4">
-                    <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-deep/20 text-brand-glow-text">
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                       <step.icon className="size-7" />
                     </span>
                     <div>
-                      <p className="text-sm font-black text-brand-soft">Step {step.number}</p>
+                      <p className="text-sm font-black text-brand">Step {step.number}</p>
                       <h3 className="text-2xl font-black text-foreground">{step.title}</h3>
                     </div>
                   </div>
@@ -76,7 +76,7 @@ export default function AiStrategyPage() {
                   <p className="text-lg leading-8 text-muted">{step.description}</p>
                   <ul className="mt-5 flex flex-wrap gap-3">
                     {step.outcomes.map((o) => (
-                      <li key={o} className="rounded-full bg-brand-deep/20 px-4 py-2 text-sm font-bold text-brand-glow-text">
+                      <li key={o} className="rounded-full bg-brand/10 px-4 py-2 text-sm font-bold text-brand-glow-text">
                         {o}
                       </li>
                     ))}
@@ -115,7 +115,7 @@ export default function AiStrategyPage() {
               },
             ].map((item) => (
               <div key={item.title} className="rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-6 shadow-sm">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-deep/20 text-brand-glow-text">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                   <item.icon className="size-6" />
                 </span>
                 <h3 className="mt-5 text-xl font-black text-foreground">{item.title}</h3>
@@ -135,7 +135,7 @@ export default function AiStrategyPage() {
           </p>
           <Link
             href="/contact"
-            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.3)]"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)]"
           >
             Book a Strategy Call <ArrowRight className="size-4" />
           </Link>

@@ -32,12 +32,12 @@ export function TestimonialCarousel() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,rgba(148,0,211,0.1),transparent_55%)]"
       />
       <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-        <p className="text-sm font-black uppercase tracking-[.25em] text-brand-soft">Testimonials</p>
+        <p className="text-sm font-black uppercase tracking-[.25em] text-brand">Testimonials</p>
         <h2 className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-5xl">
           Trusted by Canadian businesses
         </h2>
         <div className="mt-14 rounded-[16px] border border-border-subtle bg-surface p-8 backdrop-blur-md sm:p-12">
-          <Quote className="mx-auto size-10 text-brand-soft/30" />
+          <Quote className="mx-auto size-10 text-brand/30" />
           <blockquote className="mt-6 text-xl leading-9 text-foreground/90">
             &ldquo;{testimonial.quote}&rdquo;
           </blockquote>

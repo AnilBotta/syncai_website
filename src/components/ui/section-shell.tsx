@@ -20,9 +20,9 @@ const tiers = {
 };
 
 const glows = {
-  left: "bg-[radial-gradient(circle_at_15%_20%,rgba(148,0,211,0.14),transparent_45%)]",
-  right: "bg-[radial-gradient(circle_at_85%_30%,rgba(148,0,211,0.14),transparent_45%)]",
-  center: "bg-[radial-gradient(circle_at_50%_35%,rgba(148,0,211,0.12),transparent_55%)]",
+  left: "bg-[radial-gradient(circle_at_15%_20%,rgba(125,60,152,0.06),transparent_45%)]",
+  right: "bg-[radial-gradient(circle_at_85%_30%,rgba(125,60,152,0.06),transparent_45%)]",
+  center: "bg-[radial-gradient(circle_at_50%_35%,rgba(125,60,152,0.05),transparent_55%)]",
   none: "",
 };
 
@@ -41,7 +41,7 @@ export function SectionShell({
       {dotGrid ? (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 [background-image:radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:32px_32px]"
+          className="pointer-events-none absolute inset-0 [background-image:radial-gradient(rgba(0,0,0,0.04)_1px,transparent_1px)] [background-size:32px_32px]"
         />
       ) : null}
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>

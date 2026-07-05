@@ -160,8 +160,8 @@ export function ChatbotCostCalculator() {
                   onClick={() => toggleIntegration(integration)}
                   className={`flex cursor-pointer items-center gap-2.5 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
                     checked
-                      ? "border-brand-soft bg-brand-deep/25 text-brand-glow-text"
-                      : "border-border-subtle bg-surface text-foreground/90 hover:border-brand-soft/40"
+                      ? "border-brand-soft bg-brand/10 text-brand"
+                      : "border-border-subtle bg-[#f5f5f5] text-foreground/90 hover:border-brand-soft/40"
                   }`}
                 >
                   <span
@@ -198,7 +198,7 @@ export function ChatbotCostCalculator() {
           type="button"
           disabled={!ready}
           onClick={() => setShowResults(true)}
-          className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           Estimate my cost <ArrowRight className="size-4" />
         </button>
@@ -223,7 +223,7 @@ export function ChatbotCostCalculator() {
             </div>
 
             <GlassCard className="mt-5 p-6">
-              <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+              <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
                 What&apos;s driving the cost
               </p>
               <ul className="mt-4 grid gap-2.5 text-sm text-foreground/90">

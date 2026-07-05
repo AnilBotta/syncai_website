@@ -66,7 +66,7 @@ export default function AiWebsitesPage() {
                     <p className="mt-3 leading-7 text-muted">{site.description}</p>
                     <ul className="mt-4 flex flex-wrap gap-2">
                       {site.features.map((f) => (
-                        <li key={f} className="rounded-full bg-brand-deep/20 px-3 py-1 text-xs font-bold text-brand-glow-text">
+                        <li key={f} className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand-glow-text">
                           {f}
                         </li>
                       ))}
@@ -107,7 +107,7 @@ export default function AiWebsitesPage() {
               },
             ].map((feat) => (
               <div key={feat.title} className="rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-6 shadow-sm">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-deep/20 text-brand-glow-text">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                   <feat.icon className="size-6" />
                 </span>
                 <h3 className="mt-5 text-xl font-black text-foreground">{feat.title}</h3>
@@ -125,7 +125,7 @@ export default function AiWebsitesPage() {
           <p className="mt-5 text-lg text-muted">Let&apos;s build your AI-powered website that captures leads around the clock.</p>
           <Link
             href="/contact"
-            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.3)]"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)]"
           >
             Book a Strategy Call <ArrowRight className="size-4" />
           </Link>

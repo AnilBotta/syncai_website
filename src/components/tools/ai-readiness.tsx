@@ -252,7 +252,7 @@ export function AiReadiness() {
             {Object.keys(answers).length}/{CATEGORIES.length * QUESTIONS_PER_CATEGORY} answered
           </span>
         </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e4e7ea]">
           <div
             className="h-full rounded-full bg-gradient-to-r from-brand-electric to-brand-soft transition-[width] duration-500"
             style={{ width: `${((step + (answeredInStep ? 1 : 0.35)) / CATEGORIES.length) * 100}%` }}
@@ -277,8 +277,8 @@ export function AiReadiness() {
                         onClick={() => setAnswers({ ...answers, [key]: optionIndex + 1 })}
                         className={`cursor-pointer rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
                           selected
-                            ? "border-brand-soft bg-brand-deep/25 text-brand-glow-text shadow-[0_0_16px_rgba(160,120,255,0.25)]"
-                            : "border-border-subtle bg-surface text-foreground/90 hover:border-brand-soft/40"
+                            ? "border-brand-soft bg-brand/10 text-brand"
+                            : "border-border-subtle bg-[#f5f5f5] text-foreground/90 hover:border-brand-soft/40"
                         }`}
                       >
                         {option}
@@ -323,12 +323,12 @@ export function AiReadiness() {
   return (
     <div className="mx-auto max-w-2xl">
       <GlassCard glow className="p-8 text-center">
-        <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+        <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
           Your AI readiness score
         </p>
         <p className="mt-3 text-7xl font-black text-brand-glow-text">{totalScore}</p>
         <p className="text-sm text-muted">out of 100</p>
-        <p className="mt-4 inline-block rounded-full border border-brand/30 bg-brand-deep/20 px-5 py-2 text-lg font-black text-foreground">
+        <p className="mt-4 inline-block rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-lg font-black text-foreground">
           {tier.label}
         </p>
       </GlassCard>
@@ -336,7 +336,7 @@ export function AiReadiness() {
       {unlocked ? (
         <>
           <GlassCard className="mt-6 p-6 sm:p-8">
-            <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+            <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
               Category breakdown
             </p>
             <div className="mt-5">
@@ -345,7 +345,7 @@ export function AiReadiness() {
           </GlassCard>
 
           <GlassCard className="mt-6 p-6 sm:p-8">
-            <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+            <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
               Your next moves
             </p>
             <ul className="mt-4 grid gap-3">
@@ -362,7 +362,7 @@ export function AiReadiness() {
         </>
       ) : (
         <GlassCard className="mt-6 p-6 text-center sm:p-8">
-          <span className="mx-auto grid size-12 place-items-center rounded-full border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+          <span className="mx-auto grid size-12 place-items-center rounded-full border border-brand/25 bg-brand/10 text-brand">
             <Lock className="size-5" />
           </span>
           <p className="mt-4 font-black text-foreground">

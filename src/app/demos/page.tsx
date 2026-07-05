@@ -52,7 +52,7 @@ export default function DemosPage() {
               <TiltCard className="h-full rounded-[16px]">
                 <Link href={demo.href} className="group block h-full">
                   <GlassCard className="h-full p-6">
-                    <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text shadow-[0_0_32px_rgba(148,0,211,.22)]">
+                    <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-brand shadow-[0_0_32px_rgba(148,0,211,.22)]">
                       <demo.icon className="size-6" />
                     </span>
                     <h2 className="mt-5 text-xl font-black text-foreground transition group-hover:text-brand-glow-text">

@@ -31,8 +31,8 @@ export function OptionGrid({ options, value, onChange, columns = 1 }: OptionGrid
             className={cn(
               "cursor-pointer rounded-2xl border px-4 py-3.5 text-left text-sm font-semibold transition",
               selected
-                ? "border-brand-soft bg-brand-deep/25 text-brand-glow-text shadow-[0_0_16px_rgba(160,120,255,0.25)]"
-                : "border-border-subtle bg-surface text-foreground/90 hover:border-brand-soft/40"
+                ? "border-brand-soft bg-brand/10 text-brand"
+                : "border-border-subtle bg-[#f5f5f5] text-foreground/90 hover:border-brand-soft/40"
             )}
           >
             {option.label}

@@ -4,7 +4,7 @@ import { contact } from "@/lib/site-data";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border-subtle bg-bg-deep text-foreground">
+    <footer className="theme-dark border-t border-border-subtle bg-bg-deep text-foreground">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_.7fr_.7fr] lg:px-8">
         <div>
           <div className="flex items-center gap-3">

@@ -58,7 +58,7 @@ export default function ToolsPage() {
                 <Link href={tool.href} className="group block h-full">
                   <GlassCard className="flex h-full flex-col p-6">
                     <div className="flex items-center justify-between">
-                      <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+                      <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-brand">
                         <tool.icon className="size-6" />
                       </span>
                       <span className="text-4xl font-black text-white/[.06]">{tool.number}</span>

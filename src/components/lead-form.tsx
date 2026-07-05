@@ -150,7 +150,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
       <button
         type="submit"
         disabled={status === "loading"}
-        className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)] disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {status === "loading" ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
         Request AI Strategy Call

@@ -38,7 +38,7 @@ export function HomeExperience({ children }: HomeExperienceProps) {
       {/* Inertia scrolling for the cinematic scrub feel (window scroll). */}
       <ReactLenis root />
 
-      <div ref={wrapperRef} className="relative bg-bg-deep" style={{ height: `${CHAPTER_COUNT * 100}vh` }}>
+      <div ref={wrapperRef} className="theme-dark relative bg-bg-deep" style={{ height: `${CHAPTER_COUNT * 100}vh` }}>
         <ScrollProgressBridge targetRef={wrapperRef} />
 
         {/* Pinned scene */}

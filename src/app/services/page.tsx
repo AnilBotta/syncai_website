@@ -28,7 +28,7 @@ export default function ServicesPage() {
                 <Link href={`/services/${service.slug}`} className="group block h-full">
                   <GlassCard className="flex h-full flex-col p-6">
                     <div className="flex items-center justify-between">
-                      <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+                      <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-brand">
                         <service.icon className="size-6" />
                       </span>
                       <span className="text-4xl font-black text-white/[.06]">{service.number}</span>
@@ -36,7 +36,7 @@ export default function ServicesPage() {
                     <h2 className="mt-5 text-xl font-black text-foreground transition group-hover:text-brand-glow-text">
                       {service.title}
                     </h2>
-                    <p className="mt-1 text-sm font-semibold text-brand-soft">{service.tagline}</p>
+                    <p className="mt-1 text-sm font-semibold text-brand">{service.tagline}</p>
                     <p className="mt-3 flex-1 text-sm leading-7 text-muted">{service.description}</p>
                     <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-glow-text">
                       Learn more <ArrowRight className="size-3" />

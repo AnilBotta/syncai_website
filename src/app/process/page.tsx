@@ -17,7 +17,7 @@ export default function ProcessPage() {
             <Reveal key={item.step} delay={index * 0.08}>
               <TiltCard className="h-full rounded-[16px]">
                 <GlassCard className="h-full p-6">
-                  <p className="text-sm font-black text-brand-soft">{item.step}</p>
+                  <p className="text-sm font-black text-brand">{item.step}</p>
                   <h2 className="mt-4 text-xl font-black text-foreground">{item.title}</h2>
                   <p className="mt-3 text-sm leading-7 text-muted">{item.description}</p>
                 </GlassCard>

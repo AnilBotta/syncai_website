@@ -74,14 +74,14 @@ export function NavDropdown({ label, items, viewAllHref, viewAllLabel }: NavDrop
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className="absolute left-0 top-full z-50 w-[300px] pt-3"
           >
-            <div className="overflow-hidden rounded-xl border border-border-subtle bg-bg-elevated/95 shadow-lg shadow-black/50 backdrop-blur-xl">
+            <div className="overflow-hidden rounded-xl border border-border-subtle bg-bg-elevated/98 shadow-[0_12px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl">
               <ul className="py-2">
                 {items.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       onClick={() => setOpen(false)}
-                      className="flex items-baseline gap-3 px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-surface hover:text-brand-glow-text"
+                      className="flex items-baseline gap-3 px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[#f5f5f5] hover:text-brand-glow-text"
                     >
                       <span className="text-xs font-medium tabular-nums text-muted">
                         {item.number} ·

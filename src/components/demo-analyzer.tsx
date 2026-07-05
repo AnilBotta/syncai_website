@@ -71,14 +71,10 @@ export function DemoAnalyzer() {
 
   return (
     <section id="demo" className="relative overflow-hidden bg-bg-deep py-20 text-foreground sm:py-28">
-      <Image
-        src="/brand/syncai-hero-ai-workflow.png"
-        alt=""
-        width={1792}
-        height={1024}
-        className="absolute inset-0 h-full w-full object-cover object-center opacity-20 [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_72%,transparent)]"
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(125,60,152,0.07),transparent_40%),radial-gradient(circle_at_85%_80%,rgba(125,60,152,0.05),transparent_45%)]"
       />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(75,0,130,.3),transparent_34%),linear-gradient(135deg,rgba(2,2,3,.93),rgba(26,0,51,.9)_46%,rgba(2,2,3,.94))]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
           <div>
@@ -106,7 +102,7 @@ export function DemoAnalyzer() {
 
             <form
               action={runDemo}
-              className="mt-8 grid gap-4 rounded-[16px] border border-border-subtle bg-surface p-5 shadow-2xl shadow-black/25 backdrop-blur-xl"
+              className="mt-8 grid gap-4 rounded-[16px] border border-border-subtle bg-surface p-5 shadow-[0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
               <label className="grid gap-2 text-sm font-semibold text-brand-glow-text">
                 Business type
@@ -140,15 +136,15 @@ export function DemoAnalyzer() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-black text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)] disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-black text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
                 Generate AI Opportunity Map
               </button>
-              {error ? <p className="text-sm text-red-300">{error}</p> : null}
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
             </form>
 
-            <div className="mt-8 overflow-hidden rounded-[16px] border border-border-subtle bg-surface shadow-2xl shadow-black/20 backdrop-blur-xl">
+            <div className="theme-dark mt-8 overflow-hidden rounded-[16px] border border-border-subtle shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
               <div className="relative h-[420px]">
                 <Image
                   src="/brand/syncai-lead-handoff-visual.png"
@@ -178,7 +174,7 @@ export function DemoAnalyzer() {
             </div>
           </div>
 
-          <div className="rounded-[16px] border border-border-subtle bg-bg-elevated/95 p-4 text-foreground shadow-2xl shadow-black/30">
+          <div className="rounded-[16px] border border-border-subtle bg-bg-elevated/95 p-4 text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.07)]">
             <div className="rounded-[12px] border border-border-subtle bg-surface p-5 backdrop-blur-xl">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -195,7 +191,7 @@ export function DemoAnalyzer() {
                 </span>
               </div>
 
-              <div className="mt-6 rounded-[12px] border border-border-subtle bg-bg-elevated p-5 text-foreground shadow-xl shadow-black/20">
+              <div className="mt-6 rounded-[12px] border border-border-subtle bg-bg-elevated p-5 text-foreground shadow-[0_4px_16px_rgba(0,0,0,0.05)]">
                 <div className="flex items-start gap-3">
                   <ClipboardList className="mt-1 size-5 text-brand-soft" />
                   <div>
@@ -217,7 +213,7 @@ export function DemoAnalyzer() {
                 </div>
               </div>
 
-              <div className="mt-5 rounded-[12px] border border-border-subtle bg-bg-elevated p-5 shadow-xl shadow-black/20">
+              <div className="mt-5 rounded-[12px] border border-border-subtle bg-bg-elevated p-5 shadow-[0_4px_16px_rgba(0,0,0,0.05)]">
                 <div className="mb-4 flex items-center gap-2 text-sm font-black text-foreground">
                   <ArrowRight className="size-4 text-brand-soft" />
                   Send this opportunity to SyncAI

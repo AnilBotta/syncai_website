@@ -33,7 +33,7 @@ export function AssistantWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-0 z-[59] flex flex-col overflow-hidden bg-bg-elevated shadow-2xl sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[380px] sm:rounded-[1.75rem] sm:border sm:border-border-subtle"
+            className="theme-dark fixed inset-0 z-[59] flex flex-col overflow-hidden bg-bg-elevated shadow-2xl sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:max-h-[calc(100vh-8rem)] sm:w-[380px] sm:rounded-[1.75rem] sm:border sm:border-border-subtle"
           >
             {/* Header */}
             <div className="flex items-center justify-between gap-3 bg-bg-deep px-5 py-4 text-foreground">

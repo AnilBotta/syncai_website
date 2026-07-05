@@ -28,7 +28,7 @@ export default function AiVoiceChatPage() {
           </div>
           <div className="mt-12 grid gap-8 md:grid-cols-2">
             <div className="rounded-[2rem] border border-border-subtle bg-surface p-6 backdrop-blur-xl">
-              <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-[#D9A0FF]">
+              <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-[#D9A0FF]">
                 <MessageSquareText className="size-6" />
               </span>
               <h3 className="mt-5 text-xl font-black">Live Chat Agent</h3>
@@ -38,7 +38,7 @@ export default function AiVoiceChatPage() {
               <div className="mt-6 h-[400px] rounded-xl border border-border-subtle bg-bg-deep/80 p-4">
                 <div className="flex h-full items-center justify-center text-center">
                   <div>
-                    <Bot className="mx-auto size-10 text-brand-soft" />
+                    <Bot className="mx-auto size-10 text-brand" />
                     <p className="mt-4 text-sm text-muted">[Chat agent embed code goes here]</p>
                     <p className="mt-2 text-xs text-muted">Paste your Botpress / Voiceflow / Tidio embed script</p>
                   </div>
@@ -47,7 +47,7 @@ export default function AiVoiceChatPage() {
             </div>
 
             <div className="rounded-[2rem] border border-border-subtle bg-surface p-6 backdrop-blur-xl">
-              <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-[#D9A0FF]">
+              <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-[#D9A0FF]">
                 <PhoneCall className="size-6" />
               </span>
               <h3 className="mt-5 text-xl font-black">Voice Agent Demo</h3>
@@ -57,7 +57,7 @@ export default function AiVoiceChatPage() {
               <div className="mt-6 h-[400px] rounded-xl border border-border-subtle bg-bg-deep/80 p-4">
                 <div className="flex h-full items-center justify-center text-center">
                   <div>
-                    <Headphones className="mx-auto size-10 text-brand-soft" />
+                    <Headphones className="mx-auto size-10 text-brand" />
                     <p className="mt-4 text-sm text-muted">[Voice agent embed code goes here]</p>
                     <p className="mt-2 text-xs text-muted">Paste your Vapi / Bland AI / Retell embed</p>
                   </div>
@@ -111,7 +111,7 @@ export default function AiVoiceChatPage() {
           <p className="mt-5 text-lg text-muted">Let&apos;s build a voice or chat agent that works for your business 24/7.</p>
           <Link
             href="/contact"
-            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.3)]"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)]"
           >
             Book a Strategy Call <ArrowRight className="size-4" />
           </Link>

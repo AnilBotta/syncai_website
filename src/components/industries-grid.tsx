@@ -32,7 +32,7 @@ export function IndustriesGrid() {
                 href={industry.href}
                 className="group flex h-full items-center gap-4 rounded-[16px] border border-border-subtle bg-surface p-5 backdrop-blur-md transition hover:border-brand-soft/40"
               >
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-brand">
                   <industry.icon className="size-5" />
                 </span>
                 <span className="text-sm font-bold text-foreground transition group-hover:text-brand-glow-text">
@@ -46,7 +46,7 @@ export function IndustriesGrid() {
       <div className="mt-10 text-center">
         <p className="text-sm text-muted">
           Not sure where AI fits?{" "}
-          <Link href="/contact" className="font-bold text-brand-glow-text underline transition hover:text-brand-soft">
+          <Link href="/contact" className="font-bold text-brand-glow-text underline transition hover:text-brand">
             Let&apos;s talk.
           </Link>
         </p>
