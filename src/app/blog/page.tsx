@@ -53,7 +53,7 @@ export default function BlogPage() {
             <Reveal key={post.title} delay={(index % 2) * 0.08}>
               <GlassCard className="group h-full p-6">
                 <div className="flex items-center gap-3 text-xs text-muted">
-                  <span className="rounded-full border border-brand/25 bg-brand-deep/20 px-3 py-1 font-bold text-brand-glow-text">
+                  <span className="rounded-full border border-brand/25 bg-brand/10 px-3 py-1 font-bold text-brand-glow-text">
                     {post.category}
                   </span>
                   <span className="flex items-center gap-1">

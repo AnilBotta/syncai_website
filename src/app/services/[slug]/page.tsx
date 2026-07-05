@@ -43,7 +43,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <ul className="mt-6 grid gap-4">
                 {service.includes.map((item) => (
                   <li key={item} className="flex items-start gap-3">
-                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border border-brand/30 bg-brand-deep/20 text-brand-glow-text">
+                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border border-brand/30 bg-brand/10 text-brand-glow-text">
                       <Check className="size-3.5" />
                     </span>
                     <span className="leading-7 text-foreground/90">{item}</span>
@@ -56,7 +56,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
           <div className="grid content-start gap-6">
             <Reveal delay={0.08}>
               <GlassCard glow className="p-7">
-                <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">Outcomes</p>
+                <p className="text-sm font-black uppercase tracking-[.2em] text-brand">Outcomes</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {service.outcomes.map((outcome) => (
                     <span
@@ -75,7 +75,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <Reveal delay={0.14}>
                 <Link href={service.demoHref} className="group block">
                   <GlassCard className="flex items-center gap-4 p-6">
-                    <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+                    <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-brand/25 bg-brand/10 text-brand-glow-text">
                       <PlayCircle className="size-6" />
                     </span>
                     <div>

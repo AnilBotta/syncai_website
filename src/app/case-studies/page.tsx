@@ -48,7 +48,7 @@ export default function CaseStudiesPage() {
               <GlassCard className="p-8">
                 <div className="grid gap-8 lg:grid-cols-[1.2fr_.8fr]">
                   <div>
-                    <span className="rounded-full border border-brand/25 bg-brand-deep/20 px-3 py-1 text-xs font-bold text-brand-glow-text">
+                    <span className="rounded-full border border-brand/25 bg-brand/10 px-3 py-1 text-xs font-bold text-brand-glow-text">
                       {cs.industry}
                     </span>
                     <h2 className="mt-4 text-2xl font-black text-foreground">{cs.title}</h2>

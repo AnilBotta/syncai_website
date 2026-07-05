@@ -16,7 +16,7 @@ export default function IndustriesPage() {
             <Reveal key={industry.title} delay={index * 0.08}>
               <GlassCard className="p-7">
                 <div className="flex flex-col gap-5 md:flex-row md:items-start">
-                  <span className="grid size-14 shrink-0 place-items-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+                  <span className="grid size-14 shrink-0 place-items-center rounded-2xl border border-brand/25 bg-brand/10 text-brand">
                     <industry.icon className="size-7" />
                   </span>
                   <div>

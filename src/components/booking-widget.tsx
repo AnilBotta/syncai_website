@@ -122,7 +122,7 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
   if (submitStatus === "success") {
     return (
       <div className="grid place-items-center gap-4 rounded-[2rem] border border-brand/25 bg-surface backdrop-blur-md p-10 text-center">
-        <span className="flex size-16 items-center justify-center rounded-full bg-brand-deep/20 text-brand-glow-text">
+        <span className="flex size-16 items-center justify-center rounded-full bg-brand/10 text-brand">
           <CalendarCheck className="size-8" />
         </span>
         <h3 className="text-2xl font-black text-foreground">Strategy call booked</h3>
@@ -150,7 +150,7 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
                 onClick={() => loadSlots(day)}
                 className={`shrink-0 rounded-2xl border px-4 py-3 text-sm font-bold transition ${
                   selectedDay?.date === day.date
-                    ? "border-brand-soft bg-gradient-to-r from-brand-electric to-brand text-white shadow-[0_0_16px_rgba(160,120,255,0.35)]"
+                    ? "border-brand-soft bg-gradient-to-r from-brand-electric to-brand text-white "
                     : "border-border-subtle bg-surface text-foreground hover:border-brand-soft/40"
                 }`}
               >
@@ -182,7 +182,7 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
                   onClick={() => setSelectedSlot(slot)}
                   className={`inline-flex items-center justify-center gap-1 rounded-xl border px-2 py-2.5 text-sm font-bold transition ${
                     selectedSlot?.startsAt === slot.startsAt
-                      ? "border-brand-soft bg-gradient-to-r from-brand-electric to-brand text-white shadow-[0_0_16px_rgba(160,120,255,0.35)]"
+                      ? "border-brand-soft bg-gradient-to-r from-brand-electric to-brand text-white "
                       : "border-border-subtle bg-surface text-foreground hover:border-brand-soft/40"
                   }`}
                 >
@@ -241,7 +241,7 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
             <button
               type="submit"
               disabled={submitStatus === "loading"}
-              className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)] disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {submitStatus === "loading" ? (
                 <Loader2 className="size-4 animate-spin" />

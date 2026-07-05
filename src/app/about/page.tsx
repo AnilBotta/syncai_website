@@ -33,7 +33,7 @@ export default function AboutPage() {
               <Reveal key={point.value} delay={index * 0.08}>
                 <TiltCard className="h-full rounded-[16px]">
                   <GlassCard className="h-full p-6">
-                    <span className="grid size-12 place-items-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+                    <span className="grid size-12 place-items-center rounded-2xl border border-brand/25 bg-brand/10 text-brand">
                       <point.icon className="size-6" />
                     </span>
                     <h3 className="mt-5 text-lg font-black text-foreground">{point.value}</h3>
@@ -57,7 +57,7 @@ export default function AboutPage() {
             {process.map((step, index) => (
               <Reveal key={step.step} delay={index * 0.08}>
                 <GlassCard className="h-full p-6">
-                  <p className="text-sm font-black text-brand-soft">{step.step}</p>
+                  <p className="text-sm font-black text-brand">{step.step}</p>
                   <h3 className="mt-3 text-lg font-black text-foreground">{step.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-muted">{step.description}</p>
                 </GlassCard>

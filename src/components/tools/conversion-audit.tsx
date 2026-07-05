@@ -160,7 +160,7 @@ export function ConversionAudit() {
             {answeredCount}/{totalQuestions} answered
           </span>
         </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e4e7ea]">
           <div
             className="h-full rounded-full bg-gradient-to-r from-brand-electric to-brand-soft transition-[width] duration-500"
             style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
@@ -170,7 +170,7 @@ export function ConversionAudit() {
         <div className="mt-8 grid gap-10">
           {CATEGORIES.map((category) => (
             <div key={category.id}>
-              <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+              <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
                 {category.label}
               </p>
               <div className="mt-4 grid gap-6">
@@ -191,8 +191,8 @@ export function ConversionAudit() {
                               onClick={() => setAnswers({ ...answers, [key]: optionIndex + 1 })}
                               className={`cursor-pointer rounded-xl border px-2 py-2.5 text-xs font-semibold transition ${
                                 selected
-                                  ? "border-brand-soft bg-brand-deep/25 text-brand-glow-text"
-                                  : "border-border-subtle bg-surface text-muted hover:border-brand-soft/40 hover:text-foreground/90"
+                                  ? "border-brand-soft bg-brand/10 text-brand"
+                                  : "border-border-subtle bg-[#f5f5f5] text-muted hover:border-brand-soft/40 hover:text-foreground/90"
                               }`}
                             >
                               {label}
@@ -212,7 +212,7 @@ export function ConversionAudit() {
           type="button"
           disabled={!allAnswered}
           onClick={() => setFinished(true)}
-          className="mt-8 inline-flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-8 inline-flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Get my conversion score <ArrowRight className="size-4" />
         </button>
@@ -223,18 +223,18 @@ export function ConversionAudit() {
   return (
     <div className="mx-auto max-w-2xl">
       <GlassCard glow className="p-8 text-center">
-        <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+        <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
           Your conversion score
         </p>
         <p className="mt-3 text-7xl font-black text-brand-glow-text">{totalScore}</p>
         <p className="text-sm text-muted">out of 100</p>
-        <p className="mt-4 inline-block rounded-full border border-brand/30 bg-brand-deep/20 px-5 py-2 text-lg font-black text-foreground">
+        <p className="mt-4 inline-block rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-lg font-black text-foreground">
           {grade(totalScore)}
         </p>
       </GlassCard>
 
       <GlassCard className="mt-6 p-6 sm:p-8">
-        <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+        <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
           Category breakdown
         </p>
         <div className="mt-5">
@@ -243,13 +243,13 @@ export function ConversionAudit() {
       </GlassCard>
 
       <GlassCard className="mt-6 p-6 sm:p-8">
-        <p className="text-sm font-black uppercase tracking-[.2em] text-brand-soft">
+        <p className="text-sm font-black uppercase tracking-[.2em] text-brand">
           Your top 2 priority fixes
         </p>
         <div className="mt-5 grid gap-5">
           {priorityFixes.map((fix) => (
             <div key={fix.id} className="flex gap-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-2xl border border-brand/25 bg-brand-deep/20 text-brand-glow-text">
+              <span className="grid size-11 shrink-0 place-items-center rounded-2xl border border-brand/25 bg-brand/10 text-brand">
                 <Wrench className="size-5" />
               </span>
               <div>

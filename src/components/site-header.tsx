@@ -33,16 +33,16 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "fixed top-0 z-50 w-full transition-all duration-300",
+        "fixed top-0 z-50 w-full border-b backdrop-blur-xl transition-all duration-300",
         scrolled
-          ? "bg-bg-deep/85 shadow-lg shadow-black/40 backdrop-blur-xl"
-          : "bg-transparent",
+          ? "border-[#e4e7ea] bg-white/90 shadow-sm"
+          : "border-transparent bg-white/70",
       )}
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="SyncAI Technology home">
           <Image
-            src="/brand/syncai-logo-dark.png"
+            src="/brand/syncai-logo-light.png"
             alt="SyncAI logo"
             width={154}
             height={50}
@@ -94,7 +94,7 @@ export function SiteHeader() {
           </a>
           <Link
             href="/book"
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)]"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)]"
           >
             Let&apos;s talk
             <ArrowRight className="size-4" />
@@ -103,7 +103,7 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-white/15 text-white lg:hidden"
+          className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-[#d6dbdf] text-foreground lg:hidden"
           onClick={() => setOpen((value) => !value)}
           aria-label="Toggle navigation"
           aria-expanded={open}
@@ -113,7 +113,7 @@ export function SiteHeader() {
       </div>
 
       {/* Mobile menu */}
-      <div className={cn("max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-white/10 bg-bg-deep/95 backdrop-blur-xl lg:hidden", open ? "block" : "hidden")}>
+      <div className={cn("max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-[#e4e7ea] bg-white/95 backdrop-blur-xl lg:hidden", open ? "block" : "hidden")}>
         <div className="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:px-6">
           <MobileLink href={flatLinks.home.href} label={flatLinks.home.label} onNavigate={() => setOpen(false)} />
           <MobileLink href={flatLinks.about.href} label={flatLinks.about.label} onNavigate={() => setOpen(false)} />
@@ -161,7 +161,7 @@ function MobileLink({ href, label, onNavigate }: { href: string; label: string; 
   return (
     <Link
       href={href}
-      className="rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-surface"
+      className="rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-[#f5f5f5]"
       onClick={onNavigate}
     >
       {label}
@@ -190,7 +190,7 @@ function MobileAccordion({
         type="button"
         aria-expanded={expanded}
         onClick={() => setExpanded((value) => !value)}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-surface"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-[#f5f5f5]"
       >
         {label}
         <ChevronDown className={cn("size-4 text-muted transition-transform duration-200", expanded && "rotate-180")} />
@@ -201,7 +201,7 @@ function MobileAccordion({
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-baseline gap-3 rounded-xl px-4 py-3 text-sm text-foreground/90 hover:bg-surface"
+              className="flex items-baseline gap-3 rounded-xl px-4 py-3 text-sm text-foreground/90 hover:bg-[#f5f5f5]"
               onClick={onNavigate}
             >
               <span className="text-xs font-medium tabular-nums text-muted">{item.number} ·</span>

@@ -18,14 +18,14 @@ export function PageShell({ eyebrow, title, description, children }: PageShellPr
         <section className="relative overflow-hidden bg-bg-deep px-4 pt-28 pb-20 sm:px-6 sm:py-32 lg:px-8">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(148,0,211,0.16),transparent_45%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(125,60,152,0.08),transparent_45%)]"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 [background-image:radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:32px_32px]"
+            className="pointer-events-none absolute inset-0 [background-image:radial-gradient(rgba(0,0,0,0.04)_1px,transparent_1px)] [background-size:32px_32px]"
           />
           <Reveal className="relative mx-auto max-w-5xl">
-            <p className="text-sm font-black uppercase tracking-[.25em] text-brand-soft">{eyebrow}</p>
+            <p className="text-sm font-black uppercase tracking-[.25em] text-brand">{eyebrow}</p>
             <h1 className="mt-5 text-4xl font-black tracking-tight text-foreground sm:text-6xl">{title}</h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-muted">{description}</p>
           </Reveal>

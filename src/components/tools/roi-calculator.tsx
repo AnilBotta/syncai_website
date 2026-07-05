@@ -134,7 +134,7 @@ export function RoiCalculator() {
           </label>
           <button
             type="submit"
-            className="mt-2 inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_0_24px_rgba(160,120,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(160,120,255,0.45)]"
+            className="mt-2 inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)]"
           >
             <Calculator className="size-4" />
             Calculate my savings
@@ -175,7 +175,7 @@ export function RoiCalculator() {
 
             {results.netMonthlySavings > 0 ? (
               <div className="mt-5 flex flex-wrap items-center gap-3">
-                <span className="rounded-full border border-brand/30 bg-brand-deep/20 px-4 py-1.5 text-sm font-bold text-brand-glow-text">
+                <span className="rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-bold text-brand-glow-text">
                   {Math.round(results.annualROIPercent).toLocaleString("en-CA")}% annual ROI
                 </span>
                 <span className="text-sm text-muted">

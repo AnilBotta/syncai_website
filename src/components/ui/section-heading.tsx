@@ -19,7 +19,7 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <div className={cn("max-w-3xl", align === "center" ? "mx-auto text-center" : "", className)}>
-      <p className="text-sm font-black uppercase tracking-[.25em] text-brand-soft">{eyebrow}</p>
+      <p className="text-sm font-black uppercase tracking-[.25em] text-brand">{eyebrow}</p>
       <h2 className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-5xl">{title}</h2>
       {description ? <p className="mt-5 text-lg leading-8 text-muted">{description}</p> : null}
     </div>
