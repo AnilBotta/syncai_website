@@ -6,6 +6,7 @@ import {
   verifyAdminToken,
 } from "@/lib/supabase";
 import { appointmentUpdateSchema } from "@/lib/validators";
+import { serverErrorResponse } from "@/lib/api-errors";
 
 const demoAppointments: Appointment[] = [
   {
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
     .order("starts_at", { ascending: true });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return serverErrorResponse("admin/appointments:GET", error);
   }
 
   return NextResponse.json({ appointments: data });
@@ -79,7 +80,7 @@ export async function PATCH(request: Request) {
   const { error } = await supabase.from("appointments").update(update).eq("id", parsed.data.id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return serverErrorResponse("admin/appointments:PATCH", error);
   }
 
   return NextResponse.json({ ok: true });

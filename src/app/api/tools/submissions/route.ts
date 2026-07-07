@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { toolSubmissionSchema } from "@/lib/validators";
+import { serverErrorResponse } from "@/lib/api-errors";
 
 /**
  * Captures tool submissions (readiness email gate, conversion-audit URL
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return serverErrorResponse("tools/submissions:POST", error);
   }
 
   return NextResponse.json({ ok: true });
