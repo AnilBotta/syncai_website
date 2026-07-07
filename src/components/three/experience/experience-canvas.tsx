@@ -6,13 +6,8 @@ import { CameraRig } from "./camera-rig";
 import { QualityProvider, useQuality } from "./quality";
 import { AmbientField } from "./ambient-field";
 import { Station } from "./stations/station";
-import { HeroOrbStation } from "./stations/hero-orb-station";
-import { WebsitesStation } from "./stations/websites-station";
+import { ImageScreenStation } from "./stations/image-screen-station";
 import { VoiceWaveformStation } from "./stations/voice-waveform-station";
-import { WorkflowPipelineStation } from "./stations/workflow-pipeline-station";
-import { StrategyCoreStation } from "./stations/strategy-core-station";
-import { ResultsStation } from "./stations/results-station";
-import { CtaCoreStation } from "./stations/cta-core-station";
 
 // Postprocessing is its own lazy chunk — only fetched on high-tier desktops.
 const Effects = lazy(() => import("./effects"));
@@ -50,26 +45,31 @@ export default function ExperienceCanvas({ paused = false }: ExperienceCanvasPro
         <CameraRig />
         <AmbientField />
 
-        <Station id="hero" chapterIndex={0}>
-          <HeroOrbStation />
-        </Station>
-        <Station id="websites" chapterIndex={1}>
-          <WebsitesStation />
-        </Station>
+        {/* Image "screens" the camera flies to (Suspense covers texture load). */}
+        <Suspense fallback={null}>
+          <Station id="hero" chapterIndex={0}>
+            <ImageScreenStation src="/brand/step-inside-the-ai.png" />
+          </Station>
+          <Station id="websites" chapterIndex={1}>
+            <ImageScreenStation src="/brand/tour-websites.png" height={3.8} />
+          </Station>
+          <Station id="workflow" chapterIndex={3}>
+            <ImageScreenStation src="/brand/tour-workflow.png" height={4.0} />
+          </Station>
+          <Station id="strategy" chapterIndex={4}>
+            <ImageScreenStation src="/brand/tour-strategy.png" height={3.8} />
+          </Station>
+          <Station id="results" chapterIndex={5}>
+            <ImageScreenStation src="/brand/tour-results.png" height={4.0} />
+          </Station>
+          <Station id="cta" chapterIndex={6}>
+            <ImageScreenStation src="/brand/tour-cta.png" />
+          </Station>
+        </Suspense>
+
+        {/* Kept as an animated 3D scene */}
         <Station id="voice" chapterIndex={2}>
           <VoiceWaveformStation />
-        </Station>
-        <Station id="workflow" chapterIndex={3}>
-          <WorkflowPipelineStation />
-        </Station>
-        <Station id="strategy" chapterIndex={4}>
-          <StrategyCoreStation />
-        </Station>
-        <Station id="results" chapterIndex={5}>
-          <ResultsStation />
-        </Station>
-        <Station id="cta" chapterIndex={6}>
-          <CtaCoreStation />
         </Station>
 
         <GatedEffects />

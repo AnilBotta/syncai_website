@@ -49,13 +49,13 @@ export const cameraCurve = new THREE.CatmullRomCurve3(CAMERA_POINTS, false, "cat
  * clear of the overlay text.
  */
 const LOOK_OFFSETS: Record<ChapterId, number> = {
-  hero: -1.6, // copy left → orb right of center
-  websites: -1.8, // copy left → screens right
-  voice: 2.4, // copy right → waveform left
-  workflow: -2.4, // copy left → pipeline right
-  strategy: 2.4, // copy right → core left
-  results: -2.4, // copy left → bar columns right
-  cta: 2.4, // copy right → core left
+  hero: -3.2, // copy left → image pushed right (looks good, unchanged)
+  websites: -2.5, // copy left → image right, pulled toward center to fill the gap
+  voice: 2.4, // copy right → waveform left (3D scene, unchanged)
+  workflow: -2.4, // copy left → image right, pulled toward the text
+  strategy: 2.8, // copy right → image left, pulled toward center
+  results: -2.5, // copy left → image right, pulled toward the text
+  cta: 3.4, // copy right → image left (looks good, unchanged)
 };
 
 /** Vertical framing offsets (looking above a station pushes it down-screen). */
