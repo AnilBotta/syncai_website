@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAvailableSlots, getBookableDays } from "@/lib/booking";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { availabilityQuerySchema } from "@/lib/validators";
+import { serverErrorResponse } from "@/lib/api-errors";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -27,9 +28,6 @@ export async function GET(request: Request) {
       ...(demoMode ? { demoMode: true } : {}),
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Could not load availability." },
-      { status: 500 }
-    );
+    return serverErrorResponse("appointments/availability:GET", error);
   }
 }

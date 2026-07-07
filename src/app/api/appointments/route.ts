@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { formatSlotForHumans, isValidSlot, slotEndsAt } from "@/lib/booking";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { appointmentSchema } from "@/lib/validators";
+import { serverErrorResponse } from "@/lib/api-errors";
 
 export async function POST(request: Request) {
   const parsed = appointmentSchema.safeParse(await request.json());
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return serverErrorResponse("appointments:POST", error);
   }
 
   return NextResponse.json({

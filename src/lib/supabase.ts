@@ -86,8 +86,10 @@ export async function verifyAdminToken(authHeader: string | null) {
     return null;
   }
 
+  // Fail closed: without a configured admin allow-list, no user is an admin.
+  // Otherwise any valid Supabase user for this project could read lead PII.
   const allowedEmail = process.env.ADMIN_EMAIL?.toLowerCase();
-  if (allowedEmail && data.user.email?.toLowerCase() !== allowedEmail) {
+  if (!allowedEmail || data.user.email?.toLowerCase() !== allowedEmail) {
     return null;
   }
 

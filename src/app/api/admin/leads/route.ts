@@ -6,6 +6,7 @@ import {
   verifyAdminToken,
 } from "@/lib/supabase";
 import { leadUpdateSchema } from "@/lib/validators";
+import { serverErrorResponse } from "@/lib/api-errors";
 
 const demoLeads: Lead[] = [
   {
@@ -43,7 +44,7 @@ export async function GET(request: Request) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return serverErrorResponse("admin/leads:GET", error);
   }
 
   return NextResponse.json({ leads: data });
@@ -78,7 +79,7 @@ export async function PATCH(request: Request) {
   const { error } = await supabase.from("leads").update(update).eq("id", parsed.data.id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return serverErrorResponse("admin/leads:PATCH", error);
   }
 
   return NextResponse.json({ ok: true });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { leadSchema } from "@/lib/validators";
+import { serverErrorResponse } from "@/lib/api-errors";
 
 export async function POST(request: Request) {
   const parsed = leadSchema.safeParse(await request.json());
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return serverErrorResponse("leads:POST", error);
   }
 
   return NextResponse.json({ ok: true });
