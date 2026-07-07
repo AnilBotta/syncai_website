@@ -260,6 +260,72 @@ textarea {
   }
 }
 
+/* Midnight-blue night sky behind the 3D tour canvas (canvas is transparent). */
+.night-sky {
+  /* Deep midnight-blue base so it reads as sky, never flat black — even
+     where the drifting glows aren't. */
+  background:
+    linear-gradient(160deg, #0a1428 0%, #0b1224 45%, #0a1020 100%);
+}
+.night-sky__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.7;
+  will-change: transform;
+}
+.night-sky__glow--1 {
+  width: 64vw;
+  height: 64vw;
+  top: -16%;
+  left: -12%;
+  background: radial-gradient(circle at center, rgba(52, 96, 210, 0.5), transparent 68%);
+  animation: night-drift-1 42s ease-in-out infinite;
+}
+.night-sky__glow--2 {
+  width: 58vw;
+  height: 58vw;
+  bottom: -20%;
+  right: -10%;
+  background: radial-gradient(circle at center, rgba(80, 74, 195, 0.42), transparent 68%);
+  animation: night-drift-2 48s ease-in-out infinite;
+}
+.night-sky__glow--3 {
+  width: 44vw;
+  height: 44vw;
+  top: 30%;
+  left: 44%;
+  background: radial-gradient(circle at center, rgba(40, 110, 225, 0.32), transparent 70%);
+  animation: night-drift-3 54s ease-in-out infinite;
+}
+@keyframes night-drift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(9vw, 7vh);
+  }
+}
+@keyframes night-drift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-8vw, -6vh);
+  }
+}
+@keyframes night-drift-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6vw, -5vh) scale(1.15);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

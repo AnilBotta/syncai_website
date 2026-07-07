@@ -7,6 +7,7 @@ import { useFrameloopPause, useWebglGate } from "@/components/three/use-webgl-ga
 import { ScrollProgressBridge } from "@/components/three/experience/scroll-progress-bridge";
 import { CHAPTER_COUNT } from "@/components/three/experience/layout";
 import { StaticHome } from "./static-home";
+import { NightSky } from "./night-sky";
 import { ProgressRail } from "./hud/progress-rail";
 import { SkipTour } from "./hud/skip-tour";
 import { ChapterSnap } from "./hud/chapter-snap";
@@ -43,11 +44,12 @@ export function HomeExperience({ children }: HomeExperienceProps) {
 
         {/* Pinned scene */}
         <div className="sticky top-0 h-screen w-full overflow-hidden">
+          <NightSky />
           <ExperienceCanvas paused={paused} />
           {/* Cinematic vignette for copy legibility */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(2,2,3,0.65)_100%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_48%,rgba(5,7,15,0.55)_100%)]"
           />
         </div>
 

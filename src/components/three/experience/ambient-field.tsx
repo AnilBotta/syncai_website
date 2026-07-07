@@ -6,7 +6,7 @@ import { PointMaterial } from "@react-three/drei";
 import type { Points } from "three";
 import * as THREE from "three";
 
-const COUNT = 1500;
+const COUNT = 2200;
 
 /** Sparse dust/starfield spanning the whole camera path for depth. */
 export function AmbientField() {
@@ -45,10 +45,10 @@ export function AmbientField() {
       </bufferGeometry>
       <PointMaterial
         transparent
-        color="#8a7bb8"
+        color="#aec6ff"
         size={0.05}
         sizeAttenuation
-        opacity={0.55}
+        opacity={0.65}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
       />
