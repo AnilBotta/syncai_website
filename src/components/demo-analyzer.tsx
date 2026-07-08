@@ -193,9 +193,9 @@ export function DemoAnalyzer() {
 
               <div className="mt-6 rounded-[12px] border border-border-subtle bg-bg-elevated p-5 text-foreground shadow-[0_4px_16px_rgba(0,0,0,0.05)]">
                 <div className="flex items-start gap-3">
-                  <ClipboardList className="mt-1 size-5 text-brand-soft" />
+                  <ClipboardList className="mt-1 size-5 text-brand-glow-text" />
                   <div>
-                    <p className="text-sm font-black uppercase tracking-[.18em] text-brand-soft">Summary</p>
+                    <p className="text-sm font-black uppercase tracking-[.18em] text-brand-glow-text">Summary</p>
                     <p className="mt-2 text-lg font-bold leading-7">{analysis.summary}</p>
                   </div>
                 </div>
