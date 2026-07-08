@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, CalendarCheck, CheckCircle2, Clock, Loader2 } from "lucide-react";
+import { Turnstile } from "@/components/turnstile";
 
 const services = [
   "AI strategy",
@@ -86,6 +87,7 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
       startsAt: selectedSlot.startsAt,
       timezone: "America/Toronto",
       source,
+      turnstileToken: String(formData.get("cf-turnstile-response") || ""),
     };
 
     try {
@@ -236,6 +238,8 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
               placeholder="Optional — your business, the challenge, or what you want to see."
             />
           </label>
+
+          <Turnstile />
 
           <div className="flex flex-wrap items-center gap-3">
             <button

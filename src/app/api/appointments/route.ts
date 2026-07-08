@@ -3,15 +3,22 @@ import { formatSlotForHumans, isValidSlot, slotEndsAt } from "@/lib/booking";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { appointmentSchema } from "@/lib/validators";
 import { serverErrorResponse } from "@/lib/api-errors";
+import { clientIpFromRequest, getTurnstileToken, verifyTurnstile } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
-  const parsed = appointmentSchema.safeParse(await request.json());
+  const raw = await request.json().catch(() => null);
+  const parsed = appointmentSchema.safeParse(raw);
 
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Please provide your name, email, and a valid appointment time." },
       { status: 400 }
     );
+  }
+
+  const token = getTurnstileToken(raw);
+  if (!(await verifyTurnstile(token, clientIpFromRequest(request)))) {
+    return NextResponse.json({ error: "Human verification failed. Please try again." }, { status: 403 });
   }
 
   const appointment = parsed.data;

@@ -2,12 +2,19 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { leadSchema } from "@/lib/validators";
 import { serverErrorResponse } from "@/lib/api-errors";
+import { clientIpFromRequest, getTurnstileToken, verifyTurnstile } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
-  const parsed = leadSchema.safeParse(await request.json());
+  const raw = await request.json().catch(() => null);
+  const parsed = leadSchema.safeParse(raw);
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Please complete the required lead details." }, { status: 400 });
+  }
+
+  const token = getTurnstileToken(raw);
+  if (!(await verifyTurnstile(token, clientIpFromRequest(request)))) {
+    return NextResponse.json({ error: "Human verification failed. Please try again." }, { status: 403 });
   }
 
   const lead = parsed.data;

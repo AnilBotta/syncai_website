@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { Turnstile } from "@/components/turnstile";
 
 const industries = [
   "Dental clinic",
@@ -44,6 +45,7 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
       painPoint: String(formData.get("painPoint") || ""),
       source,
       demoSummary,
+      turnstileToken: String(formData.get("cf-turnstile-response") || ""),
     };
 
     try {
@@ -146,6 +148,8 @@ export function LeadForm({ source = "website", compact = false, demoSummary = ""
           placeholder="Example: We miss calls after hours, spend too much time on intake, and need better follow-up for new leads."
         />
       </label>
+
+      <Turnstile />
 
       <button
         type="submit"
