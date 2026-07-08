@@ -140,7 +140,7 @@ export function AdminDashboard() {
       <header className="border-b border-border-subtle bg-bg-elevated">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
-            <p className="text-sm font-black uppercase tracking-[.22em] text-brand-soft">SyncAi Admin</p>
+            <p className="text-sm font-black uppercase tracking-[.22em] text-brand-glow-text">SyncAi Admin</p>
             <h1 className="mt-1 text-3xl font-black text-foreground">
               {view === "leads" ? "Lead Dashboard" : "Appointments"}
             </h1>
