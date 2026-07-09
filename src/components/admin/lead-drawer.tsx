@@ -1,0 +1,281 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { ChevronDown, Loader2, X } from "lucide-react";
+import { leadStatuses } from "@/lib/site-data";
+import type { Lead } from "@/lib/supabase";
+import { formatDate } from "@/lib/utils";
+import { ActivityTimeline } from "@/components/admin/activity-timeline";
+import { TaskList } from "@/components/admin/task-list";
+
+type LeadDrawerProps = {
+  lead: Lead;
+  getToken: () => Promise<string>;
+  onClose: () => void;
+  onSaved: (lead: Lead) => void;
+};
+
+export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps) {
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [showRules, setShowRules] = useState(false);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  async function save(formData: FormData) {
+    setSaving(true);
+    setError("");
+
+    try {
+      const token = await getToken();
+      const payload = {
+        id: lead.id,
+        status: String(formData.get("status") || lead.status),
+        notes: String(formData.get("notes") || ""),
+        value: Number(formData.get("value") || 0),
+        nextAction: String(formData.get("nextAction") || ""),
+        floorPrice: formData.get("floorPrice") ? Number(formData.get("floorPrice")) : null,
+        maxDiscountPct: formData.get("maxDiscountPct") ? Number(formData.get("maxDiscountPct")) : null,
+        concessionNotes: String(formData.get("concessionNotes") || ""),
+      };
+
+      const response = await fetch("/api/admin/leads", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Could not save lead.");
+      }
+
+      onSaved({
+        ...lead,
+        status: payload.status as Lead["status"],
+        notes: payload.notes,
+        value: payload.value,
+        next_action: payload.nextAction,
+        floor_price: payload.floorPrice,
+        max_discount_pct: payload.maxDiscountPct,
+        concession_notes: payload.concessionNotes,
+        won_at:
+          payload.status === "won"
+            ? lead.won_at || new Date().toISOString()
+            : lead.status === "won"
+              ? null
+              : lead.won_at,
+      });
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Could not save lead.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50">
+      <button
+        type="button"
+        aria-label="Close lead details"
+        onClick={onClose}
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      />
+      <aside className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto border-l border-border-subtle bg-bg-elevated shadow-2xl">
+        <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-border-subtle bg-bg-elevated px-6 py-5">
+          <div>
+            <h2 className="text-2xl font-black text-foreground">{lead.name}</h2>
+            <p className="mt-1 text-sm text-muted">
+              {lead.company ? `${lead.company} · ` : ""}
+              Added {formatDate(lead.created_at)}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid size-10 shrink-0 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-foreground"
+            aria-label="Close"
+          >
+            <X className="size-5" />
+          </button>
+        </header>
+
+        <form action={save} className="grid gap-5 px-6 py-5">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
+              Stage
+              <select
+                name="status"
+                defaultValue={lead.status}
+                className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              >
+                {leadStatuses.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
+              Deal value (CAD)
+              <input
+                name="value"
+                type="number"
+                min={0}
+                step={100}
+                defaultValue={Number(lead.value) || 0}
+                className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              />
+            </label>
+          </div>
+
+          <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
+            Next action
+            <input
+              name="nextAction"
+              defaultValue={lead.next_action || ""}
+              placeholder="e.g. Send case study, follow up Friday"
+              className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+            />
+          </label>
+
+          <div className="grid gap-3 rounded-3xl bg-surface p-4 text-sm">
+            <p className="font-black text-foreground">Contact</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <ContactRow label="Email" value={lead.email} />
+              <ContactRow label="Phone" value={lead.phone || "—"} />
+              <ContactRow label="Industry" value={lead.industry || "—"} />
+              <ContactRow label="Source" value={lead.source} />
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-surface p-4">
+            <p className="text-sm font-black text-foreground">Business challenge</p>
+            <p className="mt-1.5 text-sm leading-6 text-muted">{lead.pain_point}</p>
+          </div>
+
+          {lead.score != null ? (
+            <div className="rounded-3xl border border-border-subtle p-4">
+              <p className="text-sm font-black text-foreground">AI qualification score: {lead.score}/100</p>
+              {lead.score_rationale ? (
+                <p className="mt-1.5 text-sm leading-6 text-muted">{lead.score_rationale}</p>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className="rounded-3xl border border-border-subtle">
+            <button
+              type="button"
+              onClick={() => setShowRules((current) => !current)}
+              className="flex w-full items-center justify-between px-4 py-3 text-sm font-black text-foreground"
+            >
+              Deal rules (negotiation guardrails)
+              <ChevronDown className={`size-4 text-muted transition ${showRules ? "rotate-180" : ""}`} />
+            </button>
+            {showRules ? (
+              <div className="grid gap-4 border-t border-border-subtle p-4 sm:grid-cols-2">
+                <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
+                  Floor price (CAD)
+                  <input
+                    name="floorPrice"
+                    type="number"
+                    min={0}
+                    step={100}
+                    defaultValue={lead.floor_price ?? ""}
+                    placeholder="Never go below"
+                    className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                  />
+                </label>
+                <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
+                  Max discount %
+                  <input
+                    name="maxDiscountPct"
+                    type="number"
+                    min={0}
+                    max={100}
+                    defaultValue={lead.max_discount_pct ?? ""}
+                    placeholder="e.g. 15"
+                    className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                  />
+                </label>
+                <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted sm:col-span-2">
+                  Allowed concessions
+                  <textarea
+                    name="concessionNotes"
+                    defaultValue={lead.concession_notes || ""}
+                    rows={2}
+                    placeholder="e.g. Can extend support to 60 days; no scope additions."
+                    className="resize-none rounded-2xl border border-border-subtle p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                  />
+                </label>
+              </div>
+            ) : (
+              /* Keep values submitted even when the section is collapsed. */
+              <div className="hidden">
+                <input name="floorPrice" type="number" defaultValue={lead.floor_price ?? ""} readOnly />
+                <input name="maxDiscountPct" type="number" defaultValue={lead.max_discount_pct ?? ""} readOnly />
+                <textarea name="concessionNotes" defaultValue={lead.concession_notes || ""} readOnly />
+              </div>
+            )}
+          </div>
+
+          <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
+            Notes
+            <textarea
+              name="notes"
+              defaultValue={lead.notes || ""}
+              rows={4}
+              placeholder="Call outcomes, context, proposal details…"
+              className="resize-none rounded-2xl border border-border-subtle p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+            />
+          </label>
+
+          {error ? <p className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+
+          <button
+            type="submit"
+            disabled={saving}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-deep px-6 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {saving ? <Loader2 className="size-4 animate-spin" /> : null}
+            Save lead
+          </button>
+        </form>
+
+        <div className="border-t border-border-subtle px-6 py-5">
+          <p className="text-sm font-black text-foreground">Follow-ups</p>
+          <div className="mt-3">
+            <TaskList getToken={getToken} leadId={lead.id} compact />
+          </div>
+        </div>
+
+        <div className="border-t border-border-subtle px-6 py-5">
+          <p className="text-sm font-black text-foreground">Activity</p>
+          <div className="mt-3">
+            <ActivityTimeline leadId={lead.id} getToken={getToken} />
+          </div>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function ContactRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-xs font-black uppercase tracking-wider text-muted">{label}</p>
+      <p className="mt-0.5 break-words text-sm font-semibold text-foreground/90">{value}</p>
+    </div>
+  );
+}

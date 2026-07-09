@@ -18,6 +18,36 @@ export type Lead = {
   demo_summary?: string | null;
   status: "new" | "contacted" | "qualified" | "proposal" | "won" | "lost";
   notes?: string | null;
+  value: number;
+  won_at?: string | null;
+  last_contacted_at?: string | null;
+  score?: number | null;
+  score_rationale?: string | null;
+  next_action?: string | null;
+  floor_price?: number | null;
+  max_discount_pct?: number | null;
+  concession_notes?: string | null;
+};
+
+export type LeadActivity = {
+  id: string;
+  created_at: string;
+  lead_id: string;
+  type: "note" | "status_change" | "email" | "agent_run" | "task" | "document" | "call" | "system";
+  title: string;
+  body?: string | null;
+  meta: Record<string, unknown>;
+  actor: string;
+};
+
+export type Task = {
+  id: string;
+  created_at: string;
+  lead_id?: string | null;
+  title: string;
+  due_at?: string | null;
+  status: "open" | "done" | "dismissed";
+  completed_at?: string | null;
 };
 
 export type Appointment = {

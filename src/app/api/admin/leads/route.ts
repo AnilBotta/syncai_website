@@ -23,6 +23,7 @@ const demoLeads: Lead[] = [
     demo_summary: "Demo lead shown when Supabase is not configured.",
     status: "new",
     notes: "Connect Supabase to replace demo records with live leads.",
+    value: 4500,
   },
 ];
 
@@ -67,19 +68,68 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: true, demoMode: true });
   }
 
-  const update: Record<string, string> = {};
-  if (parsed.data.status) {
-    update.status = parsed.data.status;
+  const supabase = createSupabaseAdminClient();
+
+  const { data: current, error: fetchError } = await supabase
+    .from("leads")
+    .select("id, status")
+    .eq("id", parsed.data.id)
+    .single();
+
+  if (fetchError || !current) {
+    return NextResponse.json({ error: "Lead not found." }, { status: 404 });
   }
+
+  const update: Record<string, unknown> = {};
   if (typeof parsed.data.notes === "string") {
     update.notes = parsed.data.notes;
   }
+  if (typeof parsed.data.value === "number") {
+    update.value = parsed.data.value;
+  }
+  if (typeof parsed.data.nextAction === "string") {
+    update.next_action = parsed.data.nextAction;
+  }
+  if (parsed.data.floorPrice !== undefined) {
+    update.floor_price = parsed.data.floorPrice;
+  }
+  if (parsed.data.maxDiscountPct !== undefined) {
+    update.max_discount_pct = parsed.data.maxDiscountPct;
+  }
+  if (typeof parsed.data.concessionNotes === "string") {
+    update.concession_notes = parsed.data.concessionNotes;
+  }
 
-  const supabase = createSupabaseAdminClient();
+  const statusChanged = Boolean(parsed.data.status && parsed.data.status !== current.status);
+  if (statusChanged) {
+    update.status = parsed.data.status;
+    // won_at tracks when the deal closed; clear it if the lead moves back out of won.
+    if (parsed.data.status === "won") {
+      update.won_at = new Date().toISOString();
+    } else if (current.status === "won") {
+      update.won_at = null;
+    }
+  }
+
   const { error } = await supabase.from("leads").update(update).eq("id", parsed.data.id);
 
   if (error) {
     return serverErrorResponse("admin/leads:PATCH", error);
+  }
+
+  if (statusChanged) {
+    const { error: activityError } = await supabase.from("lead_activities").insert({
+      lead_id: parsed.data.id,
+      type: "status_change",
+      title: `Status: ${current.status} → ${parsed.data.status}`,
+      meta: { from: current.status, to: parsed.data.status },
+      actor: "ceo",
+    });
+
+    if (activityError) {
+      // The lead update already succeeded; a missing timeline entry shouldn't fail the request.
+      console.error("[admin/leads:PATCH] activity insert failed", activityError);
+    }
   }
 
   return NextResponse.json({ ok: true });
