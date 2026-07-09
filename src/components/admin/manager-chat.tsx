@@ -33,6 +33,9 @@ const toolLabels: Record<string, string> = {
   create_task: "created task",
   move_lead_status: "moved lead",
   draft_email: "drafted email → Approvals",
+  qualify_lead: "qualified lead",
+  research_company: "researched company",
+  find_prospects: "ran scraper",
 };
 
 type ManagerChatProps = {

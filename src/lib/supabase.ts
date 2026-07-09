@@ -90,7 +90,41 @@ export type Approval = {
   meta: Record<string, unknown>;
 };
 
-export type AgentName = "manager" | "qualify" | "research" | "email_draft" | "sequence_draft";
+export type AgentName =
+  | "manager"
+  | "qualify"
+  | "research"
+  | "email_draft"
+  | "sequence_draft"
+  | "scraper";
+
+export type Icp = {
+  id: string;
+  created_at: string;
+  name: string;
+  industry?: string | null;
+  location?: string | null;
+  company_size?: string | null;
+  keywords?: string | null;
+  status: "proposed" | "active" | "paused";
+  source: "ceo" | "manager";
+  rationale?: string | null;
+};
+
+export type Prospect = {
+  id: string;
+  created_at: string;
+  icp_id?: string | null;
+  company: string;
+  domain?: string | null;
+  contact_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  source: "apollo" | "places" | "manual";
+  enrichment: Record<string, unknown>;
+  status: "found" | "enriched" | "promoted" | "discarded";
+  lead_id?: string | null;
+};
 
 export type AgentRun = {
   id: string;
