@@ -73,6 +73,18 @@ export const approvalDecisionSchema = z.object({
   decision: z.enum(["approved", "rejected"]),
 });
 
+export const managerChatSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1).max(6000),
+      }),
+    )
+    .min(1)
+    .max(40),
+});
+
 export const appointmentSchema = z.object({
   name: z.string().min(2).max(120),
   email: z.string().email().max(180),

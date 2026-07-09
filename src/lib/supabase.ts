@@ -27,6 +27,7 @@ export type Lead = {
   floor_price?: number | null;
   max_discount_pct?: number | null;
   concession_notes?: string | null;
+  unsubscribed_at?: string | null;
 };
 
 export type LeadActivity = {
@@ -87,6 +88,25 @@ export type Approval = {
   status: "pending" | "approved" | "rejected";
   decided_at?: string | null;
   meta: Record<string, unknown>;
+};
+
+export type AgentName = "manager" | "qualify" | "research" | "email_draft" | "sequence_draft";
+
+export type AgentRun = {
+  id: string;
+  created_at: string;
+  finished_at?: string | null;
+  lead_id?: string | null;
+  agent: AgentName;
+  status: "running" | "succeeded" | "failed";
+  thread_key?: string | null;
+  input: Record<string, unknown>;
+  output?: Record<string, unknown> | null;
+  model?: string | null;
+  tokens_in?: number | null;
+  tokens_out?: number | null;
+  cost_usd?: number | null;
+  error?: string | null;
 };
 
 export type Appointment = {
