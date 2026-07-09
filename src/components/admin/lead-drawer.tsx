@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Loader2, X } from "lucide-react";
+import { ChevronDown, Loader2, Mail, X } from "lucide-react";
 import { leadStatuses } from "@/lib/site-data";
 import type { Lead } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
 import { ActivityTimeline } from "@/components/admin/activity-timeline";
 import { TaskList } from "@/components/admin/task-list";
+import { EmailComposer } from "@/components/admin/email-composer";
 
 type LeadDrawerProps = {
   lead: Lead;
@@ -19,6 +20,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [showRules, setShowRules] = useState(false);
+  const [composing, setComposing] = useState(false);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -101,14 +103,24 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
               Added {formatDate(lead.created_at)}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="grid size-10 shrink-0 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-foreground"
-            aria-label="Close"
-          >
-            <X className="size-5" />
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setComposing(true)}
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand-deep px-4 text-sm font-bold text-white"
+            >
+              <Mail className="size-4" />
+              Email
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid size-10 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
         </header>
 
         <form action={save} className="grid gap-5 px-6 py-5">
@@ -267,6 +279,10 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
           </div>
         </div>
       </aside>
+
+      {composing ? (
+        <EmailComposer getToken={getToken} lead={lead} onClose={() => setComposing(false)} />
+      ) : null}
     </div>
   );
 }

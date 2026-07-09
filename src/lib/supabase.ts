@@ -50,6 +50,45 @@ export type Task = {
   completed_at?: string | null;
 };
 
+export type Email = {
+  id: string;
+  created_at: string;
+  lead_id?: string | null;
+  direction: "outbound" | "inbound";
+  to_email: string;
+  subject: string;
+  body_text: string;
+  status: "draft" | "approved" | "sent" | "failed" | "cancelled";
+  source: "manual" | "agent" | "sequence";
+  sequence_enrollment_id?: string | null;
+  approved_at?: string | null;
+  sent_at?: string | null;
+  resend_id?: string | null;
+  error?: string | null;
+  meta: Record<string, unknown>;
+};
+
+export type ApprovalType =
+  | "email"
+  | "negotiation_reply"
+  | "document"
+  | "invoice"
+  | "icp"
+  | "sequence_autosend";
+
+export type Approval = {
+  id: string;
+  created_at: string;
+  type: ApprovalType;
+  entity_id?: string | null;
+  lead_id?: string | null;
+  title: string;
+  summary?: string | null;
+  status: "pending" | "approved" | "rejected";
+  decided_at?: string | null;
+  meta: Record<string, unknown>;
+};
+
 export type Appointment = {
   id: string;
   created_at: string;

@@ -49,6 +49,30 @@ export const taskUpdateSchema = z.object({
   dueAt: z.string().datetime({ offset: true }).nullable().optional(),
 });
 
+export const emailCreateSchema = z.object({
+  leadId: z.string().uuid().nullable().optional(),
+  toEmail: z.string().email().max(180),
+  subject: z.string().min(1).max(200),
+  bodyText: z.string().min(1).max(20000),
+  source: z.enum(["manual", "agent", "sequence"]).default("manual"),
+});
+
+export const emailUpdateSchema = z.object({
+  id: z.string().min(1),
+  subject: z.string().min(1).max(200).optional(),
+  bodyText: z.string().min(1).max(20000).optional(),
+  action: z.enum(["cancel"]).optional(),
+});
+
+export const emailSendSchema = z.object({
+  id: z.string().min(1),
+});
+
+export const approvalDecisionSchema = z.object({
+  id: z.string().min(1),
+  decision: z.enum(["approved", "rejected"]),
+});
+
 export const appointmentSchema = z.object({
   name: z.string().min(2).max(120),
   email: z.string().email().max(180),
