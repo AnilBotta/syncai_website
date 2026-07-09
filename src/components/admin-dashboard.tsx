@@ -3,17 +3,37 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Loader2, LogOut, RefreshCcw, Search } from "lucide-react";
-import { leadStatuses } from "@/lib/site-data";
+import { leadStatuses, type LeadStatus } from "@/lib/site-data";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import type { Lead } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
 import { AdminAppointments } from "@/components/admin-appointments";
+import { KanbanBoard } from "@/components/admin/kanban-board";
+import { LeadDrawer } from "@/components/admin/lead-drawer";
+import { TaskList } from "@/components/admin/task-list";
+
+const views = [
+  { value: "pipeline", label: "Pipeline" },
+  { value: "leads", label: "Leads" },
+  { value: "appointments", label: "Appointments" },
+  { value: "tasks", label: "Tasks" },
+] as const;
+
+type View = (typeof views)[number]["value"];
+
+const viewTitles: Record<View, string> = {
+  pipeline: "Pipeline",
+  leads: "Lead List",
+  appointments: "Appointments",
+  tasks: "Tasks",
+};
 
 export function AdminDashboard() {
   const router = useRouter();
-  const [view, setView] = useState<"leads" | "appointments">("leads");
+  const [view, setView] = useState<View>("pipeline");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selected, setSelected] = useState<Lead | null>(null);
+  const [drawerLead, setDrawerLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
@@ -77,6 +97,48 @@ export function AdminDashboard() {
     return () => window.clearTimeout(timer);
   }, [loadLeads]);
 
+  const moveLead = useCallback(
+    async (lead: Lead, nextStatus: LeadStatus) => {
+      if (lead.status === nextStatus) {
+        return;
+      }
+
+      setError("");
+      const previous = leads;
+      // Optimistic move so the card lands in the column immediately.
+      setLeads((current) =>
+        current.map((item) => (item.id === lead.id ? { ...item, status: nextStatus } : item)),
+      );
+
+      try {
+        const token = await getToken();
+        const response = await fetch("/api/admin/leads", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ id: lead.id, status: nextStatus }),
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Could not move lead.");
+        }
+      } catch (moveError) {
+        setLeads(previous);
+        setError(moveError instanceof Error ? moveError.message : "Could not move lead.");
+      }
+    },
+    [leads, getToken],
+  );
+
+  function handleDrawerSaved(updated: Lead) {
+    setDrawerLead(updated);
+    setLeads((current) => current.map((lead) => (lead.id === updated.id ? updated : lead)));
+    setSelected((current) => (current?.id === updated.id ? updated : current));
+  }
+
   async function saveLead(formData: FormData) {
     if (!selected) {
       return;
@@ -121,9 +183,9 @@ export function AdminDashboard() {
   }
 
   function exportCsv() {
-    const headers = ["created_at", "name", "email", "phone", "company", "industry", "interest", "source", "status", "pain_point", "notes"];
+    const headers = ["created_at", "name", "email", "phone", "company", "industry", "interest", "source", "status", "value", "score", "pain_point", "notes"];
     const rows = filtered.map((lead) =>
-      headers.map((header) => JSON.stringify(String(lead[header as keyof Lead] || ""))).join(","),
+      headers.map((header) => JSON.stringify(String(lead[header as keyof Lead] ?? ""))).join(","),
     );
     const csv = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -141,36 +203,34 @@ export function AdminDashboard() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
             <p className="text-sm font-black uppercase tracking-[.22em] text-brand-glow-text">SyncAi Admin</p>
-            <h1 className="mt-1 text-3xl font-black text-foreground">
-              {view === "leads" ? "Lead Dashboard" : "Appointments"}
-            </h1>
+            <h1 className="mt-1 text-3xl font-black text-foreground">{viewTitles[view]}</h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex rounded-full border border-border-subtle bg-bg-elevated p-1">
-              {(["leads", "appointments"] as const).map((tab) => (
+              {views.map((tab) => (
                 <button
-                  key={tab}
+                  key={tab.value}
                   type="button"
-                  onClick={() => setView(tab)}
-                  className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${
-                    view === tab ? "bg-brand-deep text-white" : "text-muted"
+                  onClick={() => setView(tab.value)}
+                  className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+                    view === tab.value ? "bg-brand-deep text-white" : "text-muted"
                   }`}
                 >
-                  {tab}
+                  {tab.label}
                 </button>
               ))}
             </div>
+            {view === "pipeline" || view === "leads" ? (
+              <button onClick={loadLeads} className="inline-flex h-11 items-center gap-2 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm font-bold text-muted">
+                <RefreshCcw className="size-4" />
+                Refresh
+              </button>
+            ) : null}
             {view === "leads" ? (
-              <>
-                <button onClick={loadLeads} className="inline-flex h-11 items-center gap-2 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm font-bold text-muted">
-                  <RefreshCcw className="size-4" />
-                  Refresh
-                </button>
-                <button onClick={exportCsv} className="inline-flex h-11 items-center gap-2 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm font-bold text-muted">
-                  <Download className="size-4" />
-                  CSV
-                </button>
-              </>
+              <button onClick={exportCsv} className="inline-flex h-11 items-center gap-2 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm font-bold text-muted">
+                <Download className="size-4" />
+                CSV
+              </button>
             ) : null}
             <button onClick={signOut} className="inline-flex h-11 items-center gap-2 rounded-full bg-brand-deep px-4 text-sm font-bold text-white">
               <LogOut className="size-4" />
@@ -179,6 +239,31 @@ export function AdminDashboard() {
           </div>
         </div>
       </header>
+
+      {view === "pipeline" ? (
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          {demoMode ? (
+            <div className="mb-5 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-700">
+              Demo mode is active. Add Supabase service keys to show live leads.
+            </div>
+          ) : null}
+          {error ? <p className="mb-5 rounded-2xl bg-red-500/10 p-4 text-sm text-red-600">{error}</p> : null}
+          {loading ? (
+            <div className="flex h-60 items-center justify-center text-muted">
+              <Loader2 className="mr-2 size-5 animate-spin" />
+              Loading pipeline
+            </div>
+          ) : (
+            <KanbanBoard leads={leads} onMove={moveLead} onSelect={setDrawerLead} />
+          )}
+        </main>
+      ) : null}
+
+      {view === "tasks" ? (
+        <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+          <TaskList getToken={getToken} leads={leads} />
+        </main>
+      ) : null}
 
       {view === "appointments" ? <AdminAppointments getToken={getToken} /> : null}
 
@@ -209,12 +294,12 @@ export function AdminDashboard() {
           </div>
 
           {demoMode ? (
-            <div className="mt-4 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-200">
+            <div className="mt-4 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-700">
               Demo mode is active. Add Supabase service keys to show live leads.
             </div>
           ) : null}
 
-          {error ? <p className="mt-4 rounded-2xl bg-red-500/10 p-4 text-sm text-red-300">{error}</p> : null}
+          {error ? <p className="mt-4 rounded-2xl bg-red-500/10 p-4 text-sm text-red-600">{error}</p> : null}
 
           <div className="mt-5 grid gap-3">
             {loading ? (
@@ -260,17 +345,26 @@ export function AdminDashboard() {
                   <h2 className="text-2xl font-black text-foreground">{selected.name}</h2>
                   <p className="mt-1 text-sm text-muted">{formatDate(selected.created_at)}</p>
                 </div>
-                <select
-                  name="status"
-                  defaultValue={selected.status}
-                  className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold capitalize outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
-                >
-                  {leadStatuses.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setDrawerLead(selected)}
+                    className="inline-flex h-11 items-center rounded-full border border-border-subtle px-4 text-sm font-bold text-muted transition hover:text-foreground"
+                  >
+                    Full view
+                  </button>
+                  <select
+                    name="status"
+                    defaultValue={selected.status}
+                    className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold capitalize outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                  >
+                    {leadStatuses.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -321,6 +415,15 @@ export function AdminDashboard() {
           )}
         </section>
       </main>
+
+      {drawerLead ? (
+        <LeadDrawer
+          lead={drawerLead}
+          getToken={getToken}
+          onClose={() => setDrawerLead(null)}
+          onSaved={handleDrawerSaved}
+        />
+      ) : null}
     </div>
   );
 }

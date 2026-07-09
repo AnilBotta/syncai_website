@@ -23,6 +23,30 @@ export const leadUpdateSchema = z.object({
   id: z.string().min(1),
   status: z.enum(["new", "contacted", "qualified", "proposal", "won", "lost"]).optional(),
   notes: z.string().max(4000).optional(),
+  value: z.coerce.number().min(0).max(100000000).optional(),
+  nextAction: z.string().max(500).optional(),
+  floorPrice: z.coerce.number().min(0).max(100000000).nullable().optional(),
+  maxDiscountPct: z.coerce.number().int().min(0).max(100).nullable().optional(),
+  concessionNotes: z.string().max(2000).optional(),
+});
+
+export const activityCreateSchema = z.object({
+  type: z.enum(["note", "system"]).default("note"),
+  title: z.string().min(1).max(200),
+  body: z.string().max(4000).optional().or(z.literal("")),
+});
+
+export const taskCreateSchema = z.object({
+  leadId: z.string().uuid().nullable().optional(),
+  title: z.string().min(1).max(300),
+  dueAt: z.string().datetime({ offset: true }).nullable().optional(),
+});
+
+export const taskUpdateSchema = z.object({
+  id: z.string().min(1),
+  status: z.enum(["open", "done", "dismissed"]).optional(),
+  title: z.string().min(1).max(300).optional(),
+  dueAt: z.string().datetime({ offset: true }).nullable().optional(),
 });
 
 export const appointmentSchema = z.object({
