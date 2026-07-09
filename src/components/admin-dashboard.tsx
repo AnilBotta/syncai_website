@@ -11,10 +11,12 @@ import { AdminAppointments } from "@/components/admin-appointments";
 import { KanbanBoard } from "@/components/admin/kanban-board";
 import { LeadDrawer } from "@/components/admin/lead-drawer";
 import { TaskList } from "@/components/admin/task-list";
+import { ApprovalInbox } from "@/components/admin/approval-inbox";
 
 const views = [
   { value: "pipeline", label: "Pipeline" },
   { value: "leads", label: "Leads" },
+  { value: "approvals", label: "Approvals" },
   { value: "appointments", label: "Appointments" },
   { value: "tasks", label: "Tasks" },
 ] as const;
@@ -24,6 +26,7 @@ type View = (typeof views)[number]["value"];
 const viewTitles: Record<View, string> = {
   pipeline: "Pipeline",
   leads: "Lead List",
+  approvals: "Approval Inbox",
   appointments: "Appointments",
   tasks: "Tasks",
 };
@@ -40,6 +43,7 @@ export function AdminDashboard() {
   const [status, setStatus] = useState("all");
   const [error, setError] = useState("");
   const [demoMode, setDemoMode] = useState(false);
+  const [approvalsCount, setApprovalsCount] = useState(0);
 
   const filtered = useMemo(() => {
     return leads.filter((lead) => {
@@ -96,6 +100,33 @@ export function AdminDashboard() {
 
     return () => window.clearTimeout(timer);
   }, [loadLeads]);
+
+  const loadApprovalsCount = useCallback(async () => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        return;
+      }
+      const response = await fetch("/api/admin/approvals?status=pending", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        return;
+      }
+      const result = await response.json();
+      setApprovalsCount((result.approvals || []).length);
+    } catch {
+      // Non-critical: the badge just won't show a count.
+    }
+  }, [getToken]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadApprovalsCount();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [loadApprovalsCount]);
 
   const moveLead = useCallback(
     async (lead: Lead, nextStatus: LeadStatus) => {
@@ -212,11 +243,20 @@ export function AdminDashboard() {
                   key={tab.value}
                   type="button"
                   onClick={() => setView(tab.value)}
-                  className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+                  className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition ${
                     view === tab.value ? "bg-brand-deep text-white" : "text-muted"
                   }`}
                 >
                   {tab.label}
+                  {tab.value === "approvals" && approvalsCount > 0 ? (
+                    <span
+                      className={`grid min-w-5 place-items-center rounded-full px-1.5 text-[11px] font-black ${
+                        view === tab.value ? "bg-white text-brand-deep" : "bg-brand-deep text-white"
+                      }`}
+                    >
+                      {approvalsCount}
+                    </span>
+                  ) : null}
                 </button>
               ))}
             </div>
@@ -256,6 +296,12 @@ export function AdminDashboard() {
           ) : (
             <KanbanBoard leads={leads} onMove={moveLead} onSelect={setDrawerLead} />
           )}
+        </main>
+      ) : null}
+
+      {view === "approvals" ? (
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <ApprovalInbox getToken={getToken} onCountChange={setApprovalsCount} />
         </main>
       ) : null}
 
