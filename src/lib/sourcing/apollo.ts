@@ -1,7 +1,10 @@
 import type { ProspectCandidate, SourcingResult } from "@/lib/sourcing/types";
 
 const API_KEY = process.env.APOLLO_API_KEY;
-const SEARCH_URL = "https://api.apollo.io/api/v1/mixed_people/search";
+// Apollo's API-key-scoped people search endpoint (as exposed in the API
+// Developer Portal). The plain /mixed_people/search path is the web-app's
+// internal endpoint and is not available to API keys.
+const SEARCH_URL = "https://api.apollo.io/api/v1/mixed_people/api_search";
 
 type ApolloPerson = {
   name?: string;
