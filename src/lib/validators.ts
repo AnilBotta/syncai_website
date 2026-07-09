@@ -73,6 +73,38 @@ export const approvalDecisionSchema = z.object({
   decision: z.enum(["approved", "rejected"]),
 });
 
+export const icpCreateSchema = z.object({
+  name: z.string().min(2).max(120),
+  industry: z.string().max(120).optional().or(z.literal("")),
+  location: z.string().max(160).optional().or(z.literal("")),
+  companySize: z.string().max(80).optional().or(z.literal("")),
+  keywords: z.string().max(300).optional().or(z.literal("")),
+  status: z.enum(["proposed", "active", "paused"]).default("active"),
+});
+
+export const icpUpdateSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(2).max(120).optional(),
+  industry: z.string().max(120).optional(),
+  location: z.string().max(160).optional(),
+  companySize: z.string().max(80).optional(),
+  keywords: z.string().max(300).optional(),
+  status: z.enum(["proposed", "active", "paused"]).optional(),
+});
+
+export const prospectUpdateSchema = z.object({
+  id: z.string().min(1),
+  action: z.enum(["discard"]),
+});
+
+export const agentRunSchema = z.object({
+  agent: z.enum(["qualify", "research", "outreach", "scraper"]),
+  leadId: z.string().uuid().optional(),
+  prospectId: z.string().uuid().optional(),
+  icpId: z.string().uuid().optional(),
+  instruction: z.string().max(500).optional(),
+});
+
 export const managerChatSchema = z.object({
   messages: z
     .array(

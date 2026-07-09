@@ -1,9 +1,12 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Lead } from "@/lib/supabase";
+import type { Icp, Lead } from "@/lib/supabase";
 import { leadStatuses } from "@/lib/site-data";
 import { createApproval } from "@/lib/approvals";
+import { runQualify } from "@/lib/agents/qualify";
+import { runResearch } from "@/lib/agents/research";
+import { runScraper } from "@/lib/agents/scraper";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -226,6 +229,66 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const qualifyLead = tool(
+    async ({ lead }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      const result = await runQualify(supabase, found.id);
+      if (!result.ok) return `Couldn't qualify: ${result.error}`;
+      trace.push({ tool: "qualify_lead", summary: `${found.name}: ${Math.round(result.data.score)}/100` });
+      return `Qualified ${found.name}: ${Math.round(result.data.score)}/100. ${result.data.rationale} Suggested: ${result.data.suggested_next_action}`;
+    },
+    {
+      name: "qualify_lead",
+      description: "Run the qualification agent on a lead — scores it 0-100 and writes the score, rationale, and next action.",
+      schema: z.object({ lead: z.string().describe("Lead id or name") }),
+    },
+  );
+
+  const researchCompany = tool(
+    async ({ lead }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      const result = await runResearch(supabase, {
+        company: found.company || found.name,
+        industry: found.industry,
+        painPoint: found.pain_point,
+        leadId: found.id,
+      });
+      if (!result.ok) return `Couldn't research: ${result.error}`;
+      trace.push({ tool: "research_company", summary: found.company || found.name });
+      return `Research brief for ${found.company || found.name} (${result.data.grounding}):\n${result.data.company_overview}\nTalking points: ${result.data.talking_points.join("; ")}`;
+    },
+    {
+      name: "research_company",
+      description: "Run the research agent on a lead's company — produces a sales brief with pain points and talking points.",
+      schema: z.object({ lead: z.string().describe("Lead id or name") }),
+    },
+  );
+
+  const findProspects = tool(
+    async ({ icp }) => {
+      const { data } = await supabase
+        .from("icps")
+        .select("*")
+        .ilike("name", `%${icp}%`)
+        .limit(1);
+      const target = data?.[0] as Icp | undefined;
+      if (!target) return `No target (ICP) found matching "${icp}". Create one on the Targeting page first.`;
+      if (target.status !== "active") return `The "${target.name}" target is ${target.status}. Activate it before searching.`;
+      const result = await runScraper(supabase, target.id);
+      if (!result.ok) return `Scraper error: ${result.error}`;
+      trace.push({ tool: "find_prospects", summary: `${result.inserted} for ${target.name}` });
+      return result.summary;
+    },
+    {
+      name: "find_prospects",
+      description:
+        "Run the lead scraper for an active target (ICP) by name — finds new prospect companies via Google Places / Apollo.",
+      schema: z.object({ icp: z.string().describe("The name of an active ICP/target to hunt") }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -234,5 +297,8 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     createTask,
     moveLeadStatus,
     draftEmail,
+    qualifyLead,
+    researchCompany,
+    findProspects,
   ];
 }

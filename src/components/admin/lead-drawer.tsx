@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Loader2, Mail, X } from "lucide-react";
+import { ChevronDown, Loader2, Mail, Microscope, Sparkles, X } from "lucide-react";
 import { leadStatuses } from "@/lib/site-data";
 import type { Lead } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
@@ -21,6 +21,45 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
   const [error, setError] = useState("");
   const [showRules, setShowRules] = useState(false);
   const [composing, setComposing] = useState(false);
+  const [agentBusy, setAgentBusy] = useState<"qualify" | "research" | "outreach" | null>(null);
+  const [agentNotice, setAgentNotice] = useState("");
+  const [researchBrief, setResearchBrief] = useState<Record<string, unknown> | null>(null);
+
+  async function runAgent(agent: "qualify" | "research" | "outreach") {
+    setAgentBusy(agent);
+    setAgentNotice("");
+    setError("");
+    try {
+      const token = await getToken();
+      const response = await fetch("/api/admin/agents/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ agent, leadId: lead.id }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok === false) {
+        throw new Error(result.error || `${agent} failed.`);
+      }
+      if (agent === "qualify" && result.data) {
+        onSaved({
+          ...lead,
+          score: Math.round(result.data.score),
+          score_rationale: result.data.rationale,
+          next_action: result.data.suggested_next_action,
+        });
+        setAgentNotice(`Qualified: ${Math.round(result.data.score)}/100.`);
+      } else if (agent === "research" && result.data) {
+        setResearchBrief(result.data);
+        setAgentNotice(`Research brief ready (${result.data.grounding === "web_search" ? "web search" : "model knowledge"}).`);
+      } else if (agent === "outreach") {
+        setAgentNotice("Outreach drafted → Approval Inbox.");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : `${agent} failed.`);
+    } finally {
+      setAgentBusy(null);
+    }
+  }
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -122,6 +161,46 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             </button>
           </div>
         </header>
+
+        <div className="flex flex-wrap items-center gap-2 border-b border-border-subtle px-6 py-3">
+          <button
+            type="button"
+            onClick={() => runAgent("qualify")}
+            disabled={agentBusy !== null}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+          >
+            {agentBusy === "qualify" ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5 text-brand-glow-text" />}
+            Qualify
+          </button>
+          <button
+            type="button"
+            onClick={() => runAgent("research")}
+            disabled={agentBusy !== null}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+          >
+            {agentBusy === "research" ? <Loader2 className="size-3.5 animate-spin" /> : <Microscope className="size-3.5 text-brand-glow-text" />}
+            Research
+          </button>
+          <button
+            type="button"
+            onClick={() => runAgent("outreach")}
+            disabled={agentBusy !== null}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+          >
+            {agentBusy === "outreach" ? <Loader2 className="size-3.5 animate-spin" /> : <Mail className="size-3.5 text-brand-glow-text" />}
+            Draft outreach
+          </button>
+          {agentNotice ? <span className="text-xs font-bold text-emerald-700">{agentNotice}</span> : null}
+        </div>
+
+        {researchBrief ? (
+          <div className="border-b border-border-subtle px-6 py-4">
+            <p className="text-sm font-black text-foreground">Research brief</p>
+            <pre className="mt-2 max-h-56 overflow-auto rounded-2xl bg-surface p-3 text-xs leading-5 text-muted">
+              {JSON.stringify(researchBrief, null, 2)}
+            </pre>
+          </div>
+        ) : null}
 
         <form action={save} className="grid gap-5 px-6 py-5">
           <div className="grid gap-4 sm:grid-cols-2">

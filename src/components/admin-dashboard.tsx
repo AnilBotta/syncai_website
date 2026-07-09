@@ -13,12 +13,16 @@ import { LeadDrawer } from "@/components/admin/lead-drawer";
 import { TaskList } from "@/components/admin/task-list";
 import { ApprovalInbox } from "@/components/admin/approval-inbox";
 import { ManagerChat } from "@/components/admin/manager-chat";
+import { Targeting } from "@/components/admin/targeting";
+import { ProspectsTable } from "@/components/admin/prospects-table";
 
 const views = [
   { value: "manager", label: "Manager" },
   { value: "pipeline", label: "Pipeline" },
   { value: "leads", label: "Leads" },
   { value: "approvals", label: "Approvals" },
+  { value: "targeting", label: "Targeting" },
+  { value: "prospects", label: "Prospects" },
   { value: "appointments", label: "Appointments" },
   { value: "tasks", label: "Tasks" },
 ] as const;
@@ -30,6 +34,8 @@ const viewTitles: Record<View, string> = {
   pipeline: "Pipeline",
   leads: "Lead List",
   approvals: "Approval Inbox",
+  targeting: "Targeting",
+  prospects: "Prospects",
   appointments: "Appointments",
   tasks: "Tasks",
 };
@@ -311,6 +317,18 @@ export function AdminDashboard() {
       {view === "approvals" ? (
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <ApprovalInbox getToken={getToken} onCountChange={setApprovalsCount} />
+        </main>
+      ) : null}
+
+      {view === "targeting" ? (
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <Targeting getToken={getToken} />
+        </main>
+      ) : null}
+
+      {view === "prospects" ? (
+        <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+          <ProspectsTable getToken={getToken} />
         </main>
       ) : null}
 
