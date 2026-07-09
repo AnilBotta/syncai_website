@@ -12,8 +12,10 @@ import { KanbanBoard } from "@/components/admin/kanban-board";
 import { LeadDrawer } from "@/components/admin/lead-drawer";
 import { TaskList } from "@/components/admin/task-list";
 import { ApprovalInbox } from "@/components/admin/approval-inbox";
+import { ManagerChat } from "@/components/admin/manager-chat";
 
 const views = [
+  { value: "manager", label: "Manager" },
   { value: "pipeline", label: "Pipeline" },
   { value: "leads", label: "Leads" },
   { value: "approvals", label: "Approvals" },
@@ -24,6 +26,7 @@ const views = [
 type View = (typeof views)[number]["value"];
 
 const viewTitles: Record<View, string> = {
+  manager: "Manager",
   pipeline: "Pipeline",
   leads: "Lead List",
   approvals: "Approval Inbox",
@@ -33,7 +36,7 @@ const viewTitles: Record<View, string> = {
 
 export function AdminDashboard() {
   const router = useRouter();
-  const [view, setView] = useState<View>("pipeline");
+  const [view, setView] = useState<View>("manager");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selected, setSelected] = useState<Lead | null>(null);
   const [drawerLead, setDrawerLead] = useState<Lead | null>(null);
@@ -279,6 +282,12 @@ export function AdminDashboard() {
           </div>
         </div>
       </header>
+
+      {view === "manager" ? (
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <ManagerChat getToken={getToken} />
+        </main>
+      ) : null}
 
       {view === "pipeline" ? (
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
