@@ -1,49 +1,39 @@
 import type { ProspectCandidate, SourcingResult } from "@/lib/sourcing/types";
 
 const API_KEY = process.env.APOLLO_API_KEY;
-// Apollo's API-key-scoped people search endpoint (as exposed in the API
-// Developer Portal). The plain /mixed_people/search path is the web-app's
-// internal endpoint and is not available to API keys.
-const SEARCH_URL = "https://api.apollo.io/api/v1/mixed_people/api_search";
+// Organization (company) search — available on Apollo's free API tier.
+// People search (mixed_people/api_search), which returns verified personal
+// emails, is gated to paid plans. So we discover companies here; contact emails
+// come from a paid Apollo plan, Google Places phone numbers, or inbound leads.
+const SEARCH_URL = "https://api.apollo.io/api/v1/organizations/search";
 
-type ApolloPerson = {
+type ApolloOrg = {
   name?: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string | null;
-  organization?: { name?: string; website_url?: string; primary_domain?: string; phone?: string };
-  account?: { name?: string; domain?: string };
-  title?: string;
+  website_url?: string;
+  primary_domain?: string;
+  phone?: string;
+  primary_phone?: { number?: string };
 };
 
-type ApolloResponse = { people?: ApolloPerson[] };
+type ApolloResponse = { organizations?: ApolloOrg[]; accounts?: ApolloOrg[] };
 
 /**
- * Finds B2B contacts via Apollo's people search. Apollo provides verified
- * business emails (subject to plan credits). Degrades to an empty result with
- * a note when no API key is set or the request fails.
- *
- * `personTitles` narrows to decision-makers (owner, manager, director…).
+ * Finds companies via Apollo's organization search (free-tier accessible).
+ * Returns company + domain + phone; no personal emails (that needs a paid plan).
+ * Degrades to an empty result with a note when unconfigured or on error.
  */
 export async function searchApollo(
-  params: { industry?: string | null; location?: string | null; keywords?: string | null; personTitles?: string[] },
+  params: { industry?: string | null; location?: string | null; keywords?: string | null },
   limit = 20,
 ): Promise<SourcingResult> {
   if (!API_KEY) {
     return { candidates: [], note: "Apollo is not configured (no APOLLO_API_KEY)." };
   }
 
-  const body: Record<string, unknown> = {
-    page: 1,
-    per_page: Math.min(limit, 25),
-  };
-  if (params.location) body.person_locations = [params.location];
-  if (params.keywords || params.industry) {
-    body.q_keywords = [params.keywords, params.industry].filter(Boolean).join(" ");
-  }
-  body.person_titles = params.personTitles?.length
-    ? params.personTitles
-    : ["owner", "founder", "ceo", "managing director", "director", "manager"];
+  const body: Record<string, unknown> = { page: 1, per_page: Math.min(limit, 25) };
+  if (params.location) body.organization_locations = [params.location];
+  const keywords = [params.keywords, params.industry].filter(Boolean).join(" ").trim();
+  if (keywords) body.q_organization_keyword_tags = [keywords];
 
   try {
     const response = await fetch(SEARCH_URL, {
@@ -57,28 +47,32 @@ export async function searchApollo(
     });
 
     if (!response.ok) {
-      return { candidates: [], note: `Apollo API error (${response.status}).` };
+      return {
+        candidates: [],
+        note:
+          response.status === 403
+            ? "Apollo rejected the request (403) — company search may need a paid plan or you're out of credits."
+            : `Apollo API error (${response.status}).`,
+      };
     }
 
     const data = (await response.json()) as ApolloResponse;
+    const orgs = data.organizations || data.accounts || [];
     const candidates: ProspectCandidate[] = [];
-    for (const p of data.people || []) {
-      const company = p.organization?.name || p.account?.name;
-      if (!company) continue;
-      const name = p.name || [p.first_name, p.last_name].filter(Boolean).join(" ") || null;
+    for (const o of orgs) {
+      if (!o.name) continue;
       candidates.push({
-        company,
-        domain: p.organization?.primary_domain || p.account?.domain || null,
-        contactName: name,
-        // Apollo often masks the email until "revealed"; keep whatever it returns.
-        email: p.email && !p.email.includes("email_not_unlocked") ? p.email : null,
-        phone: p.organization?.phone || null,
+        company: o.name,
+        domain: o.primary_domain || null,
+        contactName: null,
+        email: null,
+        phone: o.phone || o.primary_phone?.number || null,
         source: "apollo",
-        enrichment: { title: p.title || null, website: p.organization?.website_url || null },
+        enrichment: { website: o.website_url || null },
       });
     }
 
-    return { candidates };
+    return { candidates, note: candidates.length ? undefined : "Apollo returned no companies for this search." };
   } catch (error) {
     return {
       candidates: [],
