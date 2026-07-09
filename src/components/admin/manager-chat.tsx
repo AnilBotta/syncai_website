@@ -35,6 +35,7 @@ const toolLabels: Record<string, string> = {
   draft_email: "drafted email → Approvals",
   qualify_lead: "qualified lead",
   research_company: "researched company",
+  create_target: "created target",
   find_prospects: "ran scraper",
 };
 

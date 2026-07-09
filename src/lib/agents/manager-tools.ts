@@ -266,15 +266,47 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const createTarget = tool(
+    async ({ name, industry, location, keywords }) => {
+      const { data, error } = await supabase
+        .from("icps")
+        .insert({
+          name,
+          industry: industry || null,
+          location: location || null,
+          keywords: keywords || null,
+          status: "active",
+          source: "ceo",
+        })
+        .select()
+        .single();
+      if (error) return `Could not create target: ${error.message}`;
+      trace.push({ tool: "create_target", summary: name });
+      return `Created and activated target "${data.name}". You can now ask me to find prospects for it.`;
+    },
+    {
+      name: "create_target",
+      description:
+        "Create a new target (ICP) to hunt for — e.g. an industry + location combination like 'real estate agencies in Brampton'. Creates it active and ready to search immediately. Use this when the CEO asks to find/scrape leads in a niche that doesn't exist as a target yet.",
+      schema: z.object({
+        name: z.string().describe("Short name for the target, e.g. 'Real estate — Brampton'"),
+        industry: z.string().optional().describe("Industry, e.g. 'real estate agency'"),
+        location: z.string().optional().describe("Location, e.g. 'Brampton, ON'"),
+        keywords: z.string().optional().describe("Extra search keywords"),
+      }),
+    },
+  );
+
   const findProspects = tool(
     async ({ icp }) => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("icps")
         .select("*")
         .ilike("name", `%${icp}%`)
         .limit(1);
+      if (error) return `Error looking up targets: ${error.message}`;
       const target = data?.[0] as Icp | undefined;
-      if (!target) return `No target (ICP) found matching "${icp}". Create one on the Targeting page first.`;
+      if (!target) return `No target (ICP) found matching "${icp}". Use create_target first to set one up, then search again.`;
       if (target.status !== "active") return `The "${target.name}" target is ${target.status}. Activate it before searching.`;
       const result = await runScraper(supabase, target.id);
       if (!result.ok) return `Scraper error: ${result.error}`;
@@ -299,6 +331,7 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     draftEmail,
     qualifyLead,
     researchCompany,
+    createTarget,
     findProspects,
   ];
 }
