@@ -66,12 +66,25 @@ export async function runScraper(supabase: SupabaseClient, icpId: string) {
     for (const row of existing || []) existingEmails.add((row.email || "").toLowerCase());
   }
 
+  // De-dupe against prospects already found for this ICP in prior runs. (We
+  // filter in code rather than upsert-on-conflict because the unique index is
+  // partial — WHERE domain is not null — which Postgres can't use as an
+  // ON CONFLICT arbiter.)
+  const existingDomains = new Set<string>();
+  const { data: priorProspects } = await supabase
+    .from("prospects")
+    .select("domain")
+    .eq("icp_id", icpId);
+  for (const row of priorProspects || []) {
+    if (row.domain) existingDomains.add(row.domain);
+  }
+
   const seenDomains = new Set<string>();
   const rows = candidates
     .filter((c) => {
       if (c.email && existingEmails.has(c.email.toLowerCase())) return false;
       if (c.domain) {
-        if (seenDomains.has(c.domain)) return false;
+        if (existingDomains.has(c.domain) || seenDomains.has(c.domain)) return false;
         seenDomains.add(c.domain);
       }
       return true;
@@ -91,11 +104,7 @@ export async function runScraper(supabase: SupabaseClient, icpId: string) {
 
   let inserted = 0;
   if (rows.length) {
-    // Ignore rows that collide with the (icp_id, domain) unique index from prior runs.
-    const { data, error } = await supabase
-      .from("prospects")
-      .upsert(rows, { onConflict: "icp_id,domain", ignoreDuplicates: true })
-      .select("id");
+    const { data, error } = await supabase.from("prospects").insert(rows).select("id");
     if (error) {
       if (runId) {
         await supabase
