@@ -126,6 +126,34 @@ export type Prospect = {
   lead_id?: string | null;
 };
 
+export type Sequence = {
+  id: string;
+  created_at: string;
+  name: string;
+  description?: string | null;
+  active: boolean;
+  auto_send: boolean;
+};
+
+export type SequenceStep = {
+  id: string;
+  sequence_id: string;
+  step_order: number;
+  day_offset: number;
+  intent: string;
+  instruction: string;
+};
+
+export type SequenceEnrollment = {
+  id: string;
+  created_at: string;
+  lead_id: string;
+  sequence_id: string;
+  status: "active" | "paused" | "completed" | "cancelled";
+  current_step: number;
+  next_run_at: string;
+};
+
 export type AgentRun = {
   id: string;
   created_at: string;

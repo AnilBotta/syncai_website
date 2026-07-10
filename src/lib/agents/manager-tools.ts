@@ -321,6 +321,53 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const enrollInSequence = tool(
+    async ({ lead, sequence }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      if (found.unsubscribed_at) return `${found.name} has unsubscribed — I won't enroll them.`;
+
+      const seqQuery = supabase.from("sequences").select("id, name").eq("active", true);
+      const { data: seqs } = sequence
+        ? await seqQuery.ilike("name", `%${sequence}%`).limit(1)
+        : await seqQuery.order("created_at", { ascending: true }).limit(1);
+      const seq = seqs?.[0];
+      if (!seq) return sequence ? `No active sequence matching "${sequence}".` : "No active sequences exist yet.";
+
+      const { data: firstStep } = await supabase
+        .from("sequence_steps")
+        .select("day_offset")
+        .eq("sequence_id", seq.id)
+        .order("step_order", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      const nextRunAt = new Date(Date.now() + ((firstStep?.day_offset as number) || 0) * 86400000).toISOString();
+
+      const { error } = await supabase.from("sequence_enrollments").insert({
+        lead_id: found.id,
+        sequence_id: seq.id,
+        status: "active",
+        current_step: 0,
+        next_run_at: nextRunAt,
+      });
+      if (error) {
+        if (error.code === "23505") return `${found.name} is already enrolled in "${seq.name}".`;
+        return `Could not enroll: ${error.message}`;
+      }
+      trace.push({ tool: "enroll_in_sequence", summary: `${found.name} → ${seq.name}` });
+      return `Enrolled ${found.name} in "${seq.name}". The first email will draft into your Approval Inbox on the next daily run.`;
+    },
+    {
+      name: "enroll_in_sequence",
+      description:
+        "Enroll a lead in a nurture sequence so it gets scheduled follow-up emails (drafted for approval). Defaults to the standard sequence if none is named.",
+      schema: z.object({
+        lead: z.string().describe("Lead id or name"),
+        sequence: z.string().optional().describe("Optional sequence name; defaults to the standard nurture sequence"),
+      }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -333,5 +380,6 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     researchCompany,
     createTarget,
     findProspects,
+    enrollInSequence,
   ];
 }

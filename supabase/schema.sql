@@ -274,3 +274,63 @@ create unique index if not exists prospects_domain_icp_unique
   on public.prospects (icp_id, domain)
   where domain is not null;
 create index if not exists prospects_status_idx on public.prospects (status, created_at desc);
+
+create table if not exists public.sequences (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  name text not null,
+  description text,
+  active boolean not null default true,
+  auto_send boolean not null default false
+);
+
+alter table public.sequences enable row level security;
+drop policy if exists "Admin service role can manage sequences" on public.sequences;
+create policy "Admin service role can manage sequences"
+on public.sequences for all
+using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+
+create table if not exists public.sequence_steps (
+  id uuid primary key default gen_random_uuid(),
+  sequence_id uuid not null references public.sequences(id) on delete cascade,
+  step_order int not null,
+  day_offset int not null,
+  intent text not null default 'follow_up',
+  instruction text not null
+);
+
+alter table public.sequence_steps enable row level security;
+drop policy if exists "Admin service role can manage sequence_steps" on public.sequence_steps;
+create policy "Admin service role can manage sequence_steps"
+on public.sequence_steps for all
+using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+
+create index if not exists sequence_steps_seq_idx on public.sequence_steps (sequence_id, step_order);
+
+create table if not exists public.sequence_enrollments (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  lead_id uuid not null references public.leads(id) on delete cascade,
+  sequence_id uuid not null references public.sequences(id) on delete cascade,
+  status text not null default 'active' check (status in ('active', 'paused', 'completed', 'cancelled')),
+  current_step int not null default 0,
+  next_run_at timestamptz not null
+);
+
+alter table public.sequence_enrollments enable row level security;
+drop policy if exists "Admin service role can manage sequence_enrollments" on public.sequence_enrollments;
+create policy "Admin service role can manage sequence_enrollments"
+on public.sequence_enrollments for all
+using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+
+create unique index if not exists sequence_enrollments_active_unique
+  on public.sequence_enrollments (lead_id, sequence_id)
+  where status = 'active';
+create index if not exists sequence_enrollments_due_idx
+  on public.sequence_enrollments (status, next_run_at);
+
+alter table public.emails
+  drop constraint if exists emails_sequence_enrollment_fk;
+alter table public.emails
+  add constraint emails_sequence_enrollment_fk
+  foreign key (sequence_enrollment_id) references public.sequence_enrollments(id) on delete set null;
