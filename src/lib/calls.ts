@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Call, Lead } from "@/lib/supabase";
 import { getVoiceProvider, hasVoiceConfig } from "@/lib/voice";
 import type { NormalizedCallEvent } from "@/lib/voice/types";
+import { normalizePhoneE164 } from "@/lib/phone";
 import { notifyCeo } from "@/lib/telegram";
 
 export type InitiateCallResult =
@@ -27,11 +28,20 @@ export async function initiateCallForLead(
   if (!lead) return { ok: false, error: "Lead not found." };
   if (!lead.phone) return { ok: false, error: `${lead.name} has no phone number on file.` };
 
+  // Normalize to E.164 (e.g. "13657777336" -> "+13657777336") so providers accept it.
+  const toNumber = normalizePhoneE164(lead.phone);
+  if (!toNumber) {
+    return {
+      ok: false,
+      error: `${lead.name}'s phone number ("${lead.phone}") isn't a valid number I can dial. Please use a 10-digit North American number, or the full international format with a country code (e.g. +1 416 555 1234).`,
+    };
+  }
+
   const provider = getVoiceProvider();
   const result = await provider.initiateCall({
     leadId: lead.id,
     leadName: lead.name,
-    toNumber: lead.phone,
+    toNumber,
     context: context || lead.pain_point,
   });
   if (!result.ok) return { ok: false, error: result.error };
@@ -43,10 +53,10 @@ export async function initiateCallForLead(
       provider: provider.name,
       provider_call_id: result.providerCallId,
       direction: "outbound",
-      to_number: lead.phone,
+      to_number: toNumber,
       from_number: result.fromNumber ?? null,
       status: "queued",
-      meta: { context: context || null },
+      meta: { context: context || null, original_number: lead.phone },
     })
     .select()
     .single<Call>();
