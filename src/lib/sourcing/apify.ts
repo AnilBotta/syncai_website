@@ -5,9 +5,13 @@ const TOKEN = process.env.APIFY_TOKEN;
 // (company + phone + website, no emails). For emails, set APIFY_ACTOR_ID to a
 // contact-details actor like "lukaskrivka~google-maps-with-contact-details"
 // (slower — it visits each website to extract emails).
-const ACTOR_ID = process.env.APIFY_ACTOR_ID || "compass~crawler-google-places";
-// Bound the run so it fits inside the serverless request budget.
+// The API path needs a tilde separator; accept the store's slash form too.
+const ACTOR_ID = (process.env.APIFY_ACTOR_ID || "compass~crawler-google-places").replace("/", "~");
+// Bound the run so it fits inside the serverless request budget. The
+// contact-details actor takes ~12s per place, so cap the batch to stay well
+// under the route's maxDuration.
 const RUN_TIMEOUT_SECS = 100;
+const MAX_PLACES = 8;
 
 type ApifyItem = {
   title?: string;
@@ -48,7 +52,7 @@ export async function searchApify(query: string, limit = 15): Promise<SourcingRe
 
   const input = {
     searchStringsArray: [query],
-    maxCrawledPlacesPerSearch: Math.min(limit, 10),
+    maxCrawledPlacesPerSearch: Math.min(limit, MAX_PLACES),
     language: "en",
     // Honored by contact-detail actors; ignored by the base Maps actor.
     scrapeContacts: true,
