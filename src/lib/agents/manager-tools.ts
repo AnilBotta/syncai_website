@@ -7,6 +7,7 @@ import { createApproval } from "@/lib/approvals";
 import { runQualify } from "@/lib/agents/qualify";
 import { runResearch } from "@/lib/agents/research";
 import { runScraper } from "@/lib/agents/scraper";
+import { runNegotiator } from "@/lib/agents/negotiator";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -368,6 +369,29 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const negotiate = tool(
+    async ({ lead, threadContext }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      const result = await runNegotiator(supabase, { leadId: found.id, threadContext });
+      if (!result.ok) return `Couldn't negotiate: ${result.error}`;
+      trace.push({ tool: "negotiate", summary: `${found.name}: ${result.data.escalated ? "escalated" : "drafted"}` });
+      if (result.data.escalated) {
+        return `This needs your call, not mine: ${result.data.reason || result.data.rationale}. I've created a task for you instead of drafting anything.`;
+      }
+      return `Drafted a counter-offer to ${found.name} and put it in the Approval Inbox (never sends without your OK). ${result.data.rationale}`;
+    },
+    {
+      name: "negotiate",
+      description:
+        "Analyze a negotiation with a lead against their deal guardrails (floor price, max discount, allowed concessions) and either draft a compliant counter-offer into the Approval Inbox, or escalate to the CEO if their ask breaks the rules.",
+      schema: z.object({
+        lead: z.string().describe("Lead id or name"),
+        threadContext: z.string().describe("What the prospect asked for / said — paste their message or summarize it"),
+      }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -381,5 +405,6 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     createTarget,
     findProspects,
     enrollInSequence,
+    negotiate,
   ];
 }

@@ -177,7 +177,7 @@ create table if not exists public.agent_runs (
   created_at timestamptz not null default now(),
   finished_at timestamptz,
   lead_id uuid references public.leads(id) on delete cascade,
-  agent text not null check (agent in ('manager', 'qualify', 'research', 'email_draft', 'sequence_draft', 'scraper')),
+  agent text not null check (agent in ('manager', 'qualify', 'research', 'email_draft', 'sequence_draft', 'scraper', 'negotiate')),
   status text not null default 'running' check (status in ('running', 'succeeded', 'failed')),
   thread_key text,
   input jsonb not null default '{}'::jsonb,

@@ -94,7 +94,7 @@ export async function PATCH(request: Request) {
       .update({ status: "rejected", decided_at: now })
       .eq("id", approval.id);
     // Cancel the underlying draft email so it can't be sent later.
-    if (approval.type === "email" && approval.entity_id) {
+    if ((approval.type === "email" || approval.type === "negotiation_reply") && approval.entity_id) {
       await supabase
         .from("emails")
         .update({ status: "cancelled" })
@@ -104,8 +104,9 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  // Approved. For emails, approving IS sending.
-  if (approval.type === "email" && approval.entity_id) {
+  // Approved. For emails and negotiation replies (which are emails under the
+  // hood), approving IS sending.
+  if ((approval.type === "email" || approval.type === "negotiation_reply") && approval.entity_id) {
     const result = await sendEmailRecord(supabase, approval.entity_id);
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: result.status });

@@ -96,7 +96,8 @@ export type AgentName =
   | "research"
   | "email_draft"
   | "sequence_draft"
-  | "scraper";
+  | "scraper"
+  | "negotiate";
 
 export type Icp = {
   id: string;

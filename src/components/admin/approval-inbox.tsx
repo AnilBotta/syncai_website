@@ -61,7 +61,8 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
     let cancelled = false;
 
     const timer = window.setTimeout(() => {
-      if (!selected || selected.type !== "email" || !selected.entity_id) {
+      const previewable = selected?.type === "email" || selected?.type === "negotiation_reply";
+      if (!selected || !previewable || !selected.entity_id) {
         setEmailPreview(null);
         setEditing(false);
         return;
@@ -231,6 +232,25 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
               ) : null}
             </div>
 
+            {selected.type === "negotiation_reply" ? (
+              <div className="mt-4 grid gap-2 rounded-2xl border border-border-subtle bg-surface p-4 text-sm">
+                <p className="text-xs font-black uppercase tracking-wider text-muted">Negotiation math</p>
+                {typeof selected.meta?.their_ask === "string" ? (
+                  <p><span className="font-bold text-foreground">Their ask:</span> {String(selected.meta.their_ask)}</p>
+                ) : null}
+                {selected.meta?.proposed_price != null ? (
+                  <p>
+                    <span className="font-bold text-foreground">Proposed:</span> ${String(selected.meta.proposed_price)}
+                    {selected.meta?.discount_pct != null ? ` (${String(selected.meta.discount_pct)}% off)` : ""}
+                    {selected.meta?.floor_price != null ? ` · floor $${String(selected.meta.floor_price)} ✓` : ""}
+                  </p>
+                ) : null}
+                {typeof selected.meta?.rationale === "string" ? (
+                  <p className="text-muted">{String(selected.meta.rationale)}</p>
+                ) : null}
+              </div>
+            ) : null}
+
             {emailPreview ? (
               editing ? (
                 <div className="mt-4 grid gap-3">
@@ -272,7 +292,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                   </p>
                 </div>
               )
-            ) : selected.type === "email" ? (
+            ) : selected.type === "email" || selected.type === "negotiation_reply" ? (
               <div className="mt-4 flex h-24 items-center justify-center text-sm text-muted">
                 <Loader2 className="mr-2 size-4 animate-spin" />
                 Loading email

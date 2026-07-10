@@ -16,8 +16,10 @@ import { ManagerChat } from "@/components/admin/manager-chat";
 import { Targeting } from "@/components/admin/targeting";
 import { ProspectsTable } from "@/components/admin/prospects-table";
 import { Sequences } from "@/components/admin/sequences";
+import { Overview } from "@/components/admin/overview";
 
 const views = [
+  { value: "overview", label: "Overview" },
   { value: "manager", label: "Manager" },
   { value: "pipeline", label: "Pipeline" },
   { value: "leads", label: "Leads" },
@@ -32,6 +34,7 @@ const views = [
 type View = (typeof views)[number]["value"];
 
 const viewTitles: Record<View, string> = {
+  overview: "Overview",
   manager: "Manager",
   pipeline: "Pipeline",
   leads: "Lead List",
@@ -45,7 +48,7 @@ const viewTitles: Record<View, string> = {
 
 export function AdminDashboard() {
   const router = useRouter();
-  const [view, setView] = useState<View>("manager");
+  const [view, setView] = useState<View>("overview");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selected, setSelected] = useState<Lead | null>(null);
   const [drawerLead, setDrawerLead] = useState<Lead | null>(null);
@@ -291,6 +294,12 @@ export function AdminDashboard() {
           </div>
         </div>
       </header>
+
+      {view === "overview" ? (
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <Overview getToken={getToken} />
+        </main>
+      ) : null}
 
       {view === "manager" ? (
         <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
