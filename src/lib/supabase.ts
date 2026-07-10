@@ -145,6 +145,26 @@ export type Expense = {
   external_id?: string | null;
 };
 
+export type Call = {
+  id: string;
+  created_at: string;
+  lead_id?: string | null;
+  provider: string;
+  provider_call_id?: string | null;
+  direction: "outbound" | "inbound";
+  to_number?: string | null;
+  from_number?: string | null;
+  status: "queued" | "ringing" | "in_progress" | "completed" | "failed" | "no_answer";
+  started_at?: string | null;
+  ended_at?: string | null;
+  duration_seconds?: number | null;
+  transcript?: string | null;
+  summary?: string | null;
+  recording_url?: string | null;
+  outcome?: string | null;
+  meta: Record<string, unknown>;
+};
+
 export type DocumentType = "proposal" | "agreement" | "onboarding" | "offer_letter";
 
 export type Document = {

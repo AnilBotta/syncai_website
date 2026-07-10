@@ -167,6 +167,11 @@ export const expenseUpdateSchema = z.object({
   action: z.literal("delete"),
 });
 
+export const callInitiateSchema = z.object({
+  leadId: z.string().uuid(),
+  context: z.string().max(2000).optional().or(z.literal("")),
+});
+
 export const managerChatSchema = z.object({
   messages: z
     .array(

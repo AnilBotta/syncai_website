@@ -11,6 +11,8 @@ import { runNegotiator } from "@/lib/agents/negotiator";
 import { runDocument } from "@/lib/agents/document";
 import { createInvoiceDraft } from "@/lib/invoices";
 import { getFinanceSummary } from "@/lib/finance";
+import { initiateCallForLead } from "@/lib/calls";
+import { hasVoiceConfig } from "@/lib/voice";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -640,6 +642,28 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const callLead = tool(
+    async ({ lead, context }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      if (!hasVoiceConfig()) return "No voice provider is configured yet — add Retell or Vapi keys to place calls.";
+      if (!found.phone) return `${found.name} has no phone number on file, so I can't call them.`;
+      const result = await initiateCallForLead(supabase, found.id, context);
+      if (!result.ok) return `Couldn't start the call: ${result.error}`;
+      trace.push({ tool: "call_lead", summary: `calling ${found.name}` });
+      return `Calling ${found.name} now via ${result.provider}. I'll log the transcript and outcome to their timeline and ping you when it wraps up.`;
+    },
+    {
+      name: "call_lead",
+      description:
+        "Place an outbound phone call to a lead using the configured AI voice agent (Retell/Vapi). Use when the CEO asks to call a lead. Only works if the lead has a phone number and a voice provider is set up.",
+      schema: z.object({
+        lead: z.string().describe("Lead id or name"),
+        context: z.string().optional().describe("Optional goal/context for the call, e.g. 'confirm the Tuesday demo'"),
+      }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -661,5 +685,6 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     getSchedule,
     getAgentActivity,
     getProspecting,
+    callLead,
   ];
 }
