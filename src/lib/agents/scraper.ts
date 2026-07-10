@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Icp } from "@/lib/supabase";
+import { searchApify } from "@/lib/sourcing/apify";
 import { searchPlaces } from "@/lib/sourcing/places";
 import { searchApollo } from "@/lib/sourcing/apollo";
 import type { ProspectCandidate } from "@/lib/sourcing/types";
@@ -7,9 +8,10 @@ import type { ProspectCandidate } from "@/lib/sourcing/types";
 const MAX_PER_RUN = 25;
 
 /**
- * Finds prospects for one active ICP using whichever sourcing providers are
- * configured (Google Places for local businesses, Apollo for B2B contacts),
- * de-dupes, and inserts them as `found` prospects. Never emails anyone.
+ * Finds prospects for one active ICP. Tries the configured sourcing providers in
+ * priority order and uses the FIRST that returns results — Apify (Google Maps,
+ * can include emails) → Google Places (Maps, no emails) → Apollo (company
+ * search). De-dupes and inserts as `found` prospects. Never emails anyone.
  */
 export async function runScraper(supabase: SupabaseClient, icpId: string) {
   const { data: icp } = await supabase.from("icps").select("*").eq("id", icpId).single<Icp>();
@@ -18,24 +20,31 @@ export async function runScraper(supabase: SupabaseClient, icpId: string) {
   const notes: string[] = [];
   const candidates: ProspectCandidate[] = [];
 
-  // Places: great for local-service niches. Query "<industry/keywords> in <location>".
+  // Search string for Maps-style providers: "<industry/keywords> in <location>".
   const placesQuery = [icp.keywords || icp.industry, icp.location ? `in ${icp.location}` : ""]
     .filter(Boolean)
     .join(" ")
     .trim();
-  if (placesQuery) {
-    const places = await searchPlaces(placesQuery, MAX_PER_RUN);
-    candidates.push(...places.candidates);
-    if (places.note) notes.push(places.note);
-  }
 
-  // Apollo: verified B2B contacts with emails.
-  const apollo = await searchApollo(
-    { industry: icp.industry, location: icp.location, keywords: icp.keywords },
-    MAX_PER_RUN,
-  );
-  candidates.push(...apollo.candidates);
-  if (apollo.note) notes.push(apollo.note);
+  // Priority order — first provider that returns candidates wins. Each provider
+  // self-checks its own key and returns an empty result + note when unconfigured.
+  const providers: Array<{ name: string; run: () => Promise<{ candidates: ProspectCandidate[]; note?: string }> }> = [
+    { name: "apify", run: () => searchApify(placesQuery, MAX_PER_RUN) },
+    { name: "places", run: () => searchPlaces(placesQuery, MAX_PER_RUN) },
+    {
+      name: "apollo",
+      run: () => searchApollo({ industry: icp.industry, location: icp.location, keywords: icp.keywords }, MAX_PER_RUN),
+    },
+  ];
+
+  for (const provider of providers) {
+    const result = await provider.run();
+    if (result.note) notes.push(`${provider.name}: ${result.note}`);
+    if (result.candidates.length) {
+      candidates.push(...result.candidates);
+      break;
+    }
+  }
 
   const { data: run } = await supabase
     .from("agent_runs")
