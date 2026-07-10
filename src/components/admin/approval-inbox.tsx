@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, FileText, Loader2, Mail, Pencil, X } from "lucide-react";
-import type { Approval, Document, Email } from "@/lib/supabase";
+import { Check, FileText, Loader2, Mail, Pencil, Receipt, X } from "lucide-react";
+import type { Approval, Document, Email, Invoice } from "@/lib/supabase";
+
+const cad = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 2 });
 import { formatDate } from "@/lib/utils";
 
 type ApprovalInboxProps = {
@@ -15,6 +17,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
   const [selected, setSelected] = useState<Approval | null>(null);
   const [emailPreview, setEmailPreview] = useState<Email | null>(null);
   const [docPreview, setDocPreview] = useState<Document | null>(null);
+  const [invoicePreview, setInvoicePreview] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -64,9 +67,11 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
     const timer = window.setTimeout(() => {
       const isEmail = selected?.type === "email" || selected?.type === "negotiation_reply";
       const isDoc = selected?.type === "document";
-      if (!selected || (!isEmail && !isDoc) || !selected.entity_id) {
+      const isInvoice = selected?.type === "invoice";
+      if (!selected || (!isEmail && !isDoc && !isInvoice) || !selected.entity_id) {
         setEmailPreview(null);
         setDocPreview(null);
+        setInvoicePreview(null);
         setEditing(false);
         return;
       }
@@ -85,6 +90,23 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
             if (!cancelled) {
               setDocPreview(match || null);
               setEmailPreview(null);
+              setInvoicePreview(null);
+              setEditing(false);
+            }
+            return;
+          }
+          if (isInvoice) {
+            const response = await fetch(`/api/admin/invoices?leadId=${selected.lead_id ?? ""}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            const match: Invoice | undefined = (result.invoices || []).find(
+              (i: Invoice) => i.id === selected.entity_id,
+            );
+            if (!cancelled) {
+              setInvoicePreview(match || null);
+              setEmailPreview(null);
+              setDocPreview(null);
               setEditing(false);
             }
             return;
@@ -99,12 +121,14 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
           if (!cancelled) {
             setEmailPreview(match || null);
             setDocPreview(null);
+            setInvoicePreview(null);
             setEditing(false);
           }
         } catch {
           if (!cancelled) {
             setEmailPreview(null);
             setDocPreview(null);
+            setInvoicePreview(null);
           }
         }
       })();
@@ -211,6 +235,8 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                 <div className="flex items-center gap-2">
                   {approval.type === "document" ? (
                     <FileText className="size-4 shrink-0 text-brand-glow-text" />
+                  ) : approval.type === "invoice" ? (
+                    <Receipt className="size-4 shrink-0 text-brand-glow-text" />
                   ) : (
                     <Mail className="size-4 shrink-0 text-brand-glow-text" />
                   )}
@@ -332,6 +358,43 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                 <div className="mt-4 flex h-24 items-center justify-center text-sm text-muted">
                   <Loader2 className="mr-2 size-4 animate-spin" />
                   Loading document
+                </div>
+              )
+            ) : selected.type === "invoice" ? (
+              invoicePreview ? (
+                <div className="mt-4 rounded-2xl bg-surface p-4">
+                  <div className="flex items-center gap-2">
+                    <Receipt className="size-4 shrink-0 text-brand-glow-text" />
+                    <p className="text-sm font-black text-foreground">{invoicePreview.number}</p>
+                    <span className="ml-auto text-xs font-bold text-muted">
+                      {invoicePreview.method === "stripe" ? "Stripe" : "e-transfer"}
+                    </span>
+                  </div>
+                  <div className="mt-3 grid gap-1.5">
+                    {invoicePreview.line_items.map((li, i) => (
+                      <div key={i} className="flex items-center justify-between text-sm">
+                        <span className="text-foreground/90">
+                          {li.description} <span className="text-muted">× {li.quantity}</span>
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {cad.format((Number(li.quantity) || 0) * (Number(li.unit_amount) || 0))}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex items-center justify-between border-t border-border-subtle pt-3">
+                    <span className="text-sm font-black text-foreground">Total</span>
+                    <span className="text-sm font-black text-foreground">{cad.format(Number(invoicePreview.amount))}</span>
+                  </div>
+                  {invoicePreview.due_on ? (
+                    <p className="mt-1 text-xs text-muted">Due {invoicePreview.due_on}</p>
+                  ) : null}
+                  <p className="mt-2 text-xs text-muted">Approving sends this invoice to the client.</p>
+                </div>
+              ) : (
+                <div className="mt-4 flex h-24 items-center justify-center text-sm text-muted">
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Loading invoice
                 </div>
               )
             ) : selected.type === "email" || selected.type === "negotiation_reply" ? (

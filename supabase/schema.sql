@@ -177,7 +177,7 @@ create table if not exists public.agent_runs (
   created_at timestamptz not null default now(),
   finished_at timestamptz,
   lead_id uuid references public.leads(id) on delete cascade,
-  agent text not null check (agent in ('manager', 'qualify', 'research', 'email_draft', 'sequence_draft', 'scraper', 'negotiate', 'document')),
+  agent text not null check (agent in ('manager', 'qualify', 'research', 'email_draft', 'sequence_draft', 'scraper', 'negotiate', 'document', 'finance')),
   status text not null default 'running' check (status in ('running', 'succeeded', 'failed')),
   thread_key text,
   input jsonb not null default '{}'::jsonb,
@@ -360,3 +360,56 @@ using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
 
 create index if not exists documents_lead_idx on public.documents (lead_id, created_at desc);
 create index if not exists documents_token_idx on public.documents (accept_token);
+
+create table if not exists public.invoices (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  lead_id uuid references public.leads(id) on delete set null,
+  number text not null unique,
+  line_items jsonb not null default '[]'::jsonb,
+  amount numeric(12,2) not null default 0,
+  currency text not null default 'CAD',
+  method text not null default 'etransfer' check (method in ('stripe', 'etransfer')),
+  status text not null default 'draft'
+    check (status in ('draft', 'approved', 'sent', 'paid', 'void')),
+  stripe_invoice_id text,
+  hosted_invoice_url text,
+  due_on date,
+  sent_at timestamptz,
+  paid_at timestamptz,
+  notes text,
+  meta jsonb not null default '{}'::jsonb
+);
+
+alter table public.invoices enable row level security;
+drop policy if exists "Admin service role can manage invoices" on public.invoices;
+create policy "Admin service role can manage invoices"
+on public.invoices for all
+using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+
+create index if not exists invoices_lead_idx on public.invoices (lead_id, created_at desc);
+create index if not exists invoices_status_idx on public.invoices (status, created_at desc);
+create index if not exists invoices_stripe_idx on public.invoices (stripe_invoice_id);
+
+create table if not exists public.expenses (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  incurred_on date not null default current_date,
+  category text not null default 'other'
+    check (category in ('software', 'contractor', 'marketing', 'ai_api', 'hardware', 'fees', 'other')),
+  vendor text,
+  description text,
+  amount numeric(12,2) not null default 0,
+  currency text not null default 'CAD',
+  recurring boolean not null default false,
+  external_source text,
+  external_id text
+);
+
+alter table public.expenses enable row level security;
+drop policy if exists "Admin service role can manage expenses" on public.expenses;
+create policy "Admin service role can manage expenses"
+on public.expenses for all
+using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+
+create index if not exists expenses_incurred_idx on public.expenses (incurred_on desc);

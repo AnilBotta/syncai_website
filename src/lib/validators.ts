@@ -134,6 +134,39 @@ export const documentUpdateSchema = z.object({
   contentMd: z.string().min(1).max(40000).optional(),
 });
 
+export const invoiceLineItemSchema = z.object({
+  description: z.string().min(1).max(300),
+  quantity: z.coerce.number().min(0).max(100000).default(1),
+  unitAmount: z.coerce.number().min(0).max(100000000),
+});
+
+export const invoiceCreateSchema = z.object({
+  leadId: z.string().uuid().nullable().optional(),
+  lineItems: z.array(invoiceLineItemSchema).min(1).max(30),
+  method: z.enum(["stripe", "etransfer"]).default("etransfer"),
+  dueOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  notes: z.string().max(2000).optional().or(z.literal("")),
+});
+
+export const invoiceUpdateSchema = z.object({
+  id: z.string().min(1),
+  action: z.enum(["mark_paid", "void"]),
+});
+
+export const expenseCreateSchema = z.object({
+  incurredOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  category: z.enum(["software", "contractor", "marketing", "ai_api", "hardware", "fees", "other"]).default("other"),
+  vendor: z.string().max(140).optional().or(z.literal("")),
+  description: z.string().max(300).optional().or(z.literal("")),
+  amount: z.coerce.number().min(0).max(100000000),
+  recurring: z.boolean().default(false),
+});
+
+export const expenseUpdateSchema = z.object({
+  id: z.string().min(1),
+  action: z.literal("delete"),
+});
+
 export const managerChatSchema = z.object({
   messages: z
     .array(

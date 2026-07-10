@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig, verifyAdminToken } from "@/lib/supabase";
+import { getFinanceSummary } from "@/lib/finance";
 import { serverErrorResponse } from "@/lib/api-errors";
 
 const WEEKS = 12;
@@ -34,6 +35,7 @@ export async function GET(request: Request) {
       { count: overdueTasks },
       { data: spendRows },
       { data: activityRows },
+      finance,
     ] = await Promise.all([
       supabase.from("leads").select("id, status, value, created_at"),
       supabase.from("approvals").select("*", { count: "exact", head: true }).eq("status", "pending"),
@@ -54,6 +56,7 @@ export async function GET(request: Request) {
         .select("id, created_at, type, title, body, actor, lead_id, leads(name)")
         .order("created_at", { ascending: false })
         .limit(15),
+      getFinanceSummary(supabase),
     ]);
 
     if (leadsError) return serverErrorResponse("admin/metrics:GET", leadsError);
@@ -122,6 +125,9 @@ export async function GET(request: Request) {
         upcomingAppointments: upcomingAppointments || 0,
         overdueTasks: overdueTasks || 0,
         aiSpendToday: Math.round(spendToday * 10_000) / 10_000,
+        netThisMonth: finance.netThisMonth,
+        collectedRevenue: finance.collectedRevenue,
+        outstanding: finance.outstanding,
         weeklyLeads,
         pipelineByStage,
         recentActivity,

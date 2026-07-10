@@ -98,7 +98,52 @@ export type AgentName =
   | "sequence_draft"
   | "scraper"
   | "negotiate"
-  | "document";
+  | "document"
+  | "finance";
+
+export type InvoiceLineItem = { description: string; quantity: number; unit_amount: number };
+
+export type Invoice = {
+  id: string;
+  created_at: string;
+  lead_id?: string | null;
+  number: string;
+  line_items: InvoiceLineItem[];
+  amount: number;
+  currency: string;
+  method: "stripe" | "etransfer";
+  status: "draft" | "approved" | "sent" | "paid" | "void";
+  stripe_invoice_id?: string | null;
+  hosted_invoice_url?: string | null;
+  due_on?: string | null;
+  sent_at?: string | null;
+  paid_at?: string | null;
+  notes?: string | null;
+  meta: Record<string, unknown>;
+};
+
+export type ExpenseCategory =
+  | "software"
+  | "contractor"
+  | "marketing"
+  | "ai_api"
+  | "hardware"
+  | "fees"
+  | "other";
+
+export type Expense = {
+  id: string;
+  created_at: string;
+  incurred_on: string;
+  category: ExpenseCategory;
+  vendor?: string | null;
+  description?: string | null;
+  amount: number;
+  currency: string;
+  recurring: boolean;
+  external_source?: string | null;
+  external_id?: string | null;
+};
 
 export type DocumentType = "proposal" | "agreement" | "onboarding" | "offer_letter";
 

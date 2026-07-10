@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Handshake, Loader2, Mail, Microscope, Sparkles, X } from "lucide-react";
+import { ChevronDown, Handshake, Loader2, Mail, Microscope, Receipt, Sparkles, X } from "lucide-react";
 import { leadStatuses } from "@/lib/site-data";
 import type { Lead } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
@@ -10,6 +10,7 @@ import { TaskList } from "@/components/admin/task-list";
 import { EmailComposer } from "@/components/admin/email-composer";
 import { SequenceEnroll } from "@/components/admin/sequence-enroll";
 import { DocumentsPanel } from "@/components/admin/documents-panel";
+import { InvoiceComposer } from "@/components/admin/invoice-composer";
 
 type LeadDrawerProps = {
   lead: Lead;
@@ -23,6 +24,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
   const [error, setError] = useState("");
   const [showRules, setShowRules] = useState(false);
   const [composing, setComposing] = useState(false);
+  const [invoicing, setInvoicing] = useState(false);
   const [agentBusy, setAgentBusy] = useState<"qualify" | "research" | "outreach" | null>(null);
   const [agentNotice, setAgentNotice] = useState("");
   const [researchBrief, setResearchBrief] = useState<Record<string, unknown> | null>(null);
@@ -186,6 +188,14 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             >
               <Mail className="size-4" />
               Email
+            </button>
+            <button
+              type="button"
+              onClick={() => setInvoicing(true)}
+              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border-subtle px-4 text-sm font-bold text-muted transition hover:text-foreground"
+            >
+              <Receipt className="size-4" />
+              Invoice
             </button>
             <button
               type="button"
@@ -477,6 +487,10 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
 
       {composing ? (
         <EmailComposer getToken={getToken} lead={lead} onClose={() => setComposing(false)} />
+      ) : null}
+
+      {invoicing ? (
+        <InvoiceComposer getToken={getToken} lead={lead} onClose={() => setInvoicing(false)} />
       ) : null}
     </div>
   );
