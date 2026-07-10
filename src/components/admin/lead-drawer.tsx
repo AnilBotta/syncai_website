@@ -11,6 +11,7 @@ import { EmailComposer } from "@/components/admin/email-composer";
 import { SequenceEnroll } from "@/components/admin/sequence-enroll";
 import { DocumentsPanel } from "@/components/admin/documents-panel";
 import { InvoiceComposer } from "@/components/admin/invoice-composer";
+import { CallsPanel } from "@/components/admin/calls-panel";
 
 type LeadDrawerProps = {
   lead: Lead;
@@ -455,6 +456,13 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             Save lead
           </button>
         </form>
+
+        <div className="border-t border-border-subtle px-6 py-5">
+          <p className="text-sm font-black text-foreground">Calls</p>
+          <div className="mt-3">
+            <CallsPanel leadId={lead.id} hasPhone={Boolean(lead.phone)} getToken={getToken} />
+          </div>
+        </div>
 
         <div className="border-t border-border-subtle px-6 py-5">
           <p className="text-sm font-black text-foreground">Documents</p>
