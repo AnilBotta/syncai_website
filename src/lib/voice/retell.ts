@@ -1,4 +1,7 @@
+import { formatInTimeZone } from "date-fns-tz";
 import type { InitiateCallInput, InitiateCallResult, NormalizedCallEvent, VoiceProvider } from "@/lib/voice/types";
+
+const BUSINESS_TZ = "America/Toronto";
 
 /**
  * Retell AI adapter. Places an outbound call with a pre-built Retell agent and
@@ -27,6 +30,9 @@ export const retellProvider: VoiceProvider = {
           retell_llm_dynamic_variables: {
             lead_name: input.leadName,
             context: input.context || "",
+            // So the agent knows "today"/"tomorrow" without guessing the date.
+            current_date: formatInTimeZone(new Date(), BUSINESS_TZ, "EEEE, MMMM d, yyyy"),
+            current_time: formatInTimeZone(new Date(), BUSINESS_TZ, "h:mm a zzz"),
           },
           metadata: { lead_id: input.leadId },
         }),
