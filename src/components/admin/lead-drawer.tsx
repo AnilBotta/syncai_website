@@ -9,6 +9,7 @@ import { ActivityTimeline } from "@/components/admin/activity-timeline";
 import { TaskList } from "@/components/admin/task-list";
 import { EmailComposer } from "@/components/admin/email-composer";
 import { SequenceEnroll } from "@/components/admin/sequence-enroll";
+import { DocumentsPanel } from "@/components/admin/documents-panel";
 
 type LeadDrawerProps = {
   lead: Lead;
@@ -444,6 +445,13 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             Save lead
           </button>
         </form>
+
+        <div className="border-t border-border-subtle px-6 py-5">
+          <p className="text-sm font-black text-foreground">Documents</p>
+          <div className="mt-3">
+            <DocumentsPanel leadId={lead.id} getToken={getToken} />
+          </div>
+        </div>
 
         <div className="border-t border-border-subtle px-6 py-5">
           <p className="text-sm font-black text-foreground">Nurture sequence</p>

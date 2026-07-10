@@ -185,6 +185,15 @@ export const appointmentStatuses: { value: AppointmentStatus; label: string }[] 
   { value: "no_show", label: "No Show" },
 ];
 
+export type DocumentType = "proposal" | "agreement" | "onboarding" | "offer_letter";
+
+export const documentTypes: { value: DocumentType; label: string }[] = [
+  { value: "proposal", label: "Proposal / SOW" },
+  { value: "agreement", label: "Service Agreement" },
+  { value: "onboarding", label: "Onboarding Doc" },
+  { value: "offer_letter", label: "Offer Letter" },
+];
+
 export type LeadStatus = "new" | "contacted" | "qualified" | "proposal" | "won" | "lost";
 
 export const leadStatuses: { value: LeadStatus; label: string }[] = [

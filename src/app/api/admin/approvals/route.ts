@@ -7,6 +7,7 @@ import {
 } from "@/lib/supabase";
 import { approvalDecisionSchema } from "@/lib/validators";
 import { sendEmailRecord } from "@/lib/email/send-core";
+import { sendDocumentForSignature } from "@/lib/documents";
 import { serverErrorResponse } from "@/lib/api-errors";
 
 const demoApprovals: Approval[] = [
@@ -101,6 +102,14 @@ export async function PATCH(request: Request) {
         .eq("id", approval.entity_id)
         .eq("status", "draft");
     }
+    // Cancel a rejected document so its accept link never activates.
+    if (approval.type === "document" && approval.entity_id) {
+      await supabase
+        .from("documents")
+        .update({ status: "cancelled" })
+        .eq("id", approval.entity_id)
+        .eq("status", "draft");
+    }
     return NextResponse.json({ ok: true });
   }
 
@@ -118,7 +127,20 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: true, demoMode: result.demoMode });
   }
 
-  // Other approval types (document/invoice/icp/…) are wired up in later phases.
+  // Approving a document emails the lead a signable copy (accept link).
+  if (approval.type === "document" && approval.entity_id) {
+    const result = await sendDocumentForSignature(supabase, approval.entity_id);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status });
+    }
+    await supabase
+      .from("approvals")
+      .update({ status: "approved", decided_at: now })
+      .eq("id", approval.id);
+    return NextResponse.json({ ok: true, demoMode: result.demoMode });
+  }
+
+  // Other approval types (invoice/icp/…) are wired up in later phases.
   await supabase
     .from("approvals")
     .update({ status: "approved", decided_at: now })
