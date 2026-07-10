@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/utils";
 import { ActivityTimeline } from "@/components/admin/activity-timeline";
 import { TaskList } from "@/components/admin/task-list";
 import { EmailComposer } from "@/components/admin/email-composer";
+import { SequenceEnroll } from "@/components/admin/sequence-enroll";
 
 type LeadDrawerProps = {
   lead: Lead;
@@ -343,6 +344,13 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             Save lead
           </button>
         </form>
+
+        <div className="border-t border-border-subtle px-6 py-5">
+          <p className="text-sm font-black text-foreground">Nurture sequence</p>
+          <div className="mt-3">
+            <SequenceEnroll leadId={lead.id} getToken={getToken} />
+          </div>
+        </div>
 
         <div className="border-t border-border-subtle px-6 py-5">
           <p className="text-sm font-black text-foreground">Follow-ups</p>

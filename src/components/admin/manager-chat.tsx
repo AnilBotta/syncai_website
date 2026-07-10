@@ -37,6 +37,7 @@ const toolLabels: Record<string, string> = {
   research_company: "researched company",
   create_target: "created target",
   find_prospects: "ran scraper",
+  enroll_in_sequence: "enrolled in sequence",
 };
 
 type ManagerChatProps = {

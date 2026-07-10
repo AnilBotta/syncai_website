@@ -105,6 +105,22 @@ export const agentRunSchema = z.object({
   instruction: z.string().max(500).optional(),
 });
 
+export const sequenceUpdateSchema = z.object({
+  id: z.string().min(1),
+  active: z.boolean().optional(),
+  autoSend: z.boolean().optional(),
+});
+
+export const enrollSchema = z.object({
+  leadId: z.string().uuid(),
+  sequenceId: z.string().uuid(),
+});
+
+export const enrollmentUpdateSchema = z.object({
+  id: z.string().min(1),
+  action: z.enum(["pause", "resume", "cancel"]),
+});
+
 export const managerChatSchema = z.object({
   messages: z
     .array(

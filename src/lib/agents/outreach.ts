@@ -27,7 +27,13 @@ Return strict JSON: { "subject": "...", "body": "..." }.`;
  */
 export async function runOutreach(
   supabase: SupabaseClient,
-  args: { leadId?: string | null; prospectId?: string | null; instruction?: string },
+  args: {
+    leadId?: string | null;
+    prospectId?: string | null;
+    instruction?: string;
+    source?: "agent" | "sequence";
+    sequenceEnrollmentId?: string | null;
+  },
 ) {
   let lead: Lead | null = null;
   let researchContext = "";
@@ -109,6 +115,7 @@ export async function runOutreach(
 
   if (!result.ok) return result;
 
+  const source = args.source ?? "agent";
   const { data: email, error } = await supabase
     .from("emails")
     .insert({
@@ -116,8 +123,9 @@ export async function runOutreach(
       to_email: lead.email,
       subject: result.data.subject,
       body_text: result.data.body,
-      source: "agent",
+      source,
       status: "draft",
+      sequence_enrollment_id: args.sequenceEnrollmentId ?? null,
     })
     .select()
     .single();
@@ -128,17 +136,21 @@ export async function runOutreach(
     entityId: email.id,
     leadId: lead.id,
     title: `Outreach: ${result.data.subject}`,
-    summary: `To ${lead.name} at ${lead.company || lead.email} (drafted by Outreach agent)`,
-    meta: { source: "agent", agent: "outreach" },
+    summary: `To ${lead.name} at ${lead.company || lead.email} (drafted by ${source === "sequence" ? "nurture sequence" : "Outreach agent"})`,
+    meta: { source, agent: "outreach" },
   });
 
   await supabase.from("lead_activities").insert({
     lead_id: lead.id,
     type: "agent_run",
     title: `Outreach drafted: ${result.data.subject}`,
-    meta: { agent: "outreach", run_id: result.runId, email_id: email.id },
+    meta: { agent: "outreach", run_id: result.runId, email_id: email.id, source },
     actor: "agent:outreach",
   });
 
-  return { ok: true as const, data: { subject: result.data.subject, leadId: lead.id }, runId: result.runId };
+  return {
+    ok: true as const,
+    data: { subject: result.data.subject, leadId: lead.id, emailId: email.id },
+    runId: result.runId,
+  };
 }
