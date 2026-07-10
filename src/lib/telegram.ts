@@ -37,3 +37,31 @@ export async function notifyCeo(text: string): Promise<boolean> {
   }
   return sendTelegramMessage(CEO_CHAT_ID, text);
 }
+
+/** Sends the "typing…" chat action so the CEO sees the bot is working. */
+export async function sendChatAction(chatId: string | number, action = "typing"): Promise<void> {
+  if (!BOT_TOKEN) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendChatAction`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, action }),
+    });
+  } catch {
+    // Non-critical.
+  }
+}
+
+/** Resolves a Telegram file_id to a temporary download URL (valid ~1h). */
+export async function getTelegramFileUrl(fileId: string): Promise<string | null> {
+  if (!BOT_TOKEN) return null;
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+    const data = await response.json();
+    const filePath = data?.result?.file_path;
+    if (!filePath) return null;
+    return `https://api.telegram.org/file/bot${BOT_TOKEN}/${filePath}`;
+  } catch {
+    return null;
+  }
+}

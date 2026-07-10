@@ -10,6 +10,7 @@ import { runScraper } from "@/lib/agents/scraper";
 import { runNegotiator } from "@/lib/agents/negotiator";
 import { runDocument } from "@/lib/agents/document";
 import { createInvoiceDraft } from "@/lib/invoices";
+import { getFinanceSummary } from "@/lib/finance";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -449,6 +450,196 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const getFinances = tool(
+    async ({ status }) => {
+      const summary = await getFinanceSummary(supabase);
+      let query = supabase
+        .from("invoices")
+        .select("number, amount, status, method, sent_at, paid_at, created_at, lead_id, leads(name, company)")
+        .order("created_at", { ascending: false })
+        .limit(40);
+      if (status && status !== "all") query = query.eq("status", status);
+      const { data, error } = await query;
+      // If the invoices table isn't set up yet, still report the P&L (zeros) rather than erroring.
+      const rows = error ? [] : data || [];
+
+      const invoiceLines = rows.map((i) => {
+        const rel = i.leads as unknown as { name?: string; company?: string } | { name?: string; company?: string }[] | null;
+        const lead = Array.isArray(rel) ? rel[0] : rel;
+        const who = lead?.company || lead?.name || "unknown client";
+        const when = i.sent_at || i.created_at;
+        return `- ${i.number} · ${who} · ${cad.format(Number(i.amount) || 0)} · ${i.status} · ${i.method}${
+          when ? ` · ${new Date(when).toLocaleDateString("en-CA")}` : ""
+        }`;
+      });
+      trace.push({ tool: "get_finances", summary: `${rows.length} invoice(s)` });
+
+      const counts = rows.reduce<Record<string, number>>((acc, i) => {
+        acc[i.status] = (acc[i.status] || 0) + 1;
+        return acc;
+      }, {});
+      const countLine = Object.entries(counts).map(([s, n]) => `${n} ${s}`).join(", ") || "none";
+
+      return [
+        `Finances (cash basis):`,
+        `- Collected revenue: ${cad.format(summary.collectedRevenue)}`,
+        `- Outstanding (sent, unpaid): ${cad.format(summary.outstanding)}`,
+        `- Expenses: ${cad.format(summary.expensesTotal)}`,
+        `- Net cash: ${cad.format(summary.netCash)} · Net this month: ${cad.format(summary.netThisMonth)}`,
+        `- Won deal value (booked): ${cad.format(summary.wonDealValue)}`,
+        ``,
+        `Invoices (${rows.length} shown${status && status !== "all" ? `, filtered to ${status}` : ""}; ${countLine}):`,
+        invoiceLines.length ? invoiceLines.join("\n") : "No invoices recorded yet.",
+      ].join("\n");
+    },
+    {
+      name: "get_finances",
+      description:
+        "Read the business finances: P&L summary (collected revenue, outstanding, expenses, net) AND the list of invoices with who they went to, amount, status (draft/sent/paid/void), and method. Use this for ANY question about invoices, revenue, payments, or money.",
+      schema: z.object({
+        status: z
+          .enum(["all", "draft", "sent", "paid", "void"])
+          .optional()
+          .describe("Optionally filter invoices by status; omit or 'all' for everything"),
+      }),
+    },
+  );
+
+  const listDocuments = tool(
+    async ({ status }) => {
+      let query = supabase
+        .from("documents")
+        .select("title, type, status, created_at, lead_id, leads(name, company)")
+        .order("created_at", { ascending: false })
+        .limit(40);
+      if (status && status !== "all") query = query.eq("status", status);
+      const { data, error } = await query;
+      if (error) return `Error reading documents: ${error.message}`;
+      if (!data?.length) return "No documents found.";
+      trace.push({ tool: "list_documents", summary: `${data.length} document(s)` });
+      return data
+        .map((d) => {
+          const rel = d.leads as unknown as { name?: string; company?: string } | { name?: string; company?: string }[] | null;
+          const lead = Array.isArray(rel) ? rel[0] : rel;
+          const who = lead?.company || lead?.name || "—";
+          return `- [${d.type}] "${d.title}" · ${who} · ${d.status} · ${new Date(d.created_at).toLocaleDateString("en-CA")}`;
+        })
+        .join("\n");
+    },
+    {
+      name: "list_documents",
+      description:
+        "List generated documents (proposals, agreements, onboarding docs, offer letters) with their client, type, and status (draft/sent/viewed/accepted). Use for questions about proposals, contracts, or what's been signed.",
+      schema: z.object({
+        status: z
+          .enum(["all", "draft", "sent", "viewed", "accepted", "cancelled"])
+          .optional()
+          .describe("Optionally filter by status"),
+      }),
+    },
+  );
+
+  const getSchedule = tool(
+    async () => {
+      const nowIso = new Date().toISOString();
+      const in14 = new Date(Date.now() + 14 * 86400000).toISOString();
+      const [{ data: appts }, { data: tasks }] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("name, starts_at, status")
+          .gte("starts_at", nowIso)
+          .lte("starts_at", in14)
+          .in("status", ["pending", "confirmed"])
+          .order("starts_at", { ascending: true })
+          .limit(20),
+        supabase
+          .from("tasks")
+          .select("title, due_at, status")
+          .eq("status", "open")
+          .order("due_at", { ascending: true })
+          .limit(20),
+      ]);
+      trace.push({ tool: "get_schedule", summary: `${(appts || []).length} appts, ${(tasks || []).length} tasks` });
+      const apptLines = (appts || []).map(
+        (a) => `- ${a.name} · ${new Date(a.starts_at).toLocaleString("en-CA")} (${a.status})`,
+      );
+      const now = Date.now();
+      const taskLines = (tasks || []).map((t) => {
+        const overdue = t.due_at && new Date(t.due_at).getTime() < now ? " ⚠️ overdue" : "";
+        return `- ${t.title}${t.due_at ? ` · due ${new Date(t.due_at).toLocaleDateString("en-CA")}` : ""}${overdue}`;
+      });
+      return [
+        `Upcoming appointments (next 14 days): ${apptLines.length}`,
+        apptLines.join("\n") || "  none",
+        ``,
+        `Open tasks: ${taskLines.length}`,
+        taskLines.join("\n") || "  none",
+      ].join("\n");
+    },
+    {
+      name: "get_schedule",
+      description: "Read the upcoming appointments (next 14 days) and open tasks. Use for questions about the calendar, meetings, or to-dos.",
+      schema: z.object({}),
+    },
+  );
+
+  const getAgentActivity = tool(
+    async () => {
+      const startOfDay = new Date();
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      const [{ data: runs }, { data: todaySpend }] = await Promise.all([
+        supabase
+          .from("agent_runs")
+          .select("agent, status, created_at, cost_usd")
+          .order("created_at", { ascending: false })
+          .limit(15),
+        supabase.from("agent_runs").select("cost_usd").gte("created_at", startOfDay.toISOString()),
+      ]);
+      const spent = (todaySpend || []).reduce((s, r) => s + (Number(r.cost_usd) || 0), 0);
+      trace.push({ tool: "get_agent_activity", summary: `${(runs || []).length} recent runs` });
+      const lines = (runs || []).map(
+        (r) => `- ${r.agent} · ${r.status} · ${new Date(r.created_at).toLocaleString("en-CA")}`,
+      );
+      return [
+        `AI spend today: $${spent.toFixed(2)}`,
+        `Recent agent runs:`,
+        lines.join("\n") || "  none",
+      ].join("\n");
+    },
+    {
+      name: "get_agent_activity",
+      description: "See what your specialist agents have been doing recently (their runs, statuses) and today's total AI spend.",
+      schema: z.object({}),
+    },
+  );
+
+  const getProspecting = tool(
+    async () => {
+      const [{ data: targets }, { data: prospects }] = await Promise.all([
+        supabase.from("icps").select("name, status").order("created_at", { ascending: false }).limit(20),
+        supabase.from("prospects").select("company, email, status, created_at").order("created_at", { ascending: false }).limit(30),
+      ]);
+      trace.push({ tool: "get_prospecting", summary: `${(prospects || []).length} prospects` });
+      const targetLines = (targets || []).map((t) => `- ${t.name} (${t.status})`);
+      const withEmail = (prospects || []).filter((p) => p.email).length;
+      const prospectLines = (prospects || [])
+        .slice(0, 15)
+        .map((p) => `- ${p.company}${p.email ? ` · ${p.email}` : ""} · ${p.status}`);
+      return [
+        `Targets (ICPs): ${targetLines.length}`,
+        targetLines.join("\n") || "  none",
+        ``,
+        `Prospects found: ${(prospects || []).length} (${withEmail} with email). Most recent:`,
+        prospectLines.join("\n") || "  none",
+      ].join("\n");
+    },
+    {
+      name: "get_prospecting",
+      description: "Read the targeting (ICPs) and the prospects the scraper has found (company, email, status). Use for questions about lead sourcing, targets, or prospects.",
+      schema: z.object({}),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -465,5 +656,10 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     negotiate,
     draftDocument,
     createInvoice,
+    getFinances,
+    listDocuments,
+    getSchedule,
+    getAgentActivity,
+    getProspecting,
   ];
 }
