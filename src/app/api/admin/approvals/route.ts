@@ -8,6 +8,7 @@ import {
 import { approvalDecisionSchema } from "@/lib/validators";
 import { sendEmailRecord } from "@/lib/email/send-core";
 import { sendDocumentForSignature } from "@/lib/documents";
+import { sendInvoice } from "@/lib/invoices";
 import { serverErrorResponse } from "@/lib/api-errors";
 
 const demoApprovals: Approval[] = [
@@ -110,6 +111,14 @@ export async function PATCH(request: Request) {
         .eq("id", approval.entity_id)
         .eq("status", "draft");
     }
+    // Void a rejected invoice so it can't be sent.
+    if (approval.type === "invoice" && approval.entity_id) {
+      await supabase
+        .from("invoices")
+        .update({ status: "void" })
+        .eq("id", approval.entity_id)
+        .eq("status", "draft");
+    }
     return NextResponse.json({ ok: true });
   }
 
@@ -140,7 +149,20 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: true, demoMode: result.demoMode });
   }
 
-  // Other approval types (invoice/icp/…) are wired up in later phases.
+  // Approving an invoice sends it (Stripe hosted invoice or e-transfer email).
+  if (approval.type === "invoice" && approval.entity_id) {
+    const result = await sendInvoice(supabase, approval.entity_id);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status });
+    }
+    await supabase
+      .from("approvals")
+      .update({ status: "approved", decided_at: now })
+      .eq("id", approval.id);
+    return NextResponse.json({ ok: true, demoMode: result.demoMode });
+  }
+
+  // Other approval types (icp/…) are wired up in later phases.
   await supabase
     .from("approvals")
     .update({ status: "approved", decided_at: now })

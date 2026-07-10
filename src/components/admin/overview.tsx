@@ -19,6 +19,9 @@ type Metrics = {
   upcomingAppointments: number;
   overdueTasks: number;
   aiSpendToday: number;
+  netThisMonth: number;
+  collectedRevenue: number;
+  outstanding: number;
   weeklyLeads: { weekStart: string; count: number }[];
   pipelineByStage: { status: string; count: number; value: number }[];
   recentActivity: {
@@ -110,6 +113,13 @@ export function Overview({ getToken }: { getToken: () => Promise<string> }) {
           tone={metrics.overdueTasks > 0 ? "warn" : "default"}
         />
         <KpiCard label="AI spend today" value={`$${metrics.aiSpendToday.toFixed(2)}`} icon={Bot} />
+        <KpiCard
+          label="Net this month"
+          value={cad.format(metrics.netThisMonth ?? 0)}
+          icon={Wallet}
+          tone={(metrics.netThisMonth ?? 0) < 0 ? "warn" : "default"}
+        />
+        <KpiCard label="Outstanding invoices" value={cad.format(metrics.outstanding ?? 0)} icon={Wallet} />
         <KpiCard label="Won value" value={cad.format(metrics.wonValue)} icon={Wallet} />
       </div>
 

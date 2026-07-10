@@ -17,6 +17,7 @@ import { Targeting } from "@/components/admin/targeting";
 import { ProspectsTable } from "@/components/admin/prospects-table";
 import { Sequences } from "@/components/admin/sequences";
 import { Overview } from "@/components/admin/overview";
+import { Finance } from "@/components/admin/finance";
 
 const views = [
   { value: "overview", label: "Overview" },
@@ -27,6 +28,7 @@ const views = [
   { value: "targeting", label: "Targeting" },
   { value: "prospects", label: "Prospects" },
   { value: "sequences", label: "Sequences" },
+  { value: "finance", label: "Finance" },
   { value: "appointments", label: "Appointments" },
   { value: "tasks", label: "Tasks" },
 ] as const;
@@ -42,6 +44,7 @@ const viewTitles: Record<View, string> = {
   targeting: "Targeting",
   prospects: "Prospects",
   sequences: "Sequences",
+  finance: "Finance",
   appointments: "Appointments",
   tasks: "Tasks",
 };
@@ -347,6 +350,12 @@ export function AdminDashboard() {
       {view === "sequences" ? (
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <Sequences getToken={getToken} />
+        </main>
+      ) : null}
+
+      {view === "finance" ? (
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <Finance getToken={getToken} />
         </main>
       ) : null}
 

@@ -9,6 +9,7 @@ import { runResearch } from "@/lib/agents/research";
 import { runScraper } from "@/lib/agents/scraper";
 import { runNegotiator } from "@/lib/agents/negotiator";
 import { runDocument } from "@/lib/agents/document";
+import { createInvoiceDraft } from "@/lib/invoices";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -420,6 +421,34 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const createInvoice = tool(
+    async ({ lead, description, amount, method }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      const result = await createInvoiceDraft(supabase, {
+        leadId: found.id,
+        lineItems: [{ description, quantity: 1, unit_amount: amount }],
+        method: method ?? "etransfer",
+      });
+      if (!result.ok) return `Couldn't create the invoice: ${result.error}`;
+      trace.push({ tool: "create_invoice", summary: `${result.number} for ${found.name}` });
+      return `Drafted invoice ${result.number} for ${found.name} (${cad.format(result.amount)}, ${
+        method === "stripe" ? "Stripe" : "e-transfer"
+      }) → Approval Inbox. Approve it there to send it to the client.`;
+    },
+    {
+      name: "create_invoice",
+      description:
+        "Create a draft invoice for a lead with a single line item. It's queued in the Approval Inbox; approving sends it (Stripe pay-online link or e-transfer email). Never sends on its own.",
+      schema: z.object({
+        lead: z.string().describe("Lead id or name"),
+        description: z.string().describe("What the invoice is for"),
+        amount: z.number().describe("Amount in CAD dollars for the line item"),
+        method: z.enum(["stripe", "etransfer"]).optional().describe("Payment method; defaults to e-transfer"),
+      }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -435,5 +464,6 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     enrollInSequence,
     negotiate,
     draftDocument,
+    createInvoice,
   ];
 }

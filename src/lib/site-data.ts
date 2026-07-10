@@ -194,6 +194,25 @@ export const documentTypes: { value: DocumentType; label: string }[] = [
   { value: "offer_letter", label: "Offer Letter" },
 ];
 
+export type ExpenseCategory =
+  | "software"
+  | "contractor"
+  | "marketing"
+  | "ai_api"
+  | "hardware"
+  | "fees"
+  | "other";
+
+export const expenseCategories: { value: ExpenseCategory; label: string }[] = [
+  { value: "software", label: "Software" },
+  { value: "contractor", label: "Contractor" },
+  { value: "marketing", label: "Marketing" },
+  { value: "ai_api", label: "AI / API" },
+  { value: "hardware", label: "Hardware" },
+  { value: "fees", label: "Fees" },
+  { value: "other", label: "Other" },
+];
+
 export type LeadStatus = "new" | "contacted" | "qualified" | "proposal" | "won" | "lost";
 
 export const leadStatuses: { value: LeadStatus; label: string }[] = [
