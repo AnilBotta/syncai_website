@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Loader2, Mail, Microscope, Sparkles, X } from "lucide-react";
+import { ChevronDown, Handshake, Loader2, Mail, Microscope, Sparkles, X } from "lucide-react";
 import { leadStatuses } from "@/lib/site-data";
 import type { Lead } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
@@ -25,6 +25,40 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
   const [agentBusy, setAgentBusy] = useState<"qualify" | "research" | "outreach" | null>(null);
   const [agentNotice, setAgentNotice] = useState("");
   const [researchBrief, setResearchBrief] = useState<Record<string, unknown> | null>(null);
+  const [negotiating, setNegotiating] = useState(false);
+  const [showNegotiate, setShowNegotiate] = useState(false);
+  const [threadContext, setThreadContext] = useState("");
+  const [negotiationResult, setNegotiationResult] = useState<Record<string, unknown> | null>(null);
+
+  async function runNegotiate() {
+    if (!threadContext.trim()) return;
+    setNegotiating(true);
+    setAgentNotice("");
+    setError("");
+    setNegotiationResult(null);
+    try {
+      const token = await getToken();
+      const response = await fetch("/api/admin/agents/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ agent: "negotiate", leadId: lead.id, threadContext }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok === false) {
+        throw new Error(result.error || "Negotiation failed.");
+      }
+      setNegotiationResult(result.data);
+      setAgentNotice(
+        result.data.escalated
+          ? "Escalated to you — a task was created instead of a draft."
+          : "Counter-offer drafted → Approval Inbox.",
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Negotiation failed.");
+    } finally {
+      setNegotiating(false);
+    }
+  }
 
   async function runAgent(agent: "qualify" | "research" | "outreach") {
     setAgentBusy(agent);
@@ -191,8 +225,74 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             {agentBusy === "outreach" ? <Loader2 className="size-3.5 animate-spin" /> : <Mail className="size-3.5 text-brand-glow-text" />}
             Draft outreach
           </button>
+          <button
+            type="button"
+            onClick={() => setShowNegotiate((current) => !current)}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground"
+          >
+            <Handshake className="size-3.5 text-brand-glow-text" />
+            Negotiate
+          </button>
           {agentNotice ? <span className="text-xs font-bold text-emerald-700">{agentNotice}</span> : null}
         </div>
+
+        {showNegotiate ? (
+          <div className="border-b border-border-subtle px-6 py-4">
+            <p className="text-sm font-black text-foreground">Negotiate within deal rules</p>
+            <p className="mt-1 text-xs leading-5 text-muted">
+              Paste what the prospect asked for. The Negotiator checks it against this lead&apos;s floor price and max
+              discount below — if it&apos;s within the rules it drafts a counter into the Approval Inbox; if not, it
+              escalates to you instead of drafting anything.
+            </p>
+            <textarea
+              value={threadContext}
+              onChange={(event) => setThreadContext(event.target.value)}
+              rows={3}
+              placeholder="e.g. They're asking for 30% off and a 90-day payment plan…"
+              className="mt-3 w-full resize-none rounded-2xl border border-border-subtle p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+            />
+            <button
+              type="button"
+              onClick={runNegotiate}
+              disabled={negotiating || !threadContext.trim()}
+              className="mt-3 inline-flex h-10 items-center gap-2 rounded-full bg-brand-deep px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {negotiating ? <Loader2 className="size-4 animate-spin" /> : <Handshake className="size-4" />}
+              Get negotiation advice
+            </button>
+
+            {negotiationResult ? (
+              <div className="mt-4 grid gap-2 rounded-2xl bg-surface p-4 text-sm">
+                <p>
+                  <span className="font-black text-foreground">Their ask:</span>{" "}
+                  {String(negotiationResult.their_ask ?? "—")}
+                </p>
+                <p>
+                  <span className="font-black text-foreground">Their leverage:</span>{" "}
+                  {String(negotiationResult.their_leverage ?? "—")}
+                </p>
+                <p>
+                  <span className="font-black text-foreground">Our leverage:</span>{" "}
+                  {String(negotiationResult.our_leverage ?? "—")}
+                </p>
+                {negotiationResult.escalated ? (
+                  <div className="mt-1 rounded-2xl border border-amber-300/40 bg-amber-400/10 p-3 text-amber-700">
+                    <p className="font-black">Escalated to you</p>
+                    <p className="mt-1">{String(negotiationResult.reason ?? negotiationResult.rationale ?? "")}</p>
+                  </div>
+                ) : (
+                  <div className="mt-1 rounded-2xl border border-emerald-300/40 bg-emerald-400/10 p-3 text-emerald-700">
+                    <p className="font-black">
+                      Drafted: ${String(negotiationResult.proposed_price ?? "—")}
+                      {negotiationResult.discount_pct != null ? ` (${String(negotiationResult.discount_pct)}% off)` : ""}
+                    </p>
+                    <p className="mt-1">{String(negotiationResult.rationale ?? "")}</p>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         {researchBrief ? (
           <div className="border-b border-border-subtle px-6 py-4">

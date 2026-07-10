@@ -98,11 +98,12 @@ export const prospectUpdateSchema = z.object({
 });
 
 export const agentRunSchema = z.object({
-  agent: z.enum(["qualify", "research", "outreach", "scraper"]),
+  agent: z.enum(["qualify", "research", "outreach", "scraper", "negotiate"]),
   leadId: z.string().uuid().optional(),
   prospectId: z.string().uuid().optional(),
   icpId: z.string().uuid().optional(),
   instruction: z.string().max(500).optional(),
+  threadContext: z.string().max(6000).optional(),
 });
 
 export const sequenceUpdateSchema = z.object({

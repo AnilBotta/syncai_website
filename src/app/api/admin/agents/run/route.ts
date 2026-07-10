@@ -11,6 +11,7 @@ import { runQualify } from "@/lib/agents/qualify";
 import { runResearch } from "@/lib/agents/research";
 import { runOutreach } from "@/lib/agents/outreach";
 import { runScraper } from "@/lib/agents/scraper";
+import { runNegotiator } from "@/lib/agents/negotiator";
 import { serverErrorResponse } from "@/lib/api-errors";
 
 // Agent runs can call external APIs + OpenAI; give them room.
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   const supabase = createSupabaseAdminClient();
-  const { agent, leadId, prospectId, icpId, instruction } = parsed.data;
+  const { agent, leadId, prospectId, icpId, instruction, threadContext } = parsed.data;
 
   try {
     switch (agent) {
@@ -65,6 +66,12 @@ export async function POST(request: Request) {
       case "scraper": {
         if (!icpId) return NextResponse.json({ error: "icpId required." }, { status: 400 });
         const result = await runScraper(supabase, icpId);
+        return NextResponse.json(result);
+      }
+      case "negotiate": {
+        if (!leadId) return NextResponse.json({ error: "leadId required." }, { status: 400 });
+        if (!threadContext) return NextResponse.json({ error: "threadContext required." }, { status: 400 });
+        const result = await runNegotiator(supabase, { leadId, threadContext });
         return NextResponse.json(result);
       }
       default:
