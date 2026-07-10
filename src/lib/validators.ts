@@ -122,6 +122,18 @@ export const enrollmentUpdateSchema = z.object({
   action: z.enum(["pause", "resume", "cancel"]),
 });
 
+export const documentCreateSchema = z.object({
+  leadId: z.string().uuid(),
+  type: z.enum(["proposal", "agreement", "onboarding", "offer_letter"]),
+  instruction: z.string().max(1200).optional().or(z.literal("")),
+});
+
+export const documentUpdateSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1).max(200).optional(),
+  contentMd: z.string().min(1).max(40000).optional(),
+});
+
 export const managerChatSchema = z.object({
   messages: z
     .array(

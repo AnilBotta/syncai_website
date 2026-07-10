@@ -97,7 +97,26 @@ export type AgentName =
   | "email_draft"
   | "sequence_draft"
   | "scraper"
-  | "negotiate";
+  | "negotiate"
+  | "document";
+
+export type DocumentType = "proposal" | "agreement" | "onboarding" | "offer_letter";
+
+export type Document = {
+  id: string;
+  created_at: string;
+  lead_id?: string | null;
+  type: DocumentType;
+  title: string;
+  content_md: string;
+  status: "draft" | "approved" | "sent" | "viewed" | "accepted" | "cancelled";
+  accept_token: string;
+  sent_at?: string | null;
+  viewed_at?: string | null;
+  accepted_at?: string | null;
+  accepted_ip?: string | null;
+  meta: Record<string, unknown>;
+};
 
 export type Icp = {
   id: string;

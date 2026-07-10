@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Loader2, Mail, Pencil, X } from "lucide-react";
-import type { Approval, Email } from "@/lib/supabase";
+import { Check, FileText, Loader2, Mail, Pencil, X } from "lucide-react";
+import type { Approval, Document, Email } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
 
 type ApprovalInboxProps = {
@@ -14,6 +14,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
   const [approvals, setApprovals] = useState<Approval[]>([]);
   const [selected, setSelected] = useState<Approval | null>(null);
   const [emailPreview, setEmailPreview] = useState<Email | null>(null);
+  const [docPreview, setDocPreview] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -61,9 +62,11 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
     let cancelled = false;
 
     const timer = window.setTimeout(() => {
-      const previewable = selected?.type === "email" || selected?.type === "negotiation_reply";
-      if (!selected || !previewable || !selected.entity_id) {
+      const isEmail = selected?.type === "email" || selected?.type === "negotiation_reply";
+      const isDoc = selected?.type === "document";
+      if (!selected || (!isEmail && !isDoc) || !selected.entity_id) {
         setEmailPreview(null);
+        setDocPreview(null);
         setEditing(false);
         return;
       }
@@ -71,6 +74,21 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
       void (async () => {
         try {
           const token = await getToken();
+          if (isDoc) {
+            const response = await fetch(`/api/admin/documents?leadId=${selected.lead_id ?? ""}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const result = await response.json();
+            const match: Document | undefined = (result.documents || []).find(
+              (d: Document) => d.id === selected.entity_id,
+            );
+            if (!cancelled) {
+              setDocPreview(match || null);
+              setEmailPreview(null);
+              setEditing(false);
+            }
+            return;
+          }
           const response = await fetch(`/api/admin/emails?leadId=${selected.lead_id ?? ""}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -80,11 +98,13 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
           );
           if (!cancelled) {
             setEmailPreview(match || null);
+            setDocPreview(null);
             setEditing(false);
           }
         } catch {
           if (!cancelled) {
             setEmailPreview(null);
+            setDocPreview(null);
           }
         }
       })();
@@ -189,7 +209,11 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <Mail className="size-4 shrink-0 text-brand-glow-text" />
+                  {approval.type === "document" ? (
+                    <FileText className="size-4 shrink-0 text-brand-glow-text" />
+                  ) : (
+                    <Mail className="size-4 shrink-0 text-brand-glow-text" />
+                  )}
                   <p className="min-w-0 truncate text-sm font-bold text-foreground">{approval.title}</p>
                 </div>
                 <p className="mt-1 text-xs text-muted">
@@ -290,6 +314,24 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                   <p className="mt-3 whitespace-pre-line text-sm leading-6 text-foreground/90">
                     {emailPreview.body_text}
                   </p>
+                </div>
+              )
+            ) : selected.type === "document" ? (
+              docPreview ? (
+                <div className="mt-4 rounded-2xl bg-surface p-4">
+                  <div className="flex items-center gap-2">
+                    <FileText className="size-4 shrink-0 text-brand-glow-text" />
+                    <p className="text-sm font-black text-foreground">{docPreview.title}</p>
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted">Approving emails the client a signable copy.</p>
+                  <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap font-sans text-sm leading-6 text-foreground/90">
+                    {docPreview.content_md}
+                  </pre>
+                </div>
+              ) : (
+                <div className="mt-4 flex h-24 items-center justify-center text-sm text-muted">
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Loading document
                 </div>
               )
             ) : selected.type === "email" || selected.type === "negotiation_reply" ? (

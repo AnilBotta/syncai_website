@@ -177,7 +177,7 @@ create table if not exists public.agent_runs (
   created_at timestamptz not null default now(),
   finished_at timestamptz,
   lead_id uuid references public.leads(id) on delete cascade,
-  agent text not null check (agent in ('manager', 'qualify', 'research', 'email_draft', 'sequence_draft', 'scraper', 'negotiate')),
+  agent text not null check (agent in ('manager', 'qualify', 'research', 'email_draft', 'sequence_draft', 'scraper', 'negotiate', 'document')),
   status text not null default 'running' check (status in ('running', 'succeeded', 'failed')),
   thread_key text,
   input jsonb not null default '{}'::jsonb,
@@ -334,3 +334,29 @@ alter table public.emails
 alter table public.emails
   add constraint emails_sequence_enrollment_fk
   foreign key (sequence_enrollment_id) references public.sequence_enrollments(id) on delete set null;
+
+create table if not exists public.documents (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  lead_id uuid references public.leads(id) on delete cascade,
+  type text not null check (type in ('proposal', 'agreement', 'onboarding', 'offer_letter')),
+  title text not null,
+  content_md text not null,
+  status text not null default 'draft'
+    check (status in ('draft', 'approved', 'sent', 'viewed', 'accepted', 'cancelled')),
+  accept_token text not null unique,
+  sent_at timestamptz,
+  viewed_at timestamptz,
+  accepted_at timestamptz,
+  accepted_ip text,
+  meta jsonb not null default '{}'::jsonb
+);
+
+alter table public.documents enable row level security;
+drop policy if exists "Admin service role can manage documents" on public.documents;
+create policy "Admin service role can manage documents"
+on public.documents for all
+using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+
+create index if not exists documents_lead_idx on public.documents (lead_id, created_at desc);
+create index if not exists documents_token_idx on public.documents (accept_token);

@@ -8,6 +8,7 @@ import { runQualify } from "@/lib/agents/qualify";
 import { runResearch } from "@/lib/agents/research";
 import { runScraper } from "@/lib/agents/scraper";
 import { runNegotiator } from "@/lib/agents/negotiator";
+import { runDocument } from "@/lib/agents/document";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -392,6 +393,33 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const draftDocument = tool(
+    async ({ lead, documentType, instruction }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      const result = await runDocument(supabase, {
+        leadId: found.id,
+        type: documentType,
+        instruction,
+      });
+      if (!result.ok) return `Couldn't draft the document: ${result.error}`;
+      trace.push({ tool: "draft_document", summary: `${documentType} for ${found.name}` });
+      return `Drafted a ${documentType.replace("_", " ")} ("${result.data.title}") for ${found.name} and put it in the Approval Inbox. Approve it there to email them a signable copy — nothing is sent until you do.`;
+    },
+    {
+      name: "draft_document",
+      description:
+        "Draft a business document (proposal, service agreement, onboarding doc, or offer letter) for a lead. It's saved as a draft in the Approval Inbox; approving it emails the lead a click-to-accept copy. Never sends on its own.",
+      schema: z.object({
+        lead: z.string().describe("Lead id or name"),
+        documentType: z
+          .enum(["proposal", "agreement", "onboarding", "offer_letter"])
+          .describe("Which document to generate"),
+        instruction: z.string().optional().describe("Optional special instructions (scope, term, price framing)"),
+      }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -406,5 +434,6 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     findProspects,
     enrollInSequence,
     negotiate,
+    draftDocument,
   ];
 }
