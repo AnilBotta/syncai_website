@@ -29,7 +29,6 @@ const MONTHS = [
 export function resolveSpokenDate(input: string | undefined | null, now = new Date()): string | null {
   if (!input) return null;
   const s = input.trim().toLowerCase();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
 
   const TZ = BOOKING_CONFIG.timezone;
   const todayStr = formatInTimeZone(now, TZ, "yyyy-MM-dd");
@@ -37,6 +36,19 @@ export function resolveSpokenDate(input: string | undefined | null, now = new Da
   const fmt = (d: Date) => formatInTimeZone(d, TZ, "yyyy-MM-dd");
   // ISO weekday 1..7 (Mon..Sun) -> 0..6 (Sun..Sat) to match WEEKDAYS.
   const todayDow = Number(formatInTimeZone(todayNoon, TZ, "i")) % 7;
+
+  // Exact ISO date. Never trust the YEAR the model sends — LLMs routinely emit a
+  // stale year (e.g. 2024). Since we only book into the near future, a past ISO
+  // date is a wrong-year hallucination: keep the month/day, roll to the current
+  // year (or next if that's already past).
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) {
+    if (s >= todayStr) return s;
+    const curYear = Number(formatInTimeZone(now, TZ, "yyyy"));
+    let candidate = `${curYear}-${iso[2]}-${iso[3]}`;
+    if (candidate < todayStr) candidate = `${curYear + 1}-${iso[2]}-${iso[3]}`;
+    return candidate;
+  }
 
   if (s === "today" || s === "tonight") return todayStr;
   if (s.includes("day after tomorrow")) return fmt(addDays(todayNoon, 2));
