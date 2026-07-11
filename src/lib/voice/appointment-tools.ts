@@ -1,4 +1,5 @@
-import { fromZonedTime } from "date-fns-tz";
+import { addDays } from "date-fns";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Lead } from "@/lib/supabase";
 import {
@@ -11,6 +12,68 @@ import {
   slotEndsAt,
 } from "@/lib/booking";
 import { notifyCeo } from "@/lib/telegram";
+
+const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+const MONTHS = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+
+/**
+ * Resolves a spoken date to YYYY-MM-DD in the business timezone. Handles exact
+ * ISO dates AND relative language ("today", "tomorrow", "next tuesday",
+ * "july 15", "next week") — computed server-side, where we always know the real
+ * current date, so it never depends on the voice model knowing today's date.
+ * Returns null if it can't be resolved.
+ */
+export function resolveSpokenDate(input: string | undefined | null, now = new Date()): string | null {
+  if (!input) return null;
+  const s = input.trim().toLowerCase();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  const TZ = BOOKING_CONFIG.timezone;
+  const todayStr = formatInTimeZone(now, TZ, "yyyy-MM-dd");
+  const todayNoon = fromZonedTime(`${todayStr}T12:00:00`, TZ);
+  const fmt = (d: Date) => formatInTimeZone(d, TZ, "yyyy-MM-dd");
+  // ISO weekday 1..7 (Mon..Sun) -> 0..6 (Sun..Sat) to match WEEKDAYS.
+  const todayDow = Number(formatInTimeZone(todayNoon, TZ, "i")) % 7;
+
+  if (s === "today" || s === "tonight") return todayStr;
+  if (s.includes("day after tomorrow")) return fmt(addDays(todayNoon, 2));
+  if (s === "tomorrow" || s === "tomorow" || s === "tmrw") return fmt(addDays(todayNoon, 1));
+
+  // "next week" -> next Monday.
+  if (s.includes("next week")) {
+    const delta = ((1 - todayDow + 7) % 7) || 7;
+    return fmt(addDays(todayNoon, delta));
+  }
+
+  // Weekday names, optionally prefixed with "next".
+  const wd = s.match(/(next\s+)?(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/);
+  if (wd) {
+    const target = WEEKDAYS.indexOf(wd[2]);
+    let delta = (target - todayDow + 7) % 7;
+    if (delta === 0) delta = 7; // "monday" said on a Monday means the next one
+    return fmt(addDays(todayNoon, delta));
+  }
+
+  // Month + day, in either order ("july 15", "15 july", "jul 15th").
+  const md = s.match(/(?:(\d{1,2})\s+)?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s*(\d{1,2})?/);
+  if (md) {
+    const monIdx = MONTHS.findIndex((m) => m.startsWith(md[2]));
+    const day = md[3] ? parseInt(md[3], 10) : md[1] ? parseInt(md[1], 10) : NaN;
+    if (monIdx >= 0 && day >= 1 && day <= 31) {
+      const year = Number(formatInTimeZone(now, TZ, "yyyy"));
+      const mm = String(monIdx + 1).padStart(2, "0");
+      const dd = String(day).padStart(2, "0");
+      let candidate = `${year}-${mm}-${dd}`;
+      if (candidate < todayStr) candidate = `${year + 1}-${mm}-${dd}`; // already passed -> next year
+      return candidate;
+    }
+  }
+
+  return null;
+}
 
 /**
  * Turns a spoken date + time ("2026-07-15", "2 PM" / "2:30pm" / "14:00") into a
@@ -53,24 +116,32 @@ export async function checkAvailabilityForVoice(
   supabase: SupabaseClient,
   date?: string | null,
 ): Promise<{ message: string }> {
-  if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    const { slots } = await getAvailableSlots(supabase, date);
+  const resolved = resolveSpokenDate(date);
+  if (resolved) {
+    const { slots } = await getAvailableSlots(supabase, resolved);
     if (!slots.length) {
-      return { message: `We don't have any openings on ${formatDayLabel(date)}. Would you like me to check another day?` };
+      // No slots that day (weekend, too soon, or fully booked) — offer the real next openings.
+      const next = await nextOpenDaysMessage(supabase);
+      return { message: `We don't have any openings on ${formatDayLabel(resolved)}. ${next}` };
     }
     const times = slots.slice(0, 6).map((s) => s.label).join(", ");
-    return { message: `On ${formatDayLabel(date)} we have: ${times}. Which time works best for you?` };
+    return { message: `On ${formatDayLabel(resolved)} we have: ${times}. Which time works best for you?` };
   }
 
-  const days = getBookableDays().slice(0, 3);
-  if (!days.length) return { message: "We don't have any open slots in the next couple of weeks right now." };
+  return { message: await nextOpenDaysMessage(supabase) };
+}
 
+/** Spoken summary of the next few days that actually have open slots. */
+async function nextOpenDaysMessage(supabase: SupabaseClient): Promise<string> {
+  const days = getBookableDays().slice(0, 4);
   const parts: string[] = [];
   for (const d of days) {
     const { slots } = await getAvailableSlots(supabase, d.date);
     if (slots.length) parts.push(`${d.label}: ${slots.slice(0, 3).map((s) => s.label).join(", ")}`);
+    if (parts.length >= 3) break;
   }
-  return { message: `Here are our next openings — ${parts.join("; ")}. What day and time would you like?` };
+  if (!parts.length) return "We don't have any open slots in the next couple of weeks right now.";
+  return `Here are our next openings — ${parts.join("; ")}. What day and time would you like?`;
 }
 
 /**
@@ -94,15 +165,19 @@ export async function bookAppointmentFromCall(
   if (!args.date || !args.time) {
     return { success: false, message: "What day and time would you like to book?" };
   }
-  const iso = parseSpokenTimeToIso(args.date, args.time);
+  const resolvedDate = resolveSpokenDate(args.date);
+  if (!resolvedDate) {
+    return { success: false, message: "Which day would you like — for example 'tomorrow', 'next Tuesday', or a specific date?" };
+  }
+  const iso = parseSpokenTimeToIso(resolvedDate, args.time);
   if (!iso) {
-    return { success: false, message: "I didn't quite catch that — could you say the day and time again, like 'July 15th at 2 PM'?" };
+    return { success: false, message: "I didn't quite catch the time — could you say it again, like '2 PM' or '10:30 in the morning'?" };
   }
   if (!isValidSlot(iso)) {
+    const next = await nextOpenDaysMessage(supabase);
     return {
       success: false,
-      message:
-        "That time isn't in our booking window — we book weekdays, 9 to 5 Eastern, at least 12 hours out. Could you pick another time?",
+      message: `That time isn't available — we book weekdays, 9 to 5 Eastern, at least 12 hours out. ${next}`,
     };
   }
 
