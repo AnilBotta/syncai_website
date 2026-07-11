@@ -110,6 +110,54 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const createLead = tool(
+    async ({ name, email, painPoint, phone, company, industry, interest }) => {
+      const { data, error } = await supabase
+        .from("leads")
+        .insert({
+          name,
+          email,
+          phone: phone || null,
+          company: company || null,
+          industry: industry || null,
+          pain_point: painPoint,
+          interest: interest || null,
+          source: "manual",
+          status: "new",
+        })
+        .select()
+        .single<Lead>();
+      if (error || !data) return `Couldn't add the lead: ${error?.message}`;
+
+      await supabase.from("lead_activities").insert({
+        lead_id: data.id,
+        type: "system",
+        title: "Lead added manually via the Manager",
+        actor: "ceo",
+      });
+
+      trace.push({ tool: "create_lead", summary: `added ${name}` });
+      return `Added ${name}${company ? ` (${company})` : ""} to the pipeline${phone ? "" : " — no phone number, so I can't call them until you add one"}. What would you like to do next — call them, draft an email, or something else?`;
+    },
+    {
+      name: "create_lead",
+      description:
+        "Add a brand-new lead to the pipeline (the CEO is entering someone manually, not from the website or scraper). Required: name, email, and a short description of their pain point/need (at least a full sentence). Phone is optional but required before you can call this lead. If the CEO hasn't given you enough to fill these in, ASK them for the missing pieces one at a time instead of guessing or leaving them blank.",
+      schema: z.object({
+        name: z.string().min(2).describe("The lead's full name"),
+        email: z.string().email().describe("The lead's email address"),
+        painPoint: z
+          .string()
+          .min(12)
+          .describe("A sentence or two describing their business need or pain point — required, ask if not given"),
+        phone: z.string().optional().describe("Phone number — needed if the CEO wants to call this lead later"),
+        company: z.string().optional(),
+        industry: z.string().optional(),
+        interest: z.string().optional().describe("Which service they're interested in, if known"),
+      }),
+    },
+  );
+
   const listPendingApprovals = tool(
     async () => {
       const { data, error } = await supabase
@@ -668,6 +716,7 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     getPipelineSummary,
     searchLeads,
     getLead,
+    createLead,
     listPendingApprovals,
     createTask,
     moveLeadStatus,
