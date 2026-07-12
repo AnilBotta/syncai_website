@@ -2,7 +2,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Document, Lead } from "@/lib/supabase";
 import { documentTypes } from "@/lib/site-data";
 import { sendEmailRecord } from "@/lib/email/send-core";
+import { renderDocumentPdf } from "@/lib/pdf";
 import { notifyCeo } from "@/lib/telegram";
+
+/** Safe filename from a document title, e.g. "Proposal for Acme" -> "Proposal-for-Acme.pdf". */
+function pdfFilename(title: string): string {
+  const base = title.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "document";
+  return `${base}.pdf`;
+}
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.syncai.tech";
 
@@ -42,7 +49,7 @@ export async function sendDocumentForSignature(
   const body = [
     `Hi ${lead.name},`,
     "",
-    `Please find your ${label.toLowerCase()} from SyncAI Technologies below. You can review it and accept it online here:`,
+    `Please find your ${label.toLowerCase()} from SyncAI Technologies attached as a PDF. You can also review and accept it online here:`,
     "",
     acceptUrl,
     "",
@@ -51,6 +58,15 @@ export async function sendDocumentForSignature(
     "Thanks,",
     "Anil",
   ].join("\n");
+
+  // Branded PDF of the document, attached to the email.
+  let attachments;
+  try {
+    const pdf = await renderDocumentPdf({ title: doc.title, contentMd: doc.content_md });
+    attachments = [{ filename: pdfFilename(doc.title), content: pdf }];
+  } catch (error) {
+    console.error("[documents] PDF render failed, sending without attachment", error);
+  }
 
   const { data: email, error: emailError } = await supabase
     .from("emails")
@@ -69,7 +85,7 @@ export async function sendDocumentForSignature(
     return { ok: false, status: 500, error: `Could not create the accept-link email: ${emailError?.message}` };
   }
 
-  const sendResult = await sendEmailRecord(supabase, email.id);
+  const sendResult = await sendEmailRecord(supabase, email.id, { attachments });
   if (!sendResult.ok) return sendResult;
 
   const now = new Date().toISOString();

@@ -9,11 +9,14 @@ export function hasResendConfig() {
   return Boolean(RESEND_API_KEY);
 }
 
+export type EmailAttachment = { filename: string; content: Buffer };
+
 export type SendEmailInput = {
   to: string;
   subject: string;
   html: string;
   text: string;
+  attachments?: EmailAttachment[];
 };
 
 export type SendEmailResult =
@@ -38,6 +41,9 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
       html: input.html,
       text: input.text,
       ...(EMAIL_REPLY_TO ? { replyTo: EMAIL_REPLY_TO } : {}),
+      ...(input.attachments?.length
+        ? { attachments: input.attachments.map((a) => ({ filename: a.filename, content: a.content })) }
+        : {}),
     });
 
     if (error) {
