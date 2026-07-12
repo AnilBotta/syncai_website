@@ -108,7 +108,7 @@ export function CallsPanel({ leadId, hasPhone, getToken }: CallsPanelProps) {
           </div>
         ) : calls.length ? (
           calls.map((c) => (
-            <div key={c.id} className="rounded-2xl border border-border-subtle p-3">
+            <div key={c.id} className="rounded-2xl border border-sidebar-border p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-sm font-bold text-foreground">
                   {c.direction === "outbound" ? "Outbound" : "Inbound"} · {formatDate(c.created_at)}
@@ -140,7 +140,7 @@ export function CallsPanel({ leadId, hasPhone, getToken }: CallsPanelProps) {
             </div>
           ))
         ) : (
-          <p className="rounded-2xl border border-dashed border-border-subtle p-4 text-center text-sm text-muted">
+          <p className="rounded-2xl border border-dashed border-sidebar-border p-4 text-center text-sm text-muted">
             No calls yet.
           </p>
         )}

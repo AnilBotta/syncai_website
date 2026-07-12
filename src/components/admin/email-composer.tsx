@@ -68,13 +68,13 @@ export function EmailComposer({ getToken, lead, defaultTo, onClose, onCreated }:
         onClick={onClose}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
       />
-      <div className="relative w-full max-w-lg rounded-3xl border border-border-subtle bg-bg-elevated p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-6 shadow-pop">
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-black text-foreground">Compose email</h2>
           <button
             type="button"
             onClick={onClose}
-            className="grid size-9 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-foreground"
+            className="grid size-9 place-items-center rounded-full border border-sidebar-border text-muted transition hover:text-foreground"
             aria-label="Close"
           >
             <X className="size-4" />
@@ -100,7 +100,7 @@ export function EmailComposer({ getToken, lead, defaultTo, onClose, onCreated }:
                 value={to}
                 onChange={(event) => setTo(event.target.value)}
                 type="email"
-                className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               />
             </label>
             <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
@@ -108,7 +108,7 @@ export function EmailComposer({ getToken, lead, defaultTo, onClose, onCreated }:
               <input
                 value={subject}
                 onChange={(event) => setSubject(event.target.value)}
-                className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               />
             </label>
             <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
@@ -117,7 +117,7 @@ export function EmailComposer({ getToken, lead, defaultTo, onClose, onCreated }:
                 value={body}
                 onChange={(event) => setBody(event.target.value)}
                 rows={8}
-                className="resize-none rounded-2xl border border-border-subtle p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                className="resize-none rounded-2xl border border-sidebar-border p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               />
             </label>
 

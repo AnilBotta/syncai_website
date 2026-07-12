@@ -203,13 +203,13 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[.85fr_1.15fr]">
-      <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
         <div className="flex items-center justify-between">
           <p className="text-sm font-black text-foreground">Pending ({approvals.length})</p>
         </div>
 
         {demoMode ? (
-          <div className="mt-4 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-3 text-xs text-amber-700">
+          <div className="mt-4 rounded-[var(--radius-control)] border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
             Demo mode. Connect Supabase + Resend to manage live approvals.
           </div>
         ) : null}
@@ -228,8 +228,8 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                 onClick={() => setSelected(approval)}
                 className={`rounded-2xl border p-3 text-left transition ${
                   selected?.id === approval.id
-                    ? "border-brand-soft bg-brand-deep/15"
-                    : "border-border-subtle hover:border-brand-soft"
+                    ? "border-brand-soft bg-brand/[.08]"
+                    : "border-sidebar-border hover:border-brand-soft"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -248,17 +248,17 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
               </button>
             ))
           ) : (
-            <p className="rounded-2xl border border-dashed border-border-subtle p-6 text-center text-sm text-muted">
+            <p className="rounded-2xl border border-dashed border-sidebar-border p-6 text-center text-sm text-muted">
               Nothing awaiting approval. Drafts from you and your agents will queue here.
             </p>
           )}
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
         {selected ? (
           <div>
-            <div className="flex items-start justify-between gap-3 border-b border-border-subtle pb-4">
+            <div className="flex items-start justify-between gap-3 border-b border-sidebar-border pb-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-wider text-muted">
                   {selected.type.replace("_", " ")}
@@ -274,7 +274,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                     setEditBody(emailPreview.body_text);
                     setEditing(true);
                   }}
-                  className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-border-subtle px-4 text-sm font-bold text-muted transition hover:text-foreground"
+                  className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-sidebar-border px-4 text-sm font-bold text-muted transition hover:text-foreground"
                 >
                   <Pencil className="size-4" />
                   Edit
@@ -283,7 +283,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
             </div>
 
             {selected.type === "negotiation_reply" ? (
-              <div className="mt-4 grid gap-2 rounded-2xl border border-border-subtle bg-surface p-4 text-sm">
+              <div className="mt-4 grid gap-2 rounded-2xl border border-sidebar-border bg-foreground/[.03] p-4 text-sm">
                 <p className="text-xs font-black uppercase tracking-wider text-muted">Negotiation math</p>
                 {typeof selected.meta?.their_ask === "string" ? (
                   <p><span className="font-bold text-foreground">Their ask:</span> {String(selected.meta.their_ask)}</p>
@@ -307,13 +307,13 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                   <input
                     value={editSubject}
                     onChange={(event) => setEditSubject(event.target.value)}
-                    className="h-11 rounded-full border border-border-subtle px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="h-11 rounded-full border border-sidebar-border px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                   <textarea
                     value={editBody}
                     onChange={(event) => setEditBody(event.target.value)}
                     rows={10}
-                    className="resize-none rounded-2xl border border-border-subtle p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="resize-none rounded-2xl border border-sidebar-border p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                   <div className="flex gap-2">
                     <button
@@ -327,14 +327,14 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                     <button
                       type="button"
                       onClick={() => setEditing(false)}
-                      className="inline-flex h-10 items-center rounded-full border border-border-subtle px-5 text-sm font-bold text-muted"
+                      className="inline-flex h-10 items-center rounded-full border border-sidebar-border px-5 text-sm font-bold text-muted"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="mt-4 rounded-2xl bg-surface p-4">
+                <div className="mt-4 rounded-2xl bg-foreground/[.03] p-4">
                   <p className="text-sm font-black text-foreground">{emailPreview.subject}</p>
                   <p className="mt-0.5 text-xs text-muted">To: {emailPreview.to_email}</p>
                   <p className="mt-3 whitespace-pre-line text-sm leading-6 text-foreground/90">
@@ -344,7 +344,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
               )
             ) : selected.type === "document" ? (
               docPreview ? (
-                <div className="mt-4 rounded-2xl bg-surface p-4">
+                <div className="mt-4 rounded-2xl bg-foreground/[.03] p-4">
                   <div className="flex items-center gap-2">
                     <FileText className="size-4 shrink-0 text-brand-glow-text" />
                     <p className="text-sm font-black text-foreground">{docPreview.title}</p>
@@ -362,7 +362,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
               )
             ) : selected.type === "invoice" ? (
               invoicePreview ? (
-                <div className="mt-4 rounded-2xl bg-surface p-4">
+                <div className="mt-4 rounded-2xl bg-foreground/[.03] p-4">
                   <div className="flex items-center gap-2">
                     <Receipt className="size-4 shrink-0 text-brand-glow-text" />
                     <p className="text-sm font-black text-foreground">{invoicePreview.number}</p>
@@ -382,7 +382,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                       </div>
                     ))}
                   </div>
-                  <div className="mt-3 flex items-center justify-between border-t border-border-subtle pt-3">
+                  <div className="mt-3 flex items-center justify-between border-t border-sidebar-border pt-3">
                     <span className="text-sm font-black text-foreground">Total</span>
                     <span className="text-sm font-black text-foreground">{cad.format(Number(invoicePreview.amount))}</span>
                   </div>
@@ -403,12 +403,12 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                 Loading email
               </div>
             ) : (
-              <p className="mt-4 rounded-2xl bg-surface p-4 text-sm text-muted">
+              <p className="mt-4 rounded-2xl bg-foreground/[.03] p-4 text-sm text-muted">
                 This approval type is handled in a later phase.
               </p>
             )}
 
-            {error ? <p className="mt-4 rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+            {error ? <p className="mt-4 rounded-[var(--radius-control)] bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
             {!editing ? (
               <div className="mt-5 flex flex-wrap gap-3">
@@ -416,7 +416,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                   type="button"
                   onClick={() => decide(selected, "approved")}
                   disabled={busy}
-                  className="inline-flex h-12 items-center gap-2 rounded-full bg-emerald-600 px-6 text-sm font-black text-white disabled:opacity-60"
+                  className="inline-flex h-12 items-center gap-2 rounded-full bg-success px-6 text-sm font-black text-white transition hover:brightness-110 disabled:opacity-60"
                 >
                   {busy ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
                   Approve &amp; send
@@ -425,7 +425,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                   type="button"
                   onClick={() => decide(selected, "rejected")}
                   disabled={busy}
-                  className="inline-flex h-12 items-center gap-2 rounded-full border border-border-subtle px-6 text-sm font-bold text-muted transition hover:text-red-600 disabled:opacity-60"
+                  className="inline-flex h-12 items-center gap-2 rounded-full border border-sidebar-border px-6 text-sm font-bold text-muted transition hover:border-danger/40 hover:text-danger disabled:opacity-60"
                 >
                   <X className="size-4" />
                   Reject

@@ -97,7 +97,7 @@ export function SequenceEnroll({ leadId, getToken }: SequenceEnrollProps) {
       ) : (
         <>
           {activeEnrollments.map((e) => (
-            <div key={e.id} className="mb-2 flex items-center justify-between gap-2 rounded-2xl border border-border-subtle p-3">
+            <div key={e.id} className="mb-2 flex items-center justify-between gap-2 rounded-2xl border border-sidebar-border p-3">
               <div className="min-w-0">
                 <p className="text-sm font-bold text-foreground">{e.sequence_name}</p>
                 <p className="text-xs text-muted">
@@ -126,7 +126,7 @@ export function SequenceEnroll({ leadId, getToken }: SequenceEnrollProps) {
             <select
               value={chosen}
               onChange={(event) => setChosen(event.target.value)}
-              className="h-10 flex-1 rounded-full border border-border-subtle px-3 text-sm outline-none focus:border-brand-soft"
+              className="h-10 flex-1 rounded-full border border-sidebar-border px-3 text-sm outline-none focus:border-brand-soft"
             >
               {sequences.length ? (
                 sequences.map((s) => (

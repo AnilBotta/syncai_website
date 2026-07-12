@@ -115,7 +115,7 @@ export function ActivityTimeline({ leadId, getToken }: ActivityTimelineProps) {
               void addNote();
             }
           }}
-          className="h-11 flex-1 rounded-full border border-border-subtle px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+          className="h-11 flex-1 rounded-full border border-sidebar-border px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
           placeholder="Add a note to the timeline…"
         />
         <button
@@ -140,7 +140,7 @@ export function ActivityTimeline({ leadId, getToken }: ActivityTimelineProps) {
           activities.map((activity) => {
             const Icon = typeIcons[activity.type] || Sparkles;
             return (
-              <div key={activity.id} className="flex gap-3 rounded-2xl border border-border-subtle p-3">
+              <div key={activity.id} className="flex gap-3 rounded-2xl border border-sidebar-border p-3">
                 <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-brand-deep/10 text-brand-glow-text">
                   <Icon className="size-4" />
                 </span>
@@ -157,7 +157,7 @@ export function ActivityTimeline({ leadId, getToken }: ActivityTimelineProps) {
             );
           })
         ) : (
-          <p className="rounded-2xl border border-dashed border-border-subtle p-4 text-center text-sm text-muted">
+          <p className="rounded-2xl border border-dashed border-sidebar-border p-4 text-center text-sm text-muted">
             No activity yet. Notes, status changes, and agent runs will appear here.
           </p>
         )}

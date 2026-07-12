@@ -172,8 +172,8 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
         onClick={onClose}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
       />
-      <aside className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto border-l border-border-subtle bg-bg-elevated shadow-2xl">
-        <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-border-subtle bg-bg-elevated px-6 py-5">
+      <aside className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto rounded-l-[24px] border-l border-sidebar-border bg-white shadow-pop">
+        <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-sidebar-border bg-white/90 px-6 py-5 backdrop-blur">
           <div>
             <h2 className="text-2xl font-black text-foreground">{lead.name}</h2>
             <p className="mt-1 text-sm text-muted">
@@ -193,7 +193,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             <button
               type="button"
               onClick={() => setInvoicing(true)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border-subtle px-4 text-sm font-bold text-muted transition hover:text-foreground"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-sidebar-border px-4 text-sm font-bold text-muted transition hover:text-foreground"
             >
               <Receipt className="size-4" />
               Invoice
@@ -201,7 +201,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             <button
               type="button"
               onClick={onClose}
-              className="grid size-10 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-foreground"
+              className="grid size-10 place-items-center rounded-full border border-sidebar-border text-muted transition hover:text-foreground"
               aria-label="Close"
             >
               <X className="size-5" />
@@ -209,12 +209,12 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
           </div>
         </header>
 
-        <div className="flex flex-wrap items-center gap-2 border-b border-border-subtle px-6 py-3">
+        <div className="flex flex-wrap items-center gap-2 border-b border-sidebar-border px-6 py-3">
           <button
             type="button"
             onClick={() => runAgent("qualify")}
             disabled={agentBusy !== null}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
           >
             {agentBusy === "qualify" ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5 text-brand-glow-text" />}
             Qualify
@@ -223,7 +223,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             type="button"
             onClick={() => runAgent("research")}
             disabled={agentBusy !== null}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
           >
             {agentBusy === "research" ? <Loader2 className="size-3.5 animate-spin" /> : <Microscope className="size-3.5 text-brand-glow-text" />}
             Research
@@ -232,7 +232,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             type="button"
             onClick={() => runAgent("outreach")}
             disabled={agentBusy !== null}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
           >
             {agentBusy === "outreach" ? <Loader2 className="size-3.5 animate-spin" /> : <Mail className="size-3.5 text-brand-glow-text" />}
             Draft outreach
@@ -240,7 +240,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
           <button
             type="button"
             onClick={() => setShowNegotiate((current) => !current)}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:text-foreground"
           >
             <Handshake className="size-3.5 text-brand-glow-text" />
             Negotiate
@@ -249,7 +249,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
         </div>
 
         {showNegotiate ? (
-          <div className="border-b border-border-subtle px-6 py-4">
+          <div className="border-b border-sidebar-border px-6 py-4">
             <p className="text-sm font-black text-foreground">Negotiate within deal rules</p>
             <p className="mt-1 text-xs leading-5 text-muted">
               Paste what the prospect asked for. The Negotiator checks it against this lead&apos;s floor price and max
@@ -261,7 +261,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
               onChange={(event) => setThreadContext(event.target.value)}
               rows={3}
               placeholder="e.g. They're asking for 30% off and a 90-day payment plan…"
-              className="mt-3 w-full resize-none rounded-2xl border border-border-subtle p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              className="mt-3 w-full resize-none rounded-2xl border border-sidebar-border p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             />
             <button
               type="button"
@@ -307,7 +307,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
         ) : null}
 
         {researchBrief ? (
-          <div className="border-b border-border-subtle px-6 py-4">
+          <div className="border-b border-sidebar-border px-6 py-4">
             <p className="text-sm font-black text-foreground">Research brief</p>
             <pre className="mt-2 max-h-56 overflow-auto rounded-2xl bg-surface p-3 text-xs leading-5 text-muted">
               {JSON.stringify(researchBrief, null, 2)}
@@ -322,7 +322,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
               <select
                 name="status"
                 defaultValue={lead.status}
-                className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               >
                 {leadStatuses.map((item) => (
                   <option key={item.value} value={item.value}>
@@ -339,7 +339,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
                 min={0}
                 step={100}
                 defaultValue={Number(lead.value) || 0}
-                className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               />
             </label>
           </div>
@@ -350,7 +350,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
               name="nextAction"
               defaultValue={lead.next_action || ""}
               placeholder="e.g. Send case study, follow up Friday"
-              className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             />
           </label>
 
@@ -370,7 +370,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
           </div>
 
           {lead.score != null ? (
-            <div className="rounded-3xl border border-border-subtle p-4">
+            <div className="rounded-3xl border border-sidebar-border p-4">
               <p className="text-sm font-black text-foreground">AI qualification score: {lead.score}/100</p>
               {lead.score_rationale ? (
                 <p className="mt-1.5 text-sm leading-6 text-muted">{lead.score_rationale}</p>
@@ -378,7 +378,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             </div>
           ) : null}
 
-          <div className="rounded-3xl border border-border-subtle">
+          <div className="rounded-3xl border border-sidebar-border">
             <button
               type="button"
               onClick={() => setShowRules((current) => !current)}
@@ -388,7 +388,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
               <ChevronDown className={`size-4 text-muted transition ${showRules ? "rotate-180" : ""}`} />
             </button>
             {showRules ? (
-              <div className="grid gap-4 border-t border-border-subtle p-4 sm:grid-cols-2">
+              <div className="grid gap-4 border-t border-sidebar-border p-4 sm:grid-cols-2">
                 <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
                   Floor price (CAD)
                   <input
@@ -398,7 +398,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
                     step={100}
                     defaultValue={lead.floor_price ?? ""}
                     placeholder="Never go below"
-                    className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                 </label>
                 <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted">
@@ -410,7 +410,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
                     max={100}
                     defaultValue={lead.max_discount_pct ?? ""}
                     placeholder="e.g. 15"
-                    className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                 </label>
                 <label className="grid gap-1.5 text-xs font-black uppercase tracking-wider text-muted sm:col-span-2">
@@ -420,7 +420,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
                     defaultValue={lead.concession_notes || ""}
                     rows={2}
                     placeholder="e.g. Can extend support to 60 days; no scope additions."
-                    className="resize-none rounded-2xl border border-border-subtle p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="resize-none rounded-2xl border border-sidebar-border p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                 </label>
               </div>
@@ -441,7 +441,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
               defaultValue={lead.notes || ""}
               rows={4}
               placeholder="Call outcomes, context, proposal details…"
-              className="resize-none rounded-2xl border border-border-subtle p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              className="resize-none rounded-2xl border border-sidebar-border p-3 text-sm font-normal leading-6 text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             />
           </label>
 
@@ -457,35 +457,35 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
           </button>
         </form>
 
-        <div className="border-t border-border-subtle px-6 py-5">
+        <div className="border-t border-sidebar-border px-6 py-5">
           <p className="text-sm font-black text-foreground">Calls</p>
           <div className="mt-3">
             <CallsPanel leadId={lead.id} hasPhone={Boolean(lead.phone)} getToken={getToken} />
           </div>
         </div>
 
-        <div className="border-t border-border-subtle px-6 py-5">
+        <div className="border-t border-sidebar-border px-6 py-5">
           <p className="text-sm font-black text-foreground">Documents</p>
           <div className="mt-3">
             <DocumentsPanel leadId={lead.id} getToken={getToken} />
           </div>
         </div>
 
-        <div className="border-t border-border-subtle px-6 py-5">
+        <div className="border-t border-sidebar-border px-6 py-5">
           <p className="text-sm font-black text-foreground">Nurture sequence</p>
           <div className="mt-3">
             <SequenceEnroll leadId={lead.id} getToken={getToken} />
           </div>
         </div>
 
-        <div className="border-t border-border-subtle px-6 py-5">
+        <div className="border-t border-sidebar-border px-6 py-5">
           <p className="text-sm font-black text-foreground">Follow-ups</p>
           <div className="mt-3">
             <TaskList getToken={getToken} leadId={lead.id} compact />
           </div>
         </div>
 
-        <div className="border-t border-border-subtle px-6 py-5">
+        <div className="border-t border-sidebar-border px-6 py-5">
           <p className="text-sm font-black text-foreground">Activity</p>
           <div className="mt-3">
             <ActivityTimeline leadId={lead.id} getToken={getToken} />
