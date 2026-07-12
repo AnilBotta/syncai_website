@@ -23,6 +23,41 @@
   --radius-card: 16px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* ---- Admin "AI operating system" tokens (light only for now) ---- */
+  /* Flat lavender canvas — the admin opts out of the animated marketing mesh. */
+  --admin-canvas: #f6f4fb;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #ece7f6;
+  --nav-active-bg: var(--brand);
+  --nav-active-fg: #ffffff;
+  --nav-hover-bg: rgba(125, 60, 152, 0.07);
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(26, 26, 31, 0.04), 0 10px 30px rgba(91, 44, 111, 0.07);
+  --shadow-card-hover: 0 2px 4px rgba(26, 26, 31, 0.05), 0 16px 40px rgba(91, 44, 111, 0.12);
+  --shadow-pop: 0 24px 60px rgba(26, 26, 31, 0.18);
+
+  /* Radii */
+  --radius-card-lg: 20px;
+  --radius-control: 12px;
+
+  /* Semantic tints */
+  --success: #0f8a5f;
+  --success-soft: rgba(16, 185, 129, 0.12);
+  --warn: #b45309;
+  --warn-soft: rgba(245, 158, 11, 0.14);
+  --danger: #dc2626;
+  --danger-soft: rgba(239, 68, 68, 0.1);
+  --info: #2563eb;
+  --info-soft: rgba(59, 130, 246, 0.1);
+
+  /* Charts */
+  --chart-line: var(--brand);
+  --chart-line-compare: var(--brand-soft);
+  --chart-grad-start: rgba(125, 60, 152, 0.3);
+  --chart-grad-end: rgba(125, 60, 152, 0);
+  --chart-grid: rgba(26, 26, 31, 0.06);
+
   /* Back-compat name */
   --background: var(--bg-base);
 }
@@ -68,6 +103,27 @@
   --color-brand-deep: var(--brand-deep);
   --color-brand-electric: var(--brand-electric);
   --color-accent-cyan: var(--accent-cyan);
+
+  /* Admin redesign tokens → utilities */
+  --color-admin-canvas: var(--admin-canvas);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-pop: var(--shadow-pop);
+
+  --radius-card: var(--radius-card);
+  --radius-card-lg: var(--radius-card-lg);
+  --radius-control: var(--radius-control);
 
   /* Legacy aliases kept so old classes don't break */
   --color-brand-dark: var(--bg-deep);
