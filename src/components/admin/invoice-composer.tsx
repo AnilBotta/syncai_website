@@ -64,13 +64,13 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      <div className="relative w-full max-w-lg rounded-3xl border border-border-subtle bg-bg-elevated p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-6 shadow-pop">
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-black text-foreground">New invoice · {lead.name}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="grid size-9 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-foreground"
+            className="grid size-9 place-items-center rounded-full border border-sidebar-border text-muted transition hover:text-foreground"
             aria-label="Close"
           >
             <X className="size-4" />
@@ -97,14 +97,14 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
                     value={li.description}
                     onChange={(event) => updateItem(i, { description: event.target.value })}
                     placeholder="Description"
-                    className="h-10 rounded-full border border-border-subtle px-3 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="h-10 rounded-full border border-sidebar-border px-3 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                   <input
                     value={li.quantity}
                     onChange={(event) => updateItem(i, { quantity: event.target.value })}
                     type="number"
                     min={0}
-                    className="h-10 w-14 rounded-full border border-border-subtle px-2 text-center text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="h-10 w-14 rounded-full border border-sidebar-border px-2 text-center text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                   <input
                     value={li.unitAmount}
@@ -113,13 +113,13 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
                     min={0}
                     step="0.01"
                     placeholder="$"
-                    className="h-10 w-24 rounded-full border border-border-subtle px-3 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                    className="h-10 w-24 rounded-full border border-sidebar-border px-3 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                   />
                   <button
                     type="button"
                     onClick={() => setItems((current) => current.filter((_, idx) => idx !== i))}
                     disabled={items.length === 1}
-                    className="grid size-8 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-red-600 disabled:opacity-40"
+                    className="grid size-8 place-items-center rounded-full border border-sidebar-border text-muted transition hover:text-red-600 disabled:opacity-40"
                     aria-label="Remove line"
                   >
                     <Trash2 className="size-3.5" />
@@ -129,7 +129,7 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
               <button
                 type="button"
                 onClick={() => setItems((current) => [...current, { description: "", quantity: "1", unitAmount: "" }])}
-                className="inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground"
+                className="inline-flex h-9 w-fit items-center gap-1.5 rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:text-foreground"
               >
                 <Plus className="size-3.5" />
                 Add line
@@ -147,7 +147,7 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
                 <select
                   value={method}
                   onChange={(event) => setMethod(event.target.value as "stripe" | "etransfer")}
-                  className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                  className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                 >
                   <option value="etransfer">Interac e-Transfer</option>
                   <option value="stripe">Stripe (pay online)</option>
@@ -159,7 +159,7 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
                   value={dueOn}
                   onChange={(event) => setDueOn(event.target.value)}
                   type="date"
-                  className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                  className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                 />
               </label>
             </div>
@@ -169,7 +169,7 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
               onChange={(event) => setNotes(event.target.value)}
               rows={2}
               placeholder="Notes (optional) — shown on the invoice"
-              className="resize-none rounded-2xl border border-border-subtle p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              className="resize-none rounded-2xl border border-sidebar-border p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             />
 
             {error ? <p className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}

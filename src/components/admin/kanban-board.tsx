@@ -3,12 +3,28 @@
 import { useState } from "react";
 import { leadStatuses, type LeadStatus } from "@/lib/site-data";
 import type { Lead } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
+import { Badge, type BadgeTone } from "@/components/admin/ui/badge";
 
 const currency = new Intl.NumberFormat("en-CA", {
   style: "currency",
   currency: "CAD",
   maximumFractionDigits: 0,
 });
+
+// Per-stage accent dot.
+const stageDot: Record<string, string> = {
+  new: "bg-info",
+  contacted: "bg-brand",
+  qualified: "bg-success",
+  proposal: "bg-warn",
+  won: "bg-success",
+  lost: "bg-danger",
+};
+
+function scoreTone(score: number): BadgeTone {
+  return score >= 70 ? "success" : score >= 40 ? "warn" : "danger";
+}
 
 function leadAgeDays(lead: Lead) {
   return Math.max(0, Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 86400000));
@@ -48,17 +64,21 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
             }}
             onDragLeave={() => setDragOver((current) => (current === column.value ? null : current))}
             onDrop={(event) => handleDrop(event, column.value)}
-            className={`min-w-56 rounded-3xl border p-3 transition ${
+            className={cn(
+              "min-w-56 rounded-[var(--radius-card-lg)] border p-3 transition",
               dragOver === column.value
-                ? "border-brand-soft bg-brand-deep/10"
-                : "border-border-subtle bg-bg-elevated/70"
-            }`}
+                ? "border-brand-soft bg-brand/[.06] ring-2 ring-brand/40"
+                : "border-sidebar-border bg-white/60",
+            )}
           >
-            <header className="flex items-baseline justify-between px-1">
-              <p className="text-sm font-black text-foreground">{column.label}</p>
-              <p className="text-xs font-bold text-muted">{columnLeads.length}</p>
+            <header className="flex items-center justify-between px-1">
+              <div className="flex items-center gap-2">
+                <span className={cn("size-2 rounded-full", stageDot[column.value] || "bg-muted")} />
+                <p className="text-sm font-black text-foreground">{column.label}</p>
+                <Badge tone="neutral">{columnLeads.length}</Badge>
+              </div>
             </header>
-            <p className="px-1 text-xs text-muted">{columnValue > 0 ? currency.format(columnValue) : "—"}</p>
+            <p className="mt-0.5 px-1 text-xs text-muted">{columnValue > 0 ? currency.format(columnValue) : "No value"}</p>
 
             <div className="mt-3 grid gap-2">
               {columnLeads.map((lead) => (
@@ -70,28 +90,17 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
                     event.dataTransfer.effectAllowed = "move";
                   }}
                   onClick={() => onSelect(lead)}
-                  className="cursor-pointer rounded-2xl border border-border-subtle bg-bg-elevated p-3 shadow-sm transition hover:border-brand-soft"
+                  className="cursor-pointer rounded-[var(--radius-card)] border border-sidebar-border bg-white p-3 shadow-card transition-shadow hover:shadow-card-hover"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <p className="min-w-0 truncate text-sm font-black text-foreground">{lead.name}</p>
                     {typeof lead.score === "number" ? (
-                      <span
-                        className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-black ${
-                          lead.score >= 70
-                            ? "bg-emerald-500/15 text-emerald-700"
-                            : lead.score >= 40
-                              ? "bg-amber-400/20 text-amber-700"
-                              : "bg-red-500/10 text-red-600"
-                        }`}
-                        title="AI qualification score"
-                      >
+                      <Badge tone={scoreTone(lead.score)} className="shrink-0">
                         {lead.score}
-                      </span>
+                      </Badge>
                     ) : null}
                   </div>
-                  {lead.company ? (
-                    <p className="mt-0.5 truncate text-xs text-muted">{lead.company}</p>
-                  ) : null}
+                  {lead.company ? <p className="mt-0.5 truncate text-xs text-muted">{lead.company}</p> : null}
                   <div className="mt-2 flex items-center justify-between gap-2">
                     <p className="text-xs font-bold text-brand-glow-text">
                       {Number(lead.value) > 0 ? currency.format(Number(lead.value)) : "No value"}
@@ -106,7 +115,7 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
                       event.stopPropagation();
                       void onMove(lead, event.target.value as LeadStatus);
                     }}
-                    className="mt-2 h-8 w-full rounded-full border border-border-subtle bg-transparent px-2 text-xs font-semibold text-muted outline-none focus:border-brand-soft"
+                    className="mt-2 h-8 w-full rounded-full border border-sidebar-border bg-transparent px-2 text-xs font-semibold text-muted outline-none focus:border-brand-soft"
                     aria-label={`Move ${lead.name} to stage`}
                   >
                     {leadStatuses.map((item) => (
@@ -118,7 +127,7 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
                 </article>
               ))}
               {columnLeads.length === 0 ? (
-                <p className="rounded-2xl border border-dashed border-border-subtle p-3 text-center text-xs text-muted">
+                <p className="rounded-[var(--radius-card)] border border-dashed border-sidebar-border p-3 text-center text-xs text-muted">
                   Empty
                 </p>
               ) : null}

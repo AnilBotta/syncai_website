@@ -93,7 +93,7 @@ export function DocumentsPanel({ leadId, getToken }: DocumentsPanelProps) {
         <select
           value={type}
           onChange={(event) => setType(event.target.value as typeof type)}
-          className="h-10 rounded-full border border-border-subtle px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+          className="h-10 rounded-full border border-sidebar-border px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
         >
           {documentTypes.map((item) => (
             <option key={item.value} value={item.value}>
@@ -115,7 +115,7 @@ export function DocumentsPanel({ leadId, getToken }: DocumentsPanelProps) {
         value={instruction}
         onChange={(event) => setInstruction(event.target.value)}
         placeholder="Optional: special instructions (e.g. 3-month engagement, include SEO scope)"
-        className="h-10 rounded-full border border-border-subtle px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+        className="h-10 rounded-full border border-sidebar-border px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
       />
 
       {notice ? <p className="text-xs font-bold text-emerald-700">{notice}</p> : null}
@@ -129,7 +129,7 @@ export function DocumentsPanel({ leadId, getToken }: DocumentsPanelProps) {
           </div>
         ) : documents.length ? (
           documents.map((doc) => (
-            <div key={doc.id} className="rounded-2xl border border-border-subtle p-3">
+            <div key={doc.id} className="rounded-2xl border border-sidebar-border p-3">
               <div className="flex items-center justify-between gap-3">
                 <p className="min-w-0 truncate text-sm font-bold text-foreground">{doc.title}</p>
                 <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-black capitalize ${statusStyles[doc.status]}`}>
@@ -152,7 +152,7 @@ export function DocumentsPanel({ leadId, getToken }: DocumentsPanelProps) {
             </div>
           ))
         ) : (
-          <p className="rounded-2xl border border-dashed border-border-subtle p-4 text-center text-sm text-muted">
+          <p className="rounded-2xl border border-dashed border-sidebar-border p-4 text-center text-sm text-muted">
             No documents yet. Generate a proposal or agreement — it lands in Approvals first.
           </p>
         )}
