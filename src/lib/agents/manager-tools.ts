@@ -13,6 +13,7 @@ import { createInvoiceDraft } from "@/lib/invoices";
 import { getFinanceSummary } from "@/lib/finance";
 import { initiateCallForLead } from "@/lib/calls";
 import { hasVoiceConfig } from "@/lib/voice";
+import { fetchUrlInfo, webSearch } from "@/lib/agents/web";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -712,6 +713,41 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const fetchUrl = tool(
+    async ({ url }) => {
+      const r = await fetchUrlInfo(url);
+      if (!r.ok) return r.error;
+      trace.push({ tool: "fetch_url", summary: r.url });
+      const parts = [`Fetched ${r.url}`];
+      if (r.title) parts.push(`Title: ${r.title}`);
+      parts.push(`Emails found: ${r.emails.length ? r.emails.join(", ") : "none"}`);
+      parts.push(`Phone numbers found: ${r.phones.length ? r.phones.join(", ") : "none"}`);
+      parts.push(`Page text (excerpt):\n${r.text.slice(0, 2500)}`);
+      return parts.join("\n");
+    },
+    {
+      name: "fetch_url",
+      description:
+        "Fetch a specific web page by URL and extract its contact details (emails, phone numbers) and readable text. Use when the CEO gives you a URL and asks for information from it — e.g. 'get the contact details from this company's site'. After you find the contact info, offer to add them to the pipeline with create_task or report the details back.",
+      schema: z.object({ url: z.string().describe("The web page URL to fetch (a company site, contact page, etc.)") }),
+    },
+  );
+
+  const webSearchTool = tool(
+    async ({ query }) => {
+      const r = await webSearch(query);
+      if (!r.ok) return `I couldn't search the web right now (${r.error}). I can still work from what's in the system.`;
+      trace.push({ tool: "web_search", summary: query });
+      return r.text;
+    },
+    {
+      name: "web_search",
+      description:
+        "Search the live web for current, real-world information (company details, news, industry facts, finding a company's website). Use when the CEO asks something that needs up-to-date info from the internet rather than the CRM.",
+      schema: z.object({ query: z.string().describe("What to search the web for") }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -735,5 +771,7 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     getAgentActivity,
     getProspecting,
     callLead,
+    fetchUrl,
+    webSearchTool,
   ];
 }
