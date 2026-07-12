@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Email } from "@/lib/supabase";
-import { sendEmail } from "@/lib/email/resend";
+import { sendEmail, type EmailAttachment } from "@/lib/email/resend";
 import { renderEmailHtml, renderEmailText } from "@/lib/email/render";
 
 export type SendRecordResult =
@@ -15,6 +15,7 @@ export type SendRecordResult =
 export async function sendEmailRecord(
   supabase: SupabaseClient,
   emailId: string,
+  options: { attachments?: EmailAttachment[] } = {},
 ): Promise<SendRecordResult> {
   const { data: email, error: fetchError } = await supabase
     .from("emails")
@@ -58,6 +59,7 @@ export async function sendEmailRecord(
     subject: email.subject,
     html,
     text,
+    attachments: options.attachments,
   });
 
   if (!result.ok) {

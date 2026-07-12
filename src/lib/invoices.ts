@@ -5,6 +5,7 @@ import { renderEmailHtml, renderEmailText } from "@/lib/email/render";
 import { createAndSendStripeInvoice, hasStripeConfig } from "@/lib/stripe";
 import { createApproval } from "@/lib/approvals";
 import { invoiceTotal, nextInvoiceNumber } from "@/lib/finance";
+import { renderInvoicePdf } from "@/lib/pdf";
 import { notifyCeo } from "@/lib/telegram";
 import type { InvoiceLineItem } from "@/lib/supabase";
 
@@ -143,7 +144,17 @@ export async function sendInvoice(supabase: SupabaseClient, invoiceId: string): 
   const subject = `Invoice ${invoice.number} from ${COMPANY}`;
   const html = renderEmailHtml(body, lead.id);
   const text = renderEmailText(body, lead.id);
-  const sendResult = await sendEmail({ to: lead.email, subject, html, text });
+
+  // Attach a branded PDF of the invoice.
+  let attachments;
+  try {
+    const pdf = await renderInvoicePdf(invoice, lead);
+    attachments = [{ filename: `${invoice.number}.pdf`, content: pdf }];
+  } catch (error) {
+    console.error("[invoices] PDF render failed, sending without attachment", error);
+  }
+
+  const sendResult = await sendEmail({ to: lead.email, subject, html, text, attachments });
   if (!sendResult.ok) return { ok: false, status: 502, error: sendResult.error };
 
   await supabase.from("invoices").update({ status: "sent", sent_at: now }).eq("id", invoice.id);
