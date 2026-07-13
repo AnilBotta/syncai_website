@@ -6,7 +6,7 @@ import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Download, Loader2, RefreshCcw } from "lucide-react";
 import { type LeadStatus } from "@/lib/site-data";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
-import type { Lead } from "@/lib/supabase";
+import type { Appointment, Invoice, Lead } from "@/lib/supabase";
 import { AdminAppointments } from "@/components/admin-appointments";
 import { KanbanBoard } from "@/components/admin/kanban-board";
 import { LeadDrawer } from "@/components/admin/lead-drawer";
@@ -38,6 +38,8 @@ export function AdminDashboard() {
   const [error, setError] = useState("");
   const [demoMode, setDemoMode] = useState(false);
   const [approvalsCount, setApprovalsCount] = useState(0);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
 
   const filtered = useMemo(() => {
     return leads.filter((lead) => {
@@ -121,6 +123,29 @@ export function AdminDashboard() {
 
     return () => window.clearTimeout(timer);
   }, [loadApprovalsCount]);
+
+  // Load appointments + invoices once so the global search can find them.
+  const loadSearchData = useCallback(async () => {
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const [apptRes, invRes] = await Promise.all([
+        fetch("/api/admin/appointments", { headers: { Authorization: `Bearer ${token}` } }),
+        fetch("/api/admin/invoices", { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      if (apptRes.ok) setAppointments((await apptRes.json()).appointments || []);
+      if (invRes.ok) setInvoices((await invRes.json()).invoices || []);
+    } catch {
+      // Non-critical: search just won't include these until reloaded.
+    }
+  }, [getToken]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadSearchData();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadSearchData]);
 
   const moveLead = useCallback(
     async (lead: Lead, nextStatus: LeadStatus) => {
@@ -283,6 +308,8 @@ export function AdminDashboard() {
             approvalsCount={approvalsCount}
             leads={leads}
             onSelectLead={setDrawerLead}
+            appointments={appointments}
+            invoices={invoices}
             actions={actions}
           />
 

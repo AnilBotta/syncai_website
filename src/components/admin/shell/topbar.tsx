@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { Bell, Menu, Search, User } from "lucide-react";
-import type { Lead } from "@/lib/supabase";
+import { Bell, CalendarClock, Menu, Receipt, Search, User } from "lucide-react";
+import type { Appointment, Invoice, Lead } from "@/lib/supabase";
 import { navItems, type View } from "@/components/admin/shell/nav-config";
 import { Badge, type BadgeTone } from "@/components/admin/ui/badge";
+
+const cad = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 
 type TopbarProps = {
   title: string;
@@ -15,6 +17,8 @@ type TopbarProps = {
   leads: Lead[];
   /** Open a lead (drawer) when picked from search. */
   onSelectLead: (lead: Lead) => void;
+  appointments?: Appointment[];
+  invoices?: Invoice[];
   /** Contextual actions (Refresh / CSV) rendered on the right. */
   actions?: ReactNode;
 };
@@ -28,8 +32,34 @@ const statusTone: Record<string, BadgeTone> = {
   lost: "danger",
 };
 
+const apptTone: Record<string, BadgeTone> = {
+  pending: "warn",
+  confirmed: "success",
+  completed: "neutral",
+  cancelled: "danger",
+  no_show: "danger",
+};
+
+const invoiceTone: Record<string, BadgeTone> = {
+  draft: "neutral",
+  approved: "brand",
+  sent: "warn",
+  paid: "success",
+  void: "danger",
+};
+
 /** Sticky top bar: mobile hamburger, section title, global search (leads + pages), bell. */
-export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, leads, onSelectLead, actions }: TopbarProps) {
+export function Topbar({
+  title,
+  onOpenMobileNav,
+  onNavigate,
+  approvalsCount,
+  leads,
+  onSelectLead,
+  appointments = [],
+  invoices = [],
+  actions,
+}: TopbarProps) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -45,15 +75,29 @@ export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, lea
           .toLowerCase()
           .includes(term),
       )
-      .slice(0, 6);
+      .slice(0, 5);
   }, [term, leads]);
+
+  const apptResults = useMemo(() => {
+    if (!term) return [];
+    return appointments
+      .filter((a) => [a.name, a.company, a.email, a.service].filter(Boolean).join(" ").toLowerCase().includes(term))
+      .slice(0, 4);
+  }, [term, appointments]);
+
+  const invoiceResults = useMemo(() => {
+    if (!term) return [];
+    return invoices
+      .filter((i) => [i.number, i.notes, String(i.amount)].filter(Boolean).join(" ").toLowerCase().includes(term))
+      .slice(0, 4);
+  }, [term, invoices]);
 
   const pageResults = useMemo(() => {
     if (!term) return [];
-    return navItems.filter((i) => i.label.toLowerCase().includes(term)).slice(0, 4);
+    return navItems.filter((i) => i.label.toLowerCase().includes(term)).slice(0, 3);
   }, [term]);
 
-  const hasResults = leadResults.length > 0 || pageResults.length > 0;
+  const hasResults = leadResults.length > 0 || apptResults.length > 0 || invoiceResults.length > 0 || pageResults.length > 0;
 
   function pickLead(lead: Lead) {
     onSelectLead(lead);
@@ -94,6 +138,8 @@ export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, lea
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 if (leadResults[0]) pickLead(leadResults[0]);
+                else if (apptResults[0]) pickPage("appointments");
+                else if (invoiceResults[0]) pickPage("finance");
                 else if (pageResults[0]) pickPage(pageResults[0].view);
               }
               if (e.key === "Escape") setOpen(false);
@@ -127,6 +173,56 @@ export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, lea
                         <span className="block truncate text-xs text-muted">{lead.company || lead.email}</span>
                       </span>
                       <Badge tone={statusTone[lead.status] || "neutral"}>{lead.status}</Badge>
+                    </button>
+                  ))}
+                </>
+              ) : null}
+
+              {apptResults.length ? (
+                <>
+                  <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-[.16em] text-muted/70">Appointments</p>
+                  {apptResults.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => pickPage("appointments")}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--nav-hover-bg)]"
+                    >
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-info-soft text-info">
+                        <CalendarClock className="size-4" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold text-foreground">{a.name}</span>
+                        <span className="block truncate text-xs text-muted">
+                          {new Date(a.starts_at).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}
+                        </span>
+                      </span>
+                      <Badge tone={apptTone[a.status] || "neutral"}>{a.status.replace("_", " ")}</Badge>
+                    </button>
+                  ))}
+                </>
+              ) : null}
+
+              {invoiceResults.length ? (
+                <>
+                  <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-[.16em] text-muted/70">Invoices</p>
+                  {invoiceResults.map((inv) => (
+                    <button
+                      key={inv.id}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => pickPage("finance")}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--nav-hover-bg)]"
+                    >
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand-glow-text">
+                        <Receipt className="size-4" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold text-foreground">{inv.number}</span>
+                        <span className="block truncate text-xs text-muted">{cad.format(Number(inv.amount) || 0)}</span>
+                      </span>
+                      <Badge tone={invoiceTone[inv.status] || "neutral"}>{inv.status}</Badge>
                     </button>
                   ))}
                 </>
