@@ -109,7 +109,7 @@ export function Targeting({ getToken }: TargetingProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
-      <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
         <h2 className="text-lg font-black text-foreground">New target (ICP)</h2>
         <p className="mt-1 text-sm text-muted">Define who to hunt for. The scraper only searches active ICPs.</p>
         <div className="mt-4 grid gap-3">
@@ -130,15 +130,15 @@ export function Targeting({ getToken }: TargetingProps) {
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
         <h2 className="text-lg font-black text-foreground">Active targets</h2>
         {demoMode ? (
-          <p className="mt-3 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-3 text-xs text-amber-700">
+          <p className="mt-3 rounded-2xl border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
             Demo mode. Connect Supabase to manage live ICPs.
           </p>
         ) : null}
-        {error ? <p className="mt-3 rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
-        {notice ? <p className="mt-3 rounded-2xl bg-emerald-500/10 p-3 text-sm text-emerald-700">{notice}</p> : null}
+        {error ? <p className="mt-3 rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
+        {notice ? <p className="mt-3 rounded-2xl bg-success-soft p-3 text-sm text-success">{notice}</p> : null}
 
         <div className="mt-4 grid gap-3">
           {loading ? (
@@ -147,7 +147,7 @@ export function Targeting({ getToken }: TargetingProps) {
             </div>
           ) : icps.length ? (
             icps.map((icp) => (
-              <div key={icp.id} className="rounded-2xl border border-border-subtle p-4">
+              <div key={icp.id} className="rounded-2xl border border-sidebar-border p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-black text-foreground">{icp.name}</p>
@@ -161,9 +161,9 @@ export function Targeting({ getToken }: TargetingProps) {
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[11px] font-black ${
                       icp.status === "active"
-                        ? "bg-emerald-500/15 text-emerald-700"
+                        ? "bg-success-soft text-success"
                         : icp.status === "proposed"
-                          ? "bg-amber-400/20 text-amber-700"
+                          ? "bg-warn-soft text-warn"
                           : "bg-border-subtle text-muted"
                     }`}
                   >
@@ -182,22 +182,22 @@ export function Targeting({ getToken }: TargetingProps) {
                     Find prospects
                   </button>
                   {icp.status !== "active" ? (
-                    <button type="button" onClick={() => setStatus(icp, "active")} className="h-9 rounded-full border border-border-subtle px-4 text-xs font-bold text-muted">
+                    <button type="button" onClick={() => setStatus(icp, "active")} className="h-9 rounded-full border border-sidebar-border px-4 text-xs font-bold text-muted">
                       Activate
                     </button>
                   ) : (
-                    <button type="button" onClick={() => setStatus(icp, "paused")} className="h-9 rounded-full border border-border-subtle px-4 text-xs font-bold text-muted">
+                    <button type="button" onClick={() => setStatus(icp, "paused")} className="h-9 rounded-full border border-sidebar-border px-4 text-xs font-bold text-muted">
                       Pause
                     </button>
                   )}
-                  <button type="button" onClick={() => remove(icp)} className="grid size-9 place-items-center rounded-full text-muted transition hover:text-red-600" title="Delete">
+                  <button type="button" onClick={() => remove(icp)} className="grid size-9 place-items-center rounded-full text-muted transition hover:text-danger" title="Delete">
                     <Trash2 className="size-4" />
                   </button>
                 </div>
               </div>
             ))
           ) : (
-            <p className="rounded-2xl border border-dashed border-border-subtle p-6 text-center text-sm text-muted">
+            <p className="rounded-2xl border border-dashed border-sidebar-border p-6 text-center text-sm text-muted">
               No targets yet. Add one to start finding prospects.
             </p>
           )}
@@ -225,7 +225,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-11 rounded-full border border-border-subtle px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+        className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-normal text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
       />
     </label>
   );

@@ -145,21 +145,21 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[.95fr_1.05fr] lg:px-8">
-      <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
           <label className="relative">
             <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="h-12 w-full rounded-full border border-border-subtle pl-11 pr-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              className="h-12 w-full rounded-full border border-sidebar-border pl-11 pr-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               placeholder="Search appointments"
             />
           </label>
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="h-12 rounded-full border border-border-subtle px-4 text-sm font-semibold outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+            className="h-12 rounded-full border border-sidebar-border px-4 text-sm font-semibold outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
           >
             <option value="all">All statuses</option>
             {appointmentStatuses.map((item) => (
@@ -177,7 +177,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
               type="button"
               onClick={() => setRange(value)}
               className={`rounded-full px-4 py-2 text-xs font-bold capitalize transition ${
-                range === value ? "bg-brand-deep text-white" : "border border-border-subtle text-muted"
+                range === value ? "bg-brand-deep text-white" : "border border-sidebar-border text-muted"
               }`}
             >
               {value}
@@ -186,14 +186,14 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
           <span className="flex-1" />
           <button
             onClick={loadAppointments}
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-border-subtle bg-bg-elevated px-3 text-xs font-bold text-muted"
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-sidebar-border bg-white px-3 text-xs font-bold text-muted"
           >
             <RefreshCcw className="size-3.5" />
             Refresh
           </button>
           <button
             onClick={exportCsv}
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-border-subtle bg-bg-elevated px-3 text-xs font-bold text-muted"
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-sidebar-border bg-white px-3 text-xs font-bold text-muted"
           >
             <Download className="size-3.5" />
             CSV
@@ -201,12 +201,12 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
         </div>
 
         {demoMode ? (
-          <div className="mt-4 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-200">
+          <div className="mt-4 rounded-[var(--radius-control)] border border-warn/20 bg-warn-soft p-4 text-sm text-warn">
             Demo mode is active. Add Supabase service keys to show live appointments.
           </div>
         ) : null}
 
-        {error ? <p className="mt-4 rounded-2xl bg-red-500/10 p-4 text-sm text-red-300">{error}</p> : null}
+        {error ? <p className="mt-4 rounded-[var(--radius-control)] bg-danger-soft p-4 text-sm text-danger">{error}</p> : null}
 
         <div className="mt-5 grid gap-3">
           {loading ? (
@@ -223,7 +223,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
                 className={`rounded-3xl border p-4 text-left transition ${
                   selected?.id === appointment.id
                     ? "border-brand-soft bg-brand-deep/20"
-                    : "border-border-subtle hover:border-border-subtle"
+                    : "border-sidebar-border hover:border-sidebar-border"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -241,17 +241,17 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
               </button>
             ))
           ) : (
-            <div className="rounded-3xl border border-dashed border-border-subtle p-8 text-center text-sm text-muted">
+            <div className="rounded-3xl border border-dashed border-sidebar-border p-8 text-center text-sm text-muted">
               No appointments match this view.
             </div>
           )}
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
         {selected ? (
           <form action={saveAppointment}>
-            <div className="flex flex-col gap-4 border-b border-border-subtle pb-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-4 border-b border-sidebar-border pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-2xl font-black text-foreground">{selected.name}</h2>
                 <p className="mt-1 text-sm text-muted">Booked {formatDate(selected.created_at)}</p>
@@ -259,7 +259,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
               <select
                 name="status"
                 defaultValue={selected.status}
-                className="h-11 rounded-full border border-border-subtle px-4 text-sm font-bold capitalize outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-bold capitalize outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
               >
                 {appointmentStatuses.map((item) => (
                   <option key={item.value} value={item.value}>
@@ -292,7 +292,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
                 name="notes"
                 defaultValue={selected.notes || ""}
                 rows={6}
-                className="resize-none rounded-3xl border border-border-subtle p-4 text-sm font-normal leading-7 text-muted outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+                className="resize-none rounded-3xl border border-sidebar-border p-4 text-sm font-normal leading-7 text-muted outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
                 placeholder="Call prep, confirmation status, or outcome."
               />
             </label>
@@ -318,7 +318,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-3xl border border-border-subtle p-4">
+    <div className="rounded-3xl border border-sidebar-border p-4">
       <p className="text-xs font-black uppercase tracking-[.18em] text-muted">{label}</p>
       <p className="mt-2 break-words text-sm font-bold text-foreground/90">{value}</p>
     </div>
