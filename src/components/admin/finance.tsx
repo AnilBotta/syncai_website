@@ -1,11 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Plus, Trash2, Wallet } from "lucide-react";
+import { Banknote, Loader2, Plus, Receipt, Trash2, TrendingDown, Trophy, Wallet } from "lucide-react";
 import type { Expense, Invoice } from "@/lib/supabase";
 import { expenseCategories } from "@/lib/site-data";
-import { KpiCard } from "@/components/admin/kpi-card";
 import { formatDate } from "@/lib/utils";
+import { Card } from "@/components/admin/ui/card";
+import { StatCard } from "@/components/admin/ui/stat-card";
+import { SectionHeader } from "@/components/admin/ui/section-header";
+import { Badge, type BadgeTone } from "@/components/admin/ui/badge";
+import { GradientAreaChart, type ChartSeries } from "@/components/admin/ui/gradient-area-chart";
+import { DemoBanner, ErrorBanner } from "@/components/admin/ui/banners";
 
 const cad = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 const cad2 = new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 2 });
@@ -20,12 +25,12 @@ type Summary = {
   monthly: { month: string; revenue: number; expenses: number }[];
 };
 
-const invoiceStatusStyles: Record<Invoice["status"], string> = {
-  draft: "bg-surface text-muted",
-  approved: "bg-brand-deep/15 text-brand-glow-text",
-  sent: "bg-amber-400/15 text-amber-600",
-  paid: "bg-emerald-400/15 text-emerald-600",
-  void: "bg-red-500/10 text-red-600",
+const invoiceStatusTone: Record<Invoice["status"], BadgeTone> = {
+  draft: "neutral",
+  approved: "brand",
+  sent: "warn",
+  paid: "success",
+  void: "danger",
 };
 
 export function Finance({ getToken }: { getToken: () => Promise<string> }) {
@@ -140,86 +145,64 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
   }
 
   if (demoMode || !summary) {
-    return (
-      <div className="rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-700">
-        Demo mode is active. Add Supabase service keys to show live finance data.
-      </div>
-    );
+    return <DemoBanner message="Demo mode is active. Add Supabase service keys to show live finance data." />;
   }
 
-  const maxMonthly = Math.max(1, ...summary.monthly.flatMap((m) => [m.revenue, m.expenses]));
+  const monthLabel = (m: string) => new Date(`${m}-01T00:00:00Z`).toLocaleDateString("en-CA", { month: "short" });
+  const financeSeries: ChartSeries[] = [
+    { id: "rev", label: "Revenue", data: summary.monthly.map((m) => ({ label: monthLabel(m.month), value: m.revenue })), style: "solid", showArea: true },
+    { id: "exp", label: "Expenses", data: summary.monthly.map((m) => ({ label: monthLabel(m.month), value: m.expenses })), style: "dashed" },
+  ];
 
   return (
     <div className="grid gap-6">
-      {error ? <p className="rounded-2xl bg-red-500/10 p-4 text-sm text-red-600">{error}</p> : null}
+      {error ? <ErrorBanner message={error} /> : null}
 
       {!stripeReady ? (
-        <div className="rounded-2xl border border-border-subtle bg-surface p-4 text-sm text-muted">
+        <div className="rounded-[var(--radius-control)] border border-sidebar-border bg-foreground/[.03] p-4 text-sm text-muted">
           Stripe isn&apos;t connected yet — invoices will go out as e-transfer requests. Add <code>STRIPE_SECRET_KEY</code>{" "}
           to enable pay-online Stripe invoices.
         </div>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <KpiCard label="Collected revenue" value={cad.format(summary.collectedRevenue)} icon={Wallet} />
-        <KpiCard label="Expenses" value={cad.format(summary.expensesTotal)} icon={Wallet} />
-        <KpiCard
-          label="Net cash"
-          value={cad.format(summary.netCash)}
-          icon={Wallet}
-          tone={summary.netCash < 0 ? "warn" : "default"}
-        />
-        <KpiCard label="Outstanding" value={cad.format(summary.outstanding)} icon={Wallet} />
-        <KpiCard label="Won deal value" value={cad.format(summary.wonDealValue)} icon={Wallet} />
+        <StatCard label="Collected revenue" value={cad.format(summary.collectedRevenue)} icon={Banknote} tone="success" />
+        <StatCard label="Expenses" value={cad.format(summary.expensesTotal)} icon={TrendingDown} tone="warn" />
+        <StatCard label="Net cash" value={cad.format(summary.netCash)} icon={Wallet} tone={summary.netCash < 0 ? "danger" : "brand"} />
+        <StatCard label="Outstanding" value={cad.format(summary.outstanding)} icon={Receipt} tone="info" />
+        <StatCard label="Won deal value" value={cad.format(summary.wonDealValue)} icon={Trophy} tone="brand" />
       </div>
 
-      <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-black text-foreground">Revenue vs expenses — last 12 months</p>
-          <div className="flex items-center gap-3 text-xs font-bold text-muted">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block size-2.5 rounded-sm bg-brand-deep/80" /> Revenue
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block size-2.5 rounded-sm bg-amber-500/70" /> Expenses
-            </span>
-          </div>
-        </div>
+      <Card className="p-5">
+        <SectionHeader
+          title="Revenue vs expenses"
+          eyebrow="Last 12 months"
+          action={
+            <div className="flex items-center gap-3 text-xs font-bold text-muted">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-0.5 w-4 rounded bg-[var(--chart-line)]" /> Revenue
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="inline-block h-0.5 w-4 rounded bg-[var(--chart-line-compare)]" style={{ borderTop: "2px dashed" }} /> Expenses
+              </span>
+            </div>
+          }
+        />
         <div className="mt-4">
-          <svg viewBox="0 0 720 200" className="w-full" role="img" aria-label="Revenue versus expenses by month">
-            {summary.monthly.map((m, i) => {
-              const groupWidth = 720 / summary.monthly.length;
-              const barWidth = groupWidth / 2 - 3;
-              const x = i * groupWidth;
-              const revH = Math.max(1, (m.revenue / maxMonthly) * 150);
-              const expH = Math.max(1, (m.expenses / maxMonthly) * 150);
-              const label = new Date(`${m.month}-01T00:00:00Z`).toLocaleDateString("en-CA", { month: "short" });
-              return (
-                <g key={m.month}>
-                  <rect x={x + 2} y={170 - revH} width={barWidth} height={revH} rx={4} className="fill-brand-deep/80" />
-                  <rect x={x + 2 + barWidth + 2} y={170 - expH} width={barWidth} height={expH} rx={4} className="fill-amber-500/70" />
-                  <text x={x + groupWidth / 2} y={188} textAnchor="middle" className="fill-current text-[9px] font-semibold text-muted">
-                    {label}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
+          <GradientAreaChart series={financeSeries} height={230} ariaLabel="Revenue versus expenses by month" valueFormatter={(n) => cad.format(n)} />
         </div>
-      </section>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+        <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
           <p className="text-sm font-black text-foreground">Invoices</p>
           <div className="mt-4 grid gap-2">
             {invoices.length ? (
               invoices.map((inv) => (
-                <div key={inv.id} className="rounded-2xl border border-border-subtle p-3">
+                <div key={inv.id} className="rounded-2xl border border-sidebar-border p-3">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-bold text-foreground">{inv.number}</p>
-                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-black capitalize ${invoiceStatusStyles[inv.status]}`}>
-                      {inv.status}
-                    </span>
+                    <Badge tone={invoiceStatusTone[inv.status]}>{inv.status}</Badge>
                   </div>
                   <div className="mt-1 flex items-center justify-between">
                     <p className="text-sm font-black text-foreground">{cad2.format(Number(inv.amount))}</p>
@@ -233,7 +216,7 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
                         type="button"
                         onClick={() => invoiceAction(inv.id, "mark_paid")}
                         disabled={busyId === inv.id}
-                        className="inline-flex h-8 items-center rounded-full bg-emerald-600 px-3 text-xs font-bold text-white disabled:opacity-60"
+                        className="inline-flex h-8 items-center rounded-full bg-success px-3 text-xs font-bold text-white disabled:opacity-60"
                       >
                         Mark paid
                       </button>
@@ -241,7 +224,7 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
                         type="button"
                         onClick={() => invoiceAction(inv.id, "void")}
                         disabled={busyId === inv.id}
-                        className="inline-flex h-8 items-center rounded-full border border-border-subtle px-3 text-xs font-bold text-muted disabled:opacity-60"
+                        className="inline-flex h-8 items-center rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted disabled:opacity-60"
                       >
                         Void
                       </button>
@@ -250,7 +233,7 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
                           href={inv.hosted_invoice_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex h-8 items-center rounded-full border border-border-subtle px-3 text-xs font-bold text-brand-glow-text"
+                          className="inline-flex h-8 items-center rounded-full border border-sidebar-border px-3 text-xs font-bold text-brand-glow-text"
                         >
                           Stripe link
                         </a>
@@ -260,14 +243,14 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
                 </div>
               ))
             ) : (
-              <p className="rounded-2xl border border-dashed border-border-subtle p-4 text-center text-sm text-muted">
+              <p className="rounded-2xl border border-dashed border-sidebar-border p-4 text-center text-sm text-muted">
                 No invoices yet. Create one from a lead&apos;s drawer.
               </p>
             )}
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+        <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
           <p className="text-sm font-black text-foreground">Expenses</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-[auto_1fr_auto]">
             <input
@@ -277,12 +260,12 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
               min={0}
               step="0.01"
               placeholder="$ amount"
-              className="h-10 w-28 rounded-full border border-border-subtle px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              className="h-10 w-28 rounded-full border border-sidebar-border px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             />
             <select
               value={category}
               onChange={(event) => setCategory(event.target.value as typeof category)}
-              className="h-10 rounded-full border border-border-subtle px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+              className="h-10 rounded-full border border-sidebar-border px-4 text-sm font-bold text-foreground outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             >
               {expenseCategories.map((c) => (
                 <option key={c.value} value={c.value}>
@@ -304,13 +287,13 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
             value={vendor}
             onChange={(event) => setVendor(event.target.value)}
             placeholder="Vendor (optional)"
-            className="mt-2 h-10 w-full rounded-full border border-border-subtle px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
+            className="mt-2 h-10 w-full rounded-full border border-sidebar-border px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
           />
 
           <div className="mt-4 grid gap-2">
             {expenses.length ? (
               expenses.slice(0, 20).map((exp) => (
-                <div key={exp.id} className="flex items-center justify-between rounded-2xl border border-border-subtle p-3">
+                <div key={exp.id} className="flex items-center justify-between rounded-2xl border border-sidebar-border p-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-foreground">
                       {cad2.format(Number(exp.amount))} · {expenseCategories.find((c) => c.value === exp.category)?.label}
@@ -324,7 +307,7 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
                     type="button"
                     onClick={() => deleteExpense(exp.id)}
                     disabled={busyId === exp.id}
-                    className="grid size-8 shrink-0 place-items-center rounded-full border border-border-subtle text-muted transition hover:text-red-600 disabled:opacity-60"
+                    className="grid size-8 shrink-0 place-items-center rounded-full border border-sidebar-border text-muted transition hover:text-danger disabled:opacity-60"
                     aria-label="Delete expense"
                   >
                     <Trash2 className="size-4" />
@@ -332,7 +315,7 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
                 </div>
               ))
             ) : (
-              <p className="rounded-2xl border border-dashed border-border-subtle p-4 text-center text-sm text-muted">
+              <p className="rounded-2xl border border-dashed border-sidebar-border p-4 text-center text-sm text-muted">
                 No expenses logged yet.
               </p>
             )}

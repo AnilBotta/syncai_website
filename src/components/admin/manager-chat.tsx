@@ -125,8 +125,8 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-13rem)] max-w-3xl flex-col rounded-[2rem] border border-border-subtle bg-bg-elevated shadow-sm">
-      <header className="flex items-center justify-between border-b border-border-subtle px-5 py-4">
+    <div className="mx-auto flex h-[calc(100vh-13rem)] max-w-3xl flex-col rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white shadow-card">
+      <header className="flex items-center justify-between border-b border-sidebar-border px-5 py-4">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-brand-deep to-brand text-white">
             <Bot className="size-5" />
@@ -152,7 +152,7 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
                 className={`rounded-3xl px-4 py-3 text-sm leading-6 ${
                   message.role === "user"
                     ? "bg-brand-deep text-white"
-                    : "border border-border-subtle bg-surface text-foreground"
+                    : "border border-sidebar-border bg-foreground/[.03] text-foreground"
                 }`}
               >
                 <p className="whitespace-pre-line">{message.content}</p>
@@ -162,7 +162,7 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
                   {message.trace.map((entry, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1 rounded-full border border-border-subtle bg-bg-elevated px-2.5 py-1 text-[11px] font-bold text-muted"
+                      className="inline-flex items-center gap-1 rounded-full border border-sidebar-border bg-white px-2.5 py-1 text-[11px] font-bold text-muted"
                     >
                       <Wrench className="size-3 text-brand-glow-text" />
                       {toolLabels[entry.tool] || entry.tool}: {entry.summary}
@@ -176,7 +176,7 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
 
         {busy ? (
           <div className="flex justify-start">
-            <div className="inline-flex items-center gap-2 rounded-3xl border border-border-subtle bg-surface px-4 py-3 text-sm text-muted">
+            <div className="inline-flex items-center gap-2 rounded-3xl border border-sidebar-border bg-foreground/[.03] px-4 py-3 text-sm text-muted">
               <Loader2 className="size-4 animate-spin" />
               Working on it…
             </div>
@@ -190,7 +190,7 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
                 key={s}
                 type="button"
                 onClick={() => send(s)}
-                className="rounded-full border border-border-subtle px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-brand-soft hover:text-foreground"
+                className="rounded-full border border-sidebar-border px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-brand-soft hover:text-foreground"
               >
                 {s}
               </button>
@@ -199,20 +199,20 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
         ) : null}
       </div>
 
-      {error ? <p className="mx-5 rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="mx-5 rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
       <form
         onSubmit={(event) => {
           event.preventDefault();
           void send(input);
         }}
-        className="flex items-center gap-2 border-t border-border-subtle px-4 py-3"
+        className="flex items-center gap-2 border-t border-sidebar-border px-4 py-3"
       >
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
           disabled={busy}
-          className="h-12 flex-1 rounded-full border border-border-subtle px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25 disabled:opacity-60"
+          className="h-12 flex-1 rounded-full border border-sidebar-border px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25 disabled:opacity-60"
           placeholder="Ask the Manager, or give a command…"
         />
         <button

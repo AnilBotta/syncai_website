@@ -24,7 +24,7 @@ const typeIcons: Record<ActivityItem["type"], typeof MessageSquare> = {
 export function ActivityFeed({ items }: { items: ActivityItem[] }) {
   if (!items.length) {
     return (
-      <p className="rounded-2xl border border-dashed border-border-subtle p-6 text-center text-sm text-muted">
+      <p className="rounded-2xl border border-dashed border-sidebar-border p-6 text-center text-sm text-muted">
         No activity yet.
       </p>
     );
@@ -35,7 +35,7 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
       {items.map((item) => {
         const Icon = typeIcons[item.type] || Sparkles;
         return (
-          <div key={item.id} className="flex gap-3 rounded-2xl border border-border-subtle p-3">
+          <div key={item.id} className="flex gap-3 rounded-2xl border border-sidebar-border p-3">
             <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-brand-deep/10 text-brand-glow-text">
               <Icon className="size-4" />
             </span>

@@ -78,14 +78,14 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
   }
 
   return (
-    <div className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+    <div className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
       {demoMode ? (
-        <p className="mb-3 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-3 text-xs text-amber-700">
+        <p className="mb-3 rounded-2xl border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
           Demo mode. Connect Supabase + a sourcing key (Google Places / Apollo) to find live prospects.
         </p>
       ) : null}
-      {error ? <p className="mb-3 rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
-      {notice ? <p className="mb-3 rounded-2xl bg-emerald-500/10 p-3 text-sm text-emerald-700">{notice}</p> : null}
+      {error ? <p className="mb-3 rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
+      {notice ? <p className="mb-3 rounded-2xl bg-success-soft p-3 text-sm text-success">{notice}</p> : null}
 
       {loading ? (
         <div className="flex h-32 items-center justify-center text-sm text-muted">
@@ -96,7 +96,7 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
           {prospects.map((prospect) => {
             const hasBrief = prospect.enrichment && "likely_ai_pain_points" in prospect.enrichment;
             return (
-              <div key={prospect.id} className="rounded-2xl border border-border-subtle p-4">
+              <div key={prospect.id} className="rounded-2xl border border-sidebar-border p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-black text-foreground">{prospect.company}</p>
@@ -110,7 +110,7 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
                         {prospect.source}
                       </span>
                       {prospect.status === "promoted" ? (
-                        <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
+                        <span className="rounded-full bg-success-soft px-2 py-0.5 text-[11px] font-bold text-success">
                           promoted to lead
                         </span>
                       ) : null}
@@ -121,7 +121,7 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
                       type="button"
                       onClick={() => runAgent(prospect, "research")}
                       disabled={busyId === prospect.id}
-                      className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border-subtle px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
                     >
                       {busyId === prospect.id ? <Loader2 className="size-3.5 animate-spin" /> : <Microscope className="size-3.5" />}
                       Research
@@ -139,7 +139,7 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
                     <button
                       type="button"
                       onClick={() => discard(prospect)}
-                      className="grid size-9 place-items-center rounded-full text-muted transition hover:text-red-600"
+                      className="grid size-9 place-items-center rounded-full text-muted transition hover:text-danger"
                       title="Discard"
                     >
                       <X className="size-4" />
@@ -157,7 +157,7 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
                   </button>
                 ) : null}
                 {openBrief === prospect.id && hasBrief ? (
-                  <pre className="mt-2 max-h-64 overflow-auto rounded-2xl bg-surface p-3 text-xs leading-5 text-muted">
+                  <pre className="mt-2 max-h-64 overflow-auto rounded-2xl bg-foreground/[.03] p-3 text-xs leading-5 text-muted">
                     {JSON.stringify(prospect.enrichment, null, 2)}
                   </pre>
                 ) : null}
@@ -166,7 +166,7 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
           })}
         </div>
       ) : (
-        <p className="rounded-2xl border border-dashed border-border-subtle p-8 text-center text-sm text-muted">
+        <p className="rounded-2xl border border-dashed border-sidebar-border p-8 text-center text-sm text-muted">
           No prospects yet. Go to Targeting, add an ICP, and click &quot;Find prospects&quot;.
         </p>
       )}

@@ -78,11 +78,11 @@ export function Sequences({ getToken }: SequencesProps) {
       </div>
 
       {demoMode ? (
-        <p className="mb-3 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-3 text-xs text-amber-700">
+        <p className="mb-3 rounded-2xl border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
           Demo mode. Connect Supabase to manage live sequences.
         </p>
       ) : null}
-      {error ? <p className="mb-3 rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="mb-3 rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
       {loading ? (
         <div className="flex h-32 items-center justify-center text-sm text-muted">
@@ -91,7 +91,7 @@ export function Sequences({ getToken }: SequencesProps) {
       ) : (
         <div className="grid gap-4">
           {sequences.map((seq) => (
-            <div key={seq.id} className="rounded-[2rem] border border-border-subtle bg-bg-elevated p-5 shadow-sm">
+            <div key={seq.id} className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-black text-foreground">{seq.name}</p>
@@ -113,7 +113,7 @@ export function Sequences({ getToken }: SequencesProps) {
                 ))}
               </ol>
 
-              <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-border-subtle pt-4">
+              <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-sidebar-border pt-4">
                 <label className="inline-flex items-center gap-2 text-sm font-bold text-foreground">
                   <input
                     type="checkbox"
@@ -125,7 +125,7 @@ export function Sequences({ getToken }: SequencesProps) {
                 </label>
                 <label
                   className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold ${
-                    seq.auto_send ? "bg-red-500/10 text-red-600" : "text-muted"
+                    seq.auto_send ? "bg-danger-soft text-danger" : "text-muted"
                   }`}
                 >
                   <Send className="size-3.5" />
@@ -136,7 +136,7 @@ export function Sequences({ getToken }: SequencesProps) {
             </div>
           ))}
           {!sequences.length ? (
-            <p className="rounded-2xl border border-dashed border-border-subtle p-8 text-center text-sm text-muted">
+            <p className="rounded-2xl border border-dashed border-sidebar-border p-8 text-center text-sm text-muted">
               No sequences yet. Run migration 005 to seed the default nurture sequence.
             </p>
           ) : null}
