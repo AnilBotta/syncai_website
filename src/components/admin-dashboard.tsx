@@ -281,6 +281,8 @@ export function AdminDashboard() {
             onOpenMobileNav={() => setMobileNavOpen(true)}
             onNavigate={setView}
             approvalsCount={approvalsCount}
+            leads={leads}
+            onSelectLead={setDrawerLead}
             actions={actions}
           />
 

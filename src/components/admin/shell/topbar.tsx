@@ -1,32 +1,66 @@
 "use client";
 
-import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Bell, Menu, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useMemo, useState, type ReactNode } from "react";
+import { Bell, Menu, Search, User } from "lucide-react";
+import type { Lead } from "@/lib/supabase";
 import { navItems, type View } from "@/components/admin/shell/nav-config";
+import { Badge, type BadgeTone } from "@/components/admin/ui/badge";
 
 type TopbarProps = {
   title: string;
   onOpenMobileNav: () => void;
   onNavigate: (view: View) => void;
   approvalsCount: number;
+  /** All leads, so the search can find them. */
+  leads: Lead[];
+  /** Open a lead (drawer) when picked from search. */
+  onSelectLead: (lead: Lead) => void;
   /** Contextual actions (Refresh / CSV) rendered on the right. */
   actions?: ReactNode;
 };
 
-/** Sticky top bar: mobile hamburger, section title, nav quick-jump, bell. */
-export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, actions }: TopbarProps) {
+const statusTone: Record<string, BadgeTone> = {
+  new: "info",
+  contacted: "brand",
+  qualified: "success",
+  proposal: "warn",
+  won: "success",
+  lost: "danger",
+};
+
+/** Sticky top bar: mobile hamburger, section title, global search (leads + pages), bell. */
+export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, leads, onSelectLead, actions }: TopbarProps) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
-  const boxRef = useRef<HTMLDivElement>(null);
 
-  const results = useMemo(() => {
-    const term = q.trim().toLowerCase();
+  const term = q.trim().toLowerCase();
+
+  const leadResults = useMemo(() => {
     if (!term) return [];
-    return navItems.filter((i) => i.label.toLowerCase().includes(term)).slice(0, 6);
-  }, [q]);
+    return leads
+      .filter((l) =>
+        [l.name, l.company, l.email, l.industry, l.pain_point]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(term),
+      )
+      .slice(0, 6);
+  }, [term, leads]);
 
-  function go(view: View) {
+  const pageResults = useMemo(() => {
+    if (!term) return [];
+    return navItems.filter((i) => i.label.toLowerCase().includes(term)).slice(0, 4);
+  }, [term]);
+
+  const hasResults = leadResults.length > 0 || pageResults.length > 0;
+
+  function pickLead(lead: Lead) {
+    onSelectLead(lead);
+    setQ("");
+    setOpen(false);
+  }
+  function pickPage(view: View) {
     onNavigate(view);
     setQ("");
     setOpen(false);
@@ -46,8 +80,8 @@ export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, act
 
         <h1 className="shrink-0 text-lg font-black text-foreground sm:text-xl">{title}</h1>
 
-        {/* Quick-jump search (navigates between views) */}
-        <div ref={boxRef} className="relative ml-auto hidden w-full max-w-xs sm:block">
+        {/* Global search — leads + pages */}
+        <div className="relative ml-auto hidden w-full max-w-sm sm:block">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
           <input
             value={q}
@@ -56,37 +90,73 @@ export function Topbar({ title, onOpenMobileNav, onNavigate, approvalsCount, act
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
-            onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+            onBlur={() => window.setTimeout(() => setOpen(false), 150)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && results[0]) go(results[0].view);
+              if (e.key === "Enter") {
+                if (leadResults[0]) pickLead(leadResults[0]);
+                else if (pageResults[0]) pickPage(pageResults[0].view);
+              }
               if (e.key === "Escape") setOpen(false);
             }}
-            placeholder="Jump to…"
-            aria-label="Jump to a section"
+            placeholder="Search leads, pages…"
+            aria-label="Search leads and pages"
             className="h-10 w-full rounded-full border border-sidebar-border bg-white pl-10 pr-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/20"
           />
-          {open && results.length ? (
-            <div className="absolute left-0 right-0 top-12 z-40 overflow-hidden rounded-2xl border border-sidebar-border bg-white p-1.5 shadow-pop">
-              {results.map((r) => {
-                const Icon = r.icon;
-                return (
-                  <button
-                    key={r.view}
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => go(r.view)}
-                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm font-bold text-foreground hover:bg-[var(--nav-hover-bg)]"
-                  >
-                    <Icon className="size-4 text-brand-glow-text" />
-                    {r.label}
-                  </button>
-                );
-              })}
+          {open && term ? (
+            <div className="absolute left-0 right-0 top-12 z-40 max-h-96 overflow-y-auto rounded-2xl border border-sidebar-border bg-white p-1.5 shadow-pop">
+              {!hasResults ? (
+                <p className="px-3 py-3 text-sm text-muted">No matches for “{q}”.</p>
+              ) : null}
+
+              {leadResults.length ? (
+                <>
+                  <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-[.16em] text-muted/70">Leads</p>
+                  {leadResults.map((lead) => (
+                    <button
+                      key={lead.id}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => pickLead(lead)}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-[var(--nav-hover-bg)]"
+                    >
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand-glow-text">
+                        <User className="size-4" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold text-foreground">{lead.name}</span>
+                        <span className="block truncate text-xs text-muted">{lead.company || lead.email}</span>
+                      </span>
+                      <Badge tone={statusTone[lead.status] || "neutral"}>{lead.status}</Badge>
+                    </button>
+                  ))}
+                </>
+              ) : null}
+
+              {pageResults.length ? (
+                <>
+                  <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-[.16em] text-muted/70">Pages</p>
+                  {pageResults.map((r) => {
+                    const Icon = r.icon;
+                    return (
+                      <button
+                        key={r.view}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => pickPage(r.view)}
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm font-bold text-foreground hover:bg-[var(--nav-hover-bg)]"
+                      >
+                        <Icon className="size-4 text-brand-glow-text" />
+                        {r.label}
+                      </button>
+                    );
+                  })}
+                </>
+              ) : null}
             </div>
           ) : null}
         </div>
 
-        <div className={cn("flex items-center gap-2", "ml-auto sm:ml-0")}>
+        <div className="ml-auto flex items-center gap-2 sm:ml-0">
           {actions}
           <button
             type="button"
