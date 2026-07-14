@@ -134,3 +134,45 @@ export async function PATCH(request: Request) {
 
   return NextResponse.json({ ok: true });
 }
+
+/**
+ * Permanently deletes a lead. First cancels any active automation pipeline and
+ * clears the lead's pending approvals (so no gate keeps firing after it's gone),
+ * then deletes the lead row. By FK rules this cascades to its pipelines, tasks,
+ * documents, activities and approvals; appointments, emails, invoices and calls
+ * are preserved with a null lead_id so financial/contact history isn't lost.
+ */
+export async function DELETE(request: Request) {
+  const user = await verifyAdminToken(request.headers.get("authorization"));
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await request.json().catch(() => ({}));
+  const id = typeof body?.id === "string" ? body.id : "";
+  if (!id) {
+    return NextResponse.json({ error: "Missing lead id." }, { status: 400 });
+  }
+
+  if (!hasSupabaseAdminConfig()) {
+    return NextResponse.json({ ok: true, demoMode: true });
+  }
+
+  const supabase = createSupabaseAdminClient();
+
+  const { data: lead, error: fetchError } = await supabase.from("leads").select("id, name").eq("id", id).single();
+  if (fetchError || !lead) {
+    return NextResponse.json({ error: "Lead not found." }, { status: 404 });
+  }
+
+  // Stop any in-flight automation and dismiss pending gates for this lead.
+  await supabase.from("pipelines").update({ status: "cancelled" }).eq("lead_id", id).eq("status", "active");
+  await supabase.from("approvals").update({ status: "rejected", decided_at: new Date().toISOString() }).eq("lead_id", id).eq("status", "pending");
+
+  const { error } = await supabase.from("leads").delete().eq("id", id);
+  if (error) {
+    return serverErrorResponse("admin/leads:DELETE", error);
+  }
+
+  return NextResponse.json({ ok: true, deleted: lead.name });
+}

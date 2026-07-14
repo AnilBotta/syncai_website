@@ -14,7 +14,7 @@ import { getFinanceSummary } from "@/lib/finance";
 import { initiateCallForLead } from "@/lib/calls";
 import { hasVoiceConfig } from "@/lib/voice";
 import { fetchUrlInfo, webSearch } from "@/lib/agents/web";
-import { pipelineStatus, recordManualReply, startLeadPipeline } from "@/lib/pipeline";
+import { offerLeadAutomation, pipelineStatus, recordManualReply } from "@/lib/pipeline";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -753,14 +753,14 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     async ({ lead }) => {
       const found = await findLead(lead);
       if (!found) return `No lead found for "${lead}".`;
-      const res = await startLeadPipeline(supabase, found.id);
+      const res = await offerLeadAutomation(supabase, found.id);
       trace.push({ tool: "start_automation", summary: found.name });
       return res.message;
     },
     {
       name: "start_automation",
       description:
-        "Start the automated lifecycle for ONE lead: it drafts an outreach email into the Approval Inbox, and after you approve/send it the lead moves to contacted, then (on reply) qualifies and books a discovery call — asking your approval on Telegram at each gate. Use when the CEO says 'automate <lead>' or 'run the pipeline on <lead>'.",
+        "Kick off the automated lifecycle for ONE lead. This does NOT start it silently — it asks the CEO on Telegram (Approve/Skip) to confirm first; on approval it drafts an outreach email into the Approval Inbox, then after that email is approved the lead moves to contacted and (on reply) it qualifies and books a discovery call, asking on Telegram at each gate. Use when the CEO says 'automate <lead>' or 'run the pipeline on <lead>'.",
       schema: z.object({ lead: z.string().describe("Lead id or name") }),
     },
   );

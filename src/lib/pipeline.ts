@@ -510,8 +510,61 @@ export async function decidePipelineApproval(
     if (approval.type === "pipeline_batch") await activateBatch(supabase, approval);
     else if (approval.type === "pipeline_calls") await activateCalls(supabase, approval);
     else if (approval.type === "pipeline_bookcall") await activateBookCall(supabase, approval);
+    else if (approval.type === "pipeline_start" && approval.lead_id) await startLeadPipeline(supabase, approval.lead_id);
   }
   return { ok: true, label: approval.type };
+}
+
+/**
+ * Asks the CEO on Telegram whether to start the automated workflow for ONE
+ * lead (the single-lead counterpart of offerBatch). Creates a `pipeline_start`
+ * approval; on approval, decidePipelineApproval calls startLeadPipeline.
+ */
+export async function offerLeadAutomation(supabase: SupabaseClient, leadId: string): Promise<{ ok: boolean; message: string }> {
+  const { data: lead } = await supabase
+    .from("leads")
+    .select("id, name, email, unsubscribed_at")
+    .eq("id", leadId)
+    .maybeSingle<Pick<Lead, "id" | "name" | "email" | "unsubscribed_at">>();
+  if (!lead) return { ok: false, message: "Lead not found." };
+  if (!lead.email) return { ok: false, message: `${lead.name} has no email to automate.` };
+  if (lead.unsubscribed_at) return { ok: false, message: `${lead.name} has unsubscribed — can't automate.` };
+
+  const { data: activePipe } = await supabase
+    .from("pipelines")
+    .select("id")
+    .eq("lead_id", leadId)
+    .eq("status", "active")
+    .maybeSingle();
+  if (activePipe) return { ok: false, message: `${lead.name} already has an active automation.` };
+
+  const { data: pending } = await supabase
+    .from("approvals")
+    .select("id")
+    .eq("type", "pipeline_start")
+    .eq("lead_id", leadId)
+    .eq("status", "pending")
+    .maybeSingle();
+  if (pending) return { ok: true, message: `Already asked you on Telegram to automate ${lead.name}.` };
+
+  const { data: approval } = await supabase
+    .from("approvals")
+    .insert({
+      type: "pipeline_start",
+      lead_id: leadId,
+      title: `Automate outreach to ${lead.name}?`,
+      summary: "Start the automated workflow: I'll draft an outreach email for your approval, then move it to contacted and handle replies, qualifying and booking a discovery call.",
+      meta: { lead_id: leadId },
+    })
+    .select()
+    .single<Approval>();
+  if (!approval) return { ok: false, message: "Could not create the approval." };
+
+  await notifyCeo(
+    `🤖 Start the automated workflow for ${lead.name}? I'll research them, draft an outreach email for your approval, and take it from there.`,
+    decideButtons(approval.id),
+  );
+  return { ok: true, message: `Asked you on Telegram — approve there (or in the inbox) to start automating ${lead.name}.` };
 }
 
 /** Manual reply path (fallback before Gmail is wired, or from the Manager tool). */

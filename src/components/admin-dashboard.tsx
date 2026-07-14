@@ -189,6 +189,12 @@ export function AdminDashboard() {
     setSelected((current) => (current?.id === updated.id ? updated : current));
   }
 
+  function handleDrawerDeleted(deletedId: string) {
+    setLeads((current) => current.filter((lead) => lead.id !== deletedId));
+    setSelected((current) => (current?.id === deletedId ? null : current));
+    setDrawerLead(null);
+  }
+
   async function saveLead(formData: FormData) {
     if (!selected) {
       return;
@@ -362,7 +368,7 @@ export function AdminDashboard() {
         </div>
 
         {drawerLead ? (
-          <LeadDrawer lead={drawerLead} getToken={getToken} onClose={() => setDrawerLead(null)} onSaved={handleDrawerSaved} />
+          <LeadDrawer lead={drawerLead} getToken={getToken} onClose={() => setDrawerLead(null)} onSaved={handleDrawerSaved} onDeleted={handleDrawerDeleted} />
         ) : null}
       </div>
     </LazyMotion>
