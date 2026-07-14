@@ -9,7 +9,11 @@ import { approvalDecisionSchema } from "@/lib/validators";
 import { sendEmailRecord } from "@/lib/email/send-core";
 import { sendDocumentForSignature } from "@/lib/documents";
 import { sendInvoice } from "@/lib/invoices";
+import { decidePipelineApproval, onEmailDecided } from "@/lib/pipeline";
 import { serverErrorResponse } from "@/lib/api-errors";
+
+// Approving a pipeline batch triggers a bounded burst of research/drafts.
+export const maxDuration = 120;
 
 const demoApprovals: Approval[] = [
   {
@@ -88,6 +92,13 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "This item was already decided." }, { status: 409 });
   }
 
+  // Pipeline gates (batch / calls / book-call) are handled by the shared decision
+  // router — the same path Telegram buttons use.
+  if (approval.type === "pipeline_batch" || approval.type === "pipeline_calls" || approval.type === "pipeline_bookcall") {
+    await decidePipelineApproval(supabase, approval.id, parsed.data.decision);
+    return NextResponse.json({ ok: true });
+  }
+
   const now = new Date().toISOString();
 
   if (parsed.data.decision === "rejected") {
@@ -102,6 +113,10 @@ export async function PATCH(request: Request) {
         .update({ status: "cancelled" })
         .eq("id", approval.entity_id)
         .eq("status", "draft");
+    }
+    // A rejected pipeline-outreach email ends that lead's automation.
+    if (approval.type === "email") {
+      await onEmailDecided(supabase, approval.lead_id ?? null, "rejected");
     }
     // Cancel a rejected document so its accept link never activates.
     if (approval.type === "document" && approval.entity_id) {
@@ -133,6 +148,10 @@ export async function PATCH(request: Request) {
       .from("approvals")
       .update({ status: "approved", decided_at: now })
       .eq("id", approval.id);
+    // Advance any automation on this lead: move to contacted + maybe offer calls.
+    if (approval.type === "email") {
+      await onEmailDecided(supabase, approval.lead_id ?? null, "approved");
+    }
     return NextResponse.json({ ok: true, demoMode: result.demoMode });
   }
 

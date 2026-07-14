@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Mail, Microscope, X } from "lucide-react";
+import { Loader2, Mail, Microscope, Sparkles, X } from "lucide-react";
 import type { Prospect } from "@/lib/supabase";
 
 type ProspectsTableProps = {
@@ -67,6 +67,30 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
     }
   }
 
+  const automatable = prospects.filter((p) => p.email && p.status === "found");
+
+  async function automateAll() {
+    setBusyId("automate");
+    setError("");
+    setNotice("");
+    try {
+      const token = await getToken();
+      const response = await fetch("/api/admin/pipeline", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ prospectIds: automatable.map((p) => p.id) }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok === false) throw new Error(result.message || result.error || "Could not start automation.");
+      setNotice(result.message || "Automation started — drafts are landing in your Approval Inbox.");
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start automation.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function discard(prospect: Prospect) {
     const token = await getToken();
     await fetch("/api/admin/prospects", {
@@ -79,6 +103,22 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
 
   return (
     <div className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+      {automatable.length ? (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-brand-soft/40 bg-brand/[.05] p-3">
+          <p className="text-sm font-bold text-foreground">
+            {automatable.length} prospect{automatable.length > 1 ? "s" : ""} with email ready to automate.
+          </p>
+          <button
+            type="button"
+            onClick={automateAll}
+            disabled={busyId === "automate"}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-brand-deep px-4 text-sm font-bold text-white transition hover:brightness-110 disabled:opacity-60"
+          >
+            {busyId === "automate" ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+            Automate outreach
+          </button>
+        </div>
+      ) : null}
       {demoMode ? (
         <p className="mb-3 rounded-2xl border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
           Demo mode. Connect Supabase + a sourcing key (Google Places / Apollo) to find live prospects.

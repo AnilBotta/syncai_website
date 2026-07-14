@@ -10,10 +10,14 @@ export function isCeoChat(chatId: string | number | undefined): boolean {
   return Boolean(CEO_CHAT_ID && chatId !== undefined && String(chatId) === String(CEO_CHAT_ID));
 }
 
-/** Sends a Telegram message. No-op (returns false) when unconfigured. */
+/** One tappable inline button. `data` is echoed back as a callback_query. */
+export type TelegramButton = { text: string; data: string };
+
+/** Sends a Telegram message, optionally with a row of inline buttons. No-op when unconfigured. */
 export async function sendTelegramMessage(
   chatId: string | number,
   text: string,
+  buttons?: TelegramButton[],
 ): Promise<boolean> {
   if (!BOT_TOKEN) {
     return false;
@@ -22,7 +26,14 @@ export async function sendTelegramMessage(
     const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        disable_web_page_preview: true,
+        ...(buttons?.length
+          ? { reply_markup: { inline_keyboard: [buttons.map((b) => ({ text: b.text, callback_data: b.data }))] } }
+          : {}),
+      }),
     });
     return response.ok;
   } catch {
@@ -30,12 +41,40 @@ export async function sendTelegramMessage(
   }
 }
 
-/** Pushes a proactive notification to the CEO (e.g. urgent lead activity). */
-export async function notifyCeo(text: string): Promise<boolean> {
+/** Pushes a proactive notification to the CEO (e.g. urgent lead activity), optionally with buttons. */
+export async function notifyCeo(text: string, buttons?: TelegramButton[]): Promise<boolean> {
   if (!CEO_CHAT_ID) {
     return false;
   }
-  return sendTelegramMessage(CEO_CHAT_ID, text);
+  return sendTelegramMessage(CEO_CHAT_ID, text, buttons);
+}
+
+/** Acknowledges a tapped inline button (stops Telegram's loading spinner). */
+export async function answerCallbackQuery(callbackQueryId: string, text?: string): Promise<void> {
+  if (!BOT_TOKEN) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callback_query_id: callbackQueryId, ...(text ? { text } : {}) }),
+    });
+  } catch {
+    // Non-critical.
+  }
+}
+
+/** Rewrites a message's text (used to stamp "✅ Approved" onto a decided prompt) and clears its buttons. */
+export async function editMessageText(chatId: string | number, messageId: number, text: string): Promise<void> {
+  if (!BOT_TOKEN) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, message_id: messageId, text, reply_markup: { inline_keyboard: [] } }),
+    });
+  } catch {
+    // Non-critical.
+  }
 }
 
 /** Sends the "typing…" chat action so the CEO sees the bot is working. */

@@ -166,12 +166,15 @@ export async function bookAppointmentFromCall(
   supabase: SupabaseClient,
   args: {
     callId?: string | null;
+    /** Book directly for this lead (e.g. from an email reply) — skips the call lookup. */
+    leadId?: string | null;
     date?: string;
     time?: string;
     name?: string;
     email?: string;
     service?: string;
     notes?: string;
+    source?: string;
   },
 ): Promise<{ success: boolean; message: string }> {
   if (!args.date || !args.time) {
@@ -193,9 +196,12 @@ export async function bookAppointmentFromCall(
     };
   }
 
-  // Resolve the lead from the call so we can default their contact details.
+  // Resolve the lead: an explicit leadId (email-reply booking) wins, else from the call.
   let lead: Lead | null = null;
-  if (args.callId) {
+  if (args.leadId) {
+    const { data } = await supabase.from("leads").select("*").eq("id", args.leadId).maybeSingle<Lead>();
+    lead = data ?? null;
+  } else if (args.callId) {
     const { data: call } = await supabase
       .from("calls")
       .select("lead_id")
@@ -224,7 +230,7 @@ export async function bookAppointmentFromCall(
       starts_at: iso,
       ends_at: slotEndsAt(iso),
       timezone: BOOKING_CONFIG.timezone,
-      source: "voice",
+      source: args.source || "voice",
       status: "pending",
       lead_id: lead?.id || null,
     })

@@ -4,6 +4,7 @@ import { searchApify } from "@/lib/sourcing/apify";
 import { searchPlaces } from "@/lib/sourcing/places";
 import { searchApollo } from "@/lib/sourcing/apollo";
 import type { ProspectCandidate } from "@/lib/sourcing/types";
+import { offerBatch } from "@/lib/pipeline";
 
 const MAX_PER_RUN = 25;
 
@@ -103,6 +104,7 @@ export async function runScraper(supabase: SupabaseClient, icpId: string) {
     }));
 
   let inserted = 0;
+  let insertedIds: string[] = [];
   if (rows.length) {
     const { data, error } = await supabase.from("prospects").insert(rows).select("id");
     if (error) {
@@ -115,6 +117,7 @@ export async function runScraper(supabase: SupabaseClient, icpId: string) {
       return { ok: false as const, error: error.message };
     }
     inserted = data?.length ?? 0;
+    insertedIds = (data || []).map((d) => d.id);
   }
 
   if (runId) {
@@ -126,6 +129,15 @@ export async function runScraper(supabase: SupabaseClient, icpId: string) {
         output: { inserted, found: candidates.length, notes },
       })
       .eq("id", runId);
+  }
+
+  // Offer to automate outreach for the new prospects (Telegram buttons + inbox).
+  if (insertedIds.length) {
+    try {
+      await offerBatch(supabase, { icpName: icp.name, prospectIds: insertedIds });
+    } catch {
+      // Non-critical — scraping still succeeds even if the offer fails.
+    }
   }
 
   const summary =

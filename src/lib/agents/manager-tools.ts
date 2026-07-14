@@ -14,6 +14,7 @@ import { getFinanceSummary } from "@/lib/finance";
 import { initiateCallForLead } from "@/lib/calls";
 import { hasVoiceConfig } from "@/lib/voice";
 import { fetchUrlInfo, webSearch } from "@/lib/agents/web";
+import { pipelineStatus, recordManualReply, startLeadPipeline } from "@/lib/pipeline";
 
 const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 
@@ -748,6 +749,62 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     },
   );
 
+  const startAutomation = tool(
+    async ({ lead }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      const res = await startLeadPipeline(supabase, found.id);
+      trace.push({ tool: "start_automation", summary: found.name });
+      return res.message;
+    },
+    {
+      name: "start_automation",
+      description:
+        "Start the automated lifecycle for ONE lead: it drafts an outreach email into the Approval Inbox, and after you approve/send it the lead moves to contacted, then (on reply) qualifies and books a discovery call — asking your approval on Telegram at each gate. Use when the CEO says 'automate <lead>' or 'run the pipeline on <lead>'.",
+      schema: z.object({ lead: z.string().describe("Lead id or name") }),
+    },
+  );
+
+  const automationStatus = tool(
+    async () => {
+      const counts = await pipelineStatus(supabase);
+      trace.push({ tool: "automation_status", summary: "read" });
+      const keys = Object.keys(counts);
+      if (!keys.length) return "No active automations right now.";
+      const labels: Record<string, string> = {
+        queued: "queued (drafting)",
+        awaiting_email_approval: "awaiting your email approval",
+        awaiting_reply: "sent, awaiting reply",
+        awaiting_booking: "qualified, awaiting a booking",
+      };
+      return `Active automations:\n${keys.map((k) => `- ${labels[k] || k}: ${counts[k]}`).join("\n")}`;
+    },
+    {
+      name: "automation_status",
+      description: "Report how many leads are in each stage of the automated pipeline (drafting, awaiting approval, awaiting reply, awaiting booking).",
+      schema: z.object({}),
+    },
+  );
+
+  const recordReply = tool(
+    async ({ lead, reply }) => {
+      const found = await findLead(lead);
+      if (!found) return `No lead found for "${lead}".`;
+      const res = await recordManualReply(supabase, found.id, reply);
+      trace.push({ tool: "record_reply", summary: found.name });
+      return res.message;
+    },
+    {
+      name: "record_reply",
+      description:
+        "Record that a lead replied to our email, and advance their automation (qualify → discovery email, or book from a proposed time). Use when the CEO relays a reply, e.g. 'Priya replied: Tuesday at 2pm works'. Only affects leads with an active automation awaiting a reply.",
+      schema: z.object({
+        lead: z.string().describe("Lead id or name"),
+        reply: z.string().describe("The lead's reply text, as close to verbatim as possible"),
+      }),
+    },
+  );
+
   return [
     getPipelineSummary,
     searchLeads,
@@ -773,5 +830,8 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
     callLead,
     fetchUrl,
     webSearchTool,
+    startAutomation,
+    automationStatus,
+    recordReply,
   ];
 }
