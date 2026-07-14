@@ -294,6 +294,9 @@ const intentSchema = z.object({
   // time parser each expect their own fragment, not one combined phrase.
   date_text: z.string().optional().default(""),
   time_text: z.string().optional().default(""),
+  // IANA zone the lead's time is in ("Asia/Kolkata"), when they say one. Empty
+  // => assume the business timezone.
+  timezone: z.string().optional().default(""),
 });
 
 /** Advances an active pipeline based on a lead's email reply. Used by the Gmail poll AND the manual record_reply path. */
@@ -353,6 +356,9 @@ export async function advanceOnReply(supabase: SupabaseClient, pipeline: Pipelin
         leadId,
         date: intent.date_text,
         time: intent.time_text,
+        // If they named their timezone, their day/time is read in it and the
+        // confirmation email is rendered in it too.
+        attendeeTimezone: intent.timezone || null,
         service: "Discovery call",
         notes: "Booked automatically from an email reply.",
         source: "pipeline",
@@ -387,6 +393,7 @@ const BOOKING_BLOCK = [
   "",
   "Day: ______________   (e.g. Thursday, or July 18)",
   "Time: _____________   (e.g. 11am or 2:30pm)",
+  "Timezone: _________   (e.g. IST, GMT — only if you're outside Eastern Time)",
   "",
   "— Anil",
 ].join("\n");
@@ -420,13 +427,14 @@ async function parseReplyIntent(supabase: SupabaseClient, leadId: string, replyT
     agent: "qualify",
     leadId,
     systemPrompt: `Classify the intent of a lead's email reply about scheduling a 15-minute discovery call. Return strict JSON:
-{ "intent": "booked" | "time_proposed" | "positive_vague" | "not_interested", "date_text": "just the DAY, else empty", "time_text": "just the TIME, else empty" }
+{ "intent": "booked" | "time_proposed" | "positive_vague" | "not_interested", "date_text": "just the DAY, else empty", "time_text": "just the TIME, else empty", "timezone": "IANA zone if they state one, else empty" }
 - booked: they say they already booked / picked a slot on the link.
 - time_proposed: they suggest a specific day AND time. Split them: date_text is the day only ("Tuesday", "tomorrow", "July 18", "next Monday"); time_text is the clock time only ("2pm", "11am", "10:30"). If they gave a day but no clock time (or vice-versa), treat it as positive_vague instead.
 - positive_vague: interested but no concrete day+time ("sure", "sounds good", "ok", "sometime next week").
 - not_interested: declining.
-The lead may reply using a filled-in template like "Day: Thursday / Time: 11am" — read the values after each label.
-Examples: "Thursday at 11 works" -> {"intent":"time_proposed","date_text":"Thursday","time_text":"11"}. "tomorrow at 2pm" -> {"intent":"time_proposed","date_text":"tomorrow","time_text":"2pm"}. "Day: Friday  Time: 10:30am" -> {"intent":"time_proposed","date_text":"Friday","time_text":"10:30am"}. "sounds good" -> {"intent":"positive_vague","date_text":"","time_text":""}.`,
+The lead may reply using a filled-in template like "Day: Thursday / Time: 11am / Timezone: IST" — read the values after each label.
+"timezone": convert whatever they say into a full IANA identifier — "IST"/"India" -> "Asia/Kolkata", "EST"/"Eastern" -> "America/Toronto", "GMT"/"UK"/"London" -> "Europe/London", "PST" -> "America/Los_Angeles". If they don't mention a timezone at all, return "".
+Examples: "Thursday at 11 works" -> {"intent":"time_proposed","date_text":"Thursday","time_text":"11","timezone":""}. "tomorrow at 2pm IST" -> {"intent":"time_proposed","date_text":"tomorrow","time_text":"2pm","timezone":"Asia/Kolkata"}. "Day: Friday  Time: 10:30am  Timezone: GMT" -> {"intent":"time_proposed","date_text":"Friday","time_text":"10:30am","timezone":"Europe/London"}. "sounds good" -> {"intent":"positive_vague","date_text":"","time_text":"","timezone":""}.`,
     userPrompt: `Reply:\n${replyText.slice(0, 1500)}`,
     schema: intentSchema,
     input: { leadId, kind: "reply_intent" },

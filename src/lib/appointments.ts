@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createZoomMeeting, toZoomStartTime } from "@/lib/zoom";
 import { sendEmail } from "@/lib/email/resend";
 import { notifyCeo } from "@/lib/telegram";
-import { formatSlotForHumans } from "@/lib/booking";
+import { BOOKING_CONFIG, formatSlotForHumans, isValidTimezone } from "@/lib/booking";
 
 export type BookingRecord = {
   id: string;
@@ -14,6 +14,8 @@ export type BookingRecord = {
   starts_at: string;
   ends_at: string;
   timezone: string;
+  /** The attendee's IANA zone; null => show them the business timezone. */
+  attendee_timezone?: string | null;
   source?: string | null;
   lead_id?: string | null;
 };
@@ -26,7 +28,12 @@ export type BookingRecord = {
  * fail the booking. Shared by the voice, pipeline, and website booking paths.
  */
 export async function finalizeBooking(supabase: SupabaseClient, appt: BookingRecord): Promise<{ meetingUrl: string | null }> {
-  const humanTime = formatSlotForHumans(appt.starts_at);
+  // The client sees the time in THEIR zone; we (and Telegram) see business time.
+  const businessTz = appt.timezone || BOOKING_CONFIG.timezone;
+  const attendeeTz = isValidTimezone(appt.attendee_timezone) ? appt.attendee_timezone : businessTz;
+  const humanTime = formatSlotForHumans(appt.starts_at, businessTz);
+  const attendeeTime = formatSlotForHumans(appt.starts_at, attendeeTz);
+  const zonesDiffer = attendeeTz !== businessTz;
   const service = appt.service || "Discovery call";
   const durationMinutes =
     Math.max(15, Math.round((new Date(appt.ends_at).getTime() - new Date(appt.starts_at).getTime()) / 60000)) || 15;
@@ -56,7 +63,8 @@ export async function finalizeBooking(supabase: SupabaseClient, appt: BookingRec
     "",
     `You're all set for a ${service.toLowerCase()} with SyncAI.`,
     "",
-    `When: ${humanTime}`,
+    `When: ${attendeeTime}${zonesDiffer ? " (your local time)" : ""}`,
+    ...(zonesDiffer ? [`That's ${humanTime} for us.`] : []),
     joinLineText,
     "",
     "Need to reschedule? Just reply to this email and we'll sort it out.",
@@ -70,7 +78,7 @@ export async function finalizeBooking(supabase: SupabaseClient, appt: BookingRec
     <p>Hi ${firstName},</p>
     <p>You're all set for a ${service.toLowerCase()} with SyncAI.</p>
     <p style="margin:18px 0;padding:16px 18px;background:#f6f4fb;border-radius:12px">
-      <strong>When:</strong> ${humanTime}<br/>
+      <strong>When:</strong> ${attendeeTime}${zonesDiffer ? ` <span style="color:#666">(your local time)</span><br/><span style="color:#666;font-size:13px">That's ${humanTime} for us.</span>` : ""}<br/>
       <strong>Where:</strong> ${joinLineHtml}
     </p>
     <p>Need to reschedule? Just reply to this email and we'll sort it out.</p>
@@ -78,12 +86,12 @@ export async function finalizeBooking(supabase: SupabaseClient, appt: BookingRec
   </div>`;
 
   try {
-    await sendEmail({ to: appt.email, subject: `Your SyncAI call is confirmed — ${humanTime}`, text, html });
+    await sendEmail({ to: appt.email, subject: `Your SyncAI call is confirmed — ${attendeeTime}`, text, html });
     await supabase.from("emails").insert({
       lead_id: appt.lead_id || null,
       direction: "outbound",
       to_email: appt.email,
-      subject: `Your SyncAI call is confirmed — ${humanTime}`,
+      subject: `Your SyncAI call is confirmed — ${attendeeTime}`,
       body_text: text,
       status: "sent",
       source: "agent",
@@ -115,7 +123,10 @@ export async function finalizeBooking(supabase: SupabaseClient, appt: BookingRec
     const link = meetingUrl
       ? `\n🔗 Zoom: ${meetingUrl}`
       : "\n(No Zoom link — add the ZOOM_* env vars to auto-create meetings.)";
-    await notifyCeo(`📅 New booking: ${who} — ${humanTime}. A confirmation email is on its way to them.${link}`);
+    const theirTime = zonesDiffer ? `\n🌍 Their local time: ${attendeeTime}` : "";
+    await notifyCeo(
+      `📅 New booking: ${who} — ${humanTime}. A confirmation email is on its way to them.${theirTime}${link}`,
+    );
   } catch {
     // ignore
   }

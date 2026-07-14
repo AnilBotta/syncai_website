@@ -55,7 +55,10 @@ create table if not exists public.appointments (
   lead_id uuid references public.leads(id) on delete set null,
   -- Video-meeting details (migration 012), populated when a booking is finalized.
   meeting_url text,
-  meeting_id text
+  meeting_id text,
+  -- The attendee's own IANA timezone (migration 013), used to show them the
+  -- meeting time in their local time. Null => fall back to `timezone` above.
+  attendee_timezone text
 );
 
 alter table public.appointments enable row level security;

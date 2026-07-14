@@ -86,6 +86,8 @@ export function BookingWidget({ source = "booking_page", compact = false }: Book
       notes: String(formData.get("notes") || ""),
       startsAt: selectedSlot.startsAt,
       timezone: "America/Toronto",
+      // The visitor's own zone, so their confirmation email shows their local time.
+      attendeeTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
       source,
       turnstileToken: String(formData.get("cf-turnstile-response") || ""),
     };

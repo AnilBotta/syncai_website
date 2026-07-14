@@ -97,12 +97,34 @@ export function slotEndsAt(startsAtISO: string) {
   return addMinutes(new Date(startsAtISO), BOOKING_CONFIG.slotMinutes).toISOString();
 }
 
-export function formatSlotForHumans(startsAtISO: string) {
-  return formatInTimeZone(
-    new Date(startsAtISO),
-    BOOKING_CONFIG.timezone,
-    "EEEE, MMMM d 'at' h:mm a zzz"
-  );
+/**
+ * Human slot label. Defaults to the business timezone; pass an attendee's IANA
+ * zone to render the same instant in THEIR local time (e.g. for a confirmation
+ * email to a lead in India). Falls back to the business zone if `tz` is invalid.
+ */
+export function formatSlotForHumans(startsAtISO: string, tz: string = BOOKING_CONFIG.timezone) {
+  const zone = isValidTimezone(tz) ? tz : BOOKING_CONFIG.timezone;
+  return formatInTimeZone(new Date(startsAtISO), zone, "EEEE, MMMM d 'at' h:mm a zzz");
+}
+
+/**
+ * True if `tz` is a real IANA zone (guards LLM- and browser-supplied values).
+ *
+ * Requires a region/city form ("Asia/Kolkata") or "UTC". Bare abbreviations are
+ * deliberately rejected even though the runtime accepts them: they resolve to
+ * FIXED-OFFSET zones that ignore daylight saving, so "EST" renders 10:00 AM for
+ * an instant that is really 11:00 AM EDT in Toronto, and "GMT" ignores BST. A
+ * wrong time in a client's confirmation is worse than falling back to ours.
+ */
+export function isValidTimezone(tz: string | null | undefined): tz is string {
+  if (!tz) return false;
+  if (tz !== "UTC" && !tz.includes("/")) return false;
+  try {
+    formatInTimeZone(new Date(), tz, "yyyy");
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
