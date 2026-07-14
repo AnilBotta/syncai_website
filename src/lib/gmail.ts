@@ -144,22 +144,27 @@ export async function pollReplies(
     if (!msg || !msg.from) continue;
 
     // Match sender to a lead with an active pipeline awaiting a reply/booking.
-    const { data: lead } = await supabase
-      .from("leads")
-      .select("id, email")
-      .ilike("email", msg.from)
-      .maybeSingle<Pick<Lead, "id" | "email">>();
-    if (!lead) continue;
+    // The same address can appear on more than one lead row (duplicate test
+    // leads, a shared inbox, etc.) — .maybeSingle() on the leads table would
+    // silently return nothing in that case, so scope the match to whichever
+    // of those leads actually has an active pipeline waiting for a reply
+    // (oldest one first, so the longest-waiting automation gets the reply).
+    const { data: candidateLeads } = await supabase.from("leads").select("id, email").ilike("email", msg.from);
+    const candidateIds = (candidateLeads || []).map((l) => l.id);
+    if (!candidateIds.length) continue;
 
     const { data: pipeline } = await supabase
       .from("pipelines")
       .select("*")
-      .eq("lead_id", lead.id)
+      .in("lead_id", candidateIds)
       .eq("status", "active")
       .in("stage", ["awaiting_reply", "awaiting_booking"])
+      .order("created_at", { ascending: true })
+      .limit(1)
       .maybeSingle<Pipeline>();
     if (!pipeline) continue;
 
+    const lead = (candidateLeads as Pick<Lead, "id" | "email">[]).find((l) => l.id === pipeline.lead_id)!;
     matched += 1;
 
     // Record the inbound message (also serves as the dedupe marker).
