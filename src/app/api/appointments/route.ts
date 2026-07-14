@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { formatSlotForHumans, isValidSlot, slotEndsAt } from "@/lib/booking";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { appointmentSchema } from "@/lib/validators";
 import { serverErrorResponse } from "@/lib/api-errors";
+import { finalizeBooking } from "@/lib/appointments";
 import { clientIpFromRequest, getTurnstileToken, verifyTurnstile } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
   }
 
   const supabase = createSupabaseAdminClient();
+  const endsAt = slotEndsAt(startsAt);
   const { data, error } = await supabase
     .from("appointments")
     .insert({
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
       service: appointment.service || null,
       notes: appointment.notes || null,
       starts_at: startsAt,
-      ends_at: slotEndsAt(startsAt),
+      ends_at: endsAt,
       timezone: appointment.timezone,
       source: appointment.source,
       status: "pending",
@@ -71,6 +73,23 @@ export async function POST(request: Request) {
     }
     return serverErrorResponse("appointments:POST", error);
   }
+
+  // Create the Zoom meeting + send the confirmation + ping the CEO after responding.
+  after(async () => {
+    await finalizeBooking(supabase, {
+      id: data.id,
+      name: appointment.name,
+      email: appointment.email,
+      phone: appointment.phone || null,
+      company: appointment.company || null,
+      service: appointment.service || null,
+      starts_at: startsAt,
+      ends_at: endsAt,
+      timezone: appointment.timezone,
+      source: appointment.source,
+      lead_id: null,
+    });
+  });
 
   return NextResponse.json({
     ok: true,

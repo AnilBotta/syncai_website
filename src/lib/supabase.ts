@@ -296,6 +296,8 @@ export type Appointment = {
   status: "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
   source: string;
   lead_id?: string | null;
+  meeting_url?: string | null;
+  meeting_id?: string | null;
 };
 
 export function hasSupabasePublicConfig() {

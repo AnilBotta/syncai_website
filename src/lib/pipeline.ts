@@ -358,7 +358,8 @@ export async function advanceOnReply(supabase: SupabaseClient, pipeline: Pipelin
         source: "pipeline",
       });
       if (booked.success) {
-        await notifyCeo(`📅 Booked ${lead.name}: ${booked.message}`);
+        // bookAppointmentFromCall → finalizeBooking already emailed the client
+        // the Zoom link and pinged the CEO, so don't notify again here.
         await complete(supabase, pipeline, "booked_reply");
       } else {
         // Couldn't parse/validate the time — fall back to offering a call.
