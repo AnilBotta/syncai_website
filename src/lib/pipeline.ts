@@ -11,7 +11,7 @@ import { sendEmailRecord } from "@/lib/email/send-core";
 import { hasVoiceConfig } from "@/lib/voice";
 import { notifyCeo, type TelegramButton } from "@/lib/telegram";
 
-const CONTACT_LINK = "https://www.syncai.tech/contact";
+const BOOK_LINK = "https://www.syncai.tech/book";
 const DRAIN_CHUNK = 3;
 const CALL_CAP = 20;
 const NO_REPLY_DAYS = 3;
@@ -290,7 +290,10 @@ async function activateCalls(supabase: SupabaseClient, approval: Approval): Prom
 
 const intentSchema = z.object({
   intent: z.enum(["booked", "time_proposed", "positive_vague", "not_interested"]),
-  datetime_text: z.string().optional().default(""),
+  // Split so the booker can parse them independently: the date resolver and the
+  // time parser each expect their own fragment, not one combined phrase.
+  date_text: z.string().optional().default(""),
+  time_text: z.string().optional().default(""),
 });
 
 /** Advances an active pipeline based on a lead's email reply. Used by the Gmail poll AND the manual record_reply path. */
@@ -345,11 +348,11 @@ export async function advanceOnReply(supabase: SupabaseClient, pipeline: Pipelin
       await complete(supabase, pipeline, "not_interested");
       return;
     }
-    if (intent.intent === "time_proposed" && intent.datetime_text) {
+    if (intent.intent === "time_proposed" && intent.date_text && intent.time_text) {
       const booked = await bookAppointmentFromCall(supabase, {
         leadId,
-        date: intent.datetime_text,
-        time: intent.datetime_text,
+        date: intent.date_text,
+        time: intent.time_text,
         service: "Discovery call",
         notes: "Booked automatically from an email reply.",
         source: "pipeline",
@@ -368,19 +371,40 @@ export async function advanceOnReply(supabase: SupabaseClient, pipeline: Pipelin
   }
 }
 
+/**
+ * Fixed "how to book" block appended to every discovery email. Kept in code (not
+ * left to the LLM) so the booking link and the fill-in-the-blank lines are always
+ * present and correctly formatted — the blanks nudge the lead to reply with a
+ * clean "Day + Time" that the reply parser can turn straight into a booking.
+ */
+const BOOKING_BLOCK = [
+  "Two easy ways to lock in a free 15-minute slot:",
+  "",
+  `1) Book instantly here: ${BOOK_LINK}`,
+  "",
+  "2) Or just reply to this email with your preferred day and time — copy the two lines below and fill them in:",
+  "",
+  "Day: ______________   (e.g. Thursday, or July 18)",
+  "Time: _____________   (e.g. 11am or 2:30pm)",
+  "",
+  "— Anil",
+].join("\n");
+
 async function sendDiscoveryEmail(supabase: SupabaseClient, lead: Lead): Promise<void> {
   const draft = await runOneShotAgent(supabase, {
     agent: "email_draft",
     leadId: lead.id,
-    systemPrompt: `You write a short, warm follow-up email for Anil at SyncAI Technologies inviting the recipient to a free 15-minute discovery call. 70-110 words, specific to them, no hype. You MUST include this exact booking link on its own line: ${CONTACT_LINK}. Sign off as "Anil". No unsubscribe/signature block. Return strict JSON { "subject": "...", "body": "..." }.`,
+    systemPrompt: `You write ONLY the opening of a short, warm follow-up email from Anil at SyncAI Technologies inviting the recipient to a free 15-minute discovery call. 2-3 sentences, specific to them, no hype. Do NOT add a booking link, scheduling instructions, or a sign-off — those are appended automatically after your text. Return strict JSON { "subject": "...", "body": "..." } where body is just the greeting and those 2-3 sentences.`,
     userPrompt: [`Recipient: ${lead.name}`, `Company: ${lead.company || "—"}`, `Pain point: ${lead.pain_point}`].join("\n"),
     schema: z.object({ subject: z.string(), body: z.string() }),
     input: { leadId: lead.id, kind: "discovery" },
   });
 
   const subject = draft.ok ? draft.data.subject : `A quick 15-minute call, ${lead.name.split(" ")[0]}?`;
-  let body = draft.ok ? draft.data.body : `Hi ${lead.name.split(" ")[0]},\n\nWould you be open to a quick 15-minute call to explore how we could help? You can grab a time here:\n\n${CONTACT_LINK}\n\nThanks,\nAnil`;
-  if (!body.includes(CONTACT_LINK)) body += `\n\nBook a time here: ${CONTACT_LINK}`;
+  const intro = draft.ok
+    ? draft.data.body.trim()
+    : `Hi ${lead.name.split(" ")[0]},\n\nWould you be open to a quick 15-minute call to explore how we could help ${lead.company || "your business"}?`;
+  const body = `${intro}\n\n${BOOKING_BLOCK}`;
 
   const { data: email } = await supabase
     .from("emails")
@@ -395,11 +419,13 @@ async function parseReplyIntent(supabase: SupabaseClient, leadId: string, replyT
     agent: "qualify",
     leadId,
     systemPrompt: `Classify the intent of a lead's email reply about scheduling a 15-minute discovery call. Return strict JSON:
-{ "intent": "booked" | "time_proposed" | "positive_vague" | "not_interested", "datetime_text": "the day/time they proposed, verbatim, else empty" }
+{ "intent": "booked" | "time_proposed" | "positive_vague" | "not_interested", "date_text": "just the DAY, else empty", "time_text": "just the TIME, else empty" }
 - booked: they say they already booked / picked a slot on the link.
-- time_proposed: they suggest a specific day/time (e.g. "Tuesday at 2pm", "tomorrow morning").
-- positive_vague: interested but no concrete time ("sure", "sounds good", "ok").
-- not_interested: declining.`,
+- time_proposed: they suggest a specific day AND time. Split them: date_text is the day only ("Tuesday", "tomorrow", "July 18", "next Monday"); time_text is the clock time only ("2pm", "11am", "10:30"). If they gave a day but no clock time (or vice-versa), treat it as positive_vague instead.
+- positive_vague: interested but no concrete day+time ("sure", "sounds good", "ok", "sometime next week").
+- not_interested: declining.
+The lead may reply using a filled-in template like "Day: Thursday / Time: 11am" — read the values after each label.
+Examples: "Thursday at 11 works" -> {"intent":"time_proposed","date_text":"Thursday","time_text":"11"}. "tomorrow at 2pm" -> {"intent":"time_proposed","date_text":"tomorrow","time_text":"2pm"}. "Day: Friday  Time: 10:30am" -> {"intent":"time_proposed","date_text":"Friday","time_text":"10:30am"}. "sounds good" -> {"intent":"positive_vague","date_text":"","time_text":""}.`,
     userPrompt: `Reply:\n${replyText.slice(0, 1500)}`,
     schema: intentSchema,
     input: { leadId, kind: "reply_intent" },
