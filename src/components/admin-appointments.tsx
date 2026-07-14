@@ -17,6 +17,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
   const [selected, setSelected] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingStatus, setSavingStatus] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [range, setRange] = useState<"upcoming" | "past" | "all">("upcoming");
@@ -88,7 +89,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
 
     try {
       const token = await getToken();
-      const nextStatus = String(formData.get("status") || selected.status);
+      const nextStatus = String(formData.get("status") ?? selected.status);
       const notes = String(formData.get("notes") || "");
 
       const response = await fetch("/api/admin/appointments", {
@@ -114,6 +115,40 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
       setError(saveError instanceof Error ? saveError.message : "Could not save appointment.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  /**
+   * The status dropdown sits far above the Save button, so it reads as a live
+   * control — persist it the moment it changes instead of silently waiting for a
+   * submit the user may never scroll to. Optimistic, and reverts if the save fails.
+   */
+  async function changeStatus(nextStatus: Appointment["status"]) {
+    if (!selected || nextStatus === selected.status) return;
+
+    const previous = selected;
+    const updated = { ...selected, status: nextStatus };
+    setSelected(updated);
+    setAppointments((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+    setSavingStatus(true);
+    setError("");
+
+    try {
+      const token = await getToken();
+      const response = await fetch("/api/admin/appointments", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id: previous.id, status: nextStatus }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not update status.");
+    } catch (statusError) {
+      // Put the old value back so the UI never claims a change that didn't stick.
+      setSelected(previous);
+      setAppointments((current) => current.map((item) => (item.id === previous.id ? previous : item)));
+      setError(statusError instanceof Error ? statusError.message : "Could not update status.");
+    } finally {
+      setSavingStatus(false);
     }
   }
 
@@ -260,17 +295,23 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
                 <h2 className="text-2xl font-black text-foreground">{selected.name}</h2>
                 <p className="mt-1 text-sm text-muted">Booked {formatDate(selected.created_at)}</p>
               </div>
-              <select
-                name="status"
-                defaultValue={selected.status}
-                className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-bold capitalize outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
-              >
-                {appointmentStatuses.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-2">
+                {savingStatus ? <Loader2 className="size-4 animate-spin text-muted" /> : null}
+                <select
+                  name="status"
+                  value={selected.status}
+                  onChange={(event) => changeStatus(event.target.value as Appointment["status"])}
+                  disabled={savingStatus}
+                  aria-label="Appointment status (saves immediately)"
+                  className="h-11 rounded-full border border-sidebar-border px-4 text-sm font-bold capitalize outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25 disabled:opacity-60"
+                >
+                  {appointmentStatuses.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -307,7 +348,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
               className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-deep px-6 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving ? <Loader2 className="size-4 animate-spin" /> : null}
-              Save appointment
+              Save notes
             </button>
           </form>
         ) : (
