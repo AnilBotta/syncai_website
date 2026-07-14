@@ -9,6 +9,7 @@ import {
   getAvailableSlots,
   getBookableDays,
   isValidSlot,
+  isValidTimezone,
   slotEndsAt,
 } from "@/lib/booking";
 import { finalizeBooking } from "@/lib/appointments";
@@ -26,11 +27,17 @@ const MONTHS = [
  * current date, so it never depends on the voice model knowing today's date.
  * Returns null if it can't be resolved.
  */
-export function resolveSpokenDate(input: string | undefined | null, now = new Date()): string | null {
+export function resolveSpokenDate(
+  input: string | undefined | null,
+  now = new Date(),
+  tz: string = BOOKING_CONFIG.timezone,
+): string | null {
   if (!input) return null;
   const s = input.trim().toLowerCase();
 
-  const TZ = BOOKING_CONFIG.timezone;
+  // Resolve relative words ("today", "thursday") in the SPEAKER's timezone —
+  // "tomorrow" means tomorrow where they are, not where the business is.
+  const TZ = isValidTimezone(tz) ? tz : BOOKING_CONFIG.timezone;
   const todayStr = formatInTimeZone(now, TZ, "yyyy-MM-dd");
   const todayNoon = fromZonedTime(`${todayStr}T12:00:00`, TZ);
   const fmt = (d: Date) => formatInTimeZone(d, TZ, "yyyy-MM-dd");
@@ -93,7 +100,11 @@ export function resolveSpokenDate(input: string | undefined | null, now = new Da
  * bare hour like "2" is given with no am/pm, assumes afternoon since business
  * hours are 9-5. Returns null if it can't be parsed.
  */
-export function parseSpokenTimeToIso(date: string, time: string): string | null {
+export function parseSpokenTimeToIso(
+  date: string,
+  time: string,
+  tz: string = BOOKING_CONFIG.timezone,
+): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !time) return null;
   const m = time.trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?$/);
   if (!m) return null;
@@ -119,7 +130,9 @@ export function parseSpokenTimeToIso(date: string, time: string): string | null 
 
   const hh = String(hour).padStart(2, "0");
   const mm = String(minute).padStart(2, "0");
-  const iso = fromZonedTime(`${date}T${hh}:${mm}:00`, BOOKING_CONFIG.timezone).toISOString();
+  // "11am" means 11am where the SPEAKER is — interpret in their zone, not ours.
+  const zone = isValidTimezone(tz) ? tz : BOOKING_CONFIG.timezone;
+  const iso = fromZonedTime(`${date}T${hh}:${mm}:00`, zone).toISOString();
   return Number.isNaN(new Date(iso).getTime()) ? null : iso;
 }
 
@@ -175,16 +188,21 @@ export async function bookAppointmentFromCall(
     service?: string;
     notes?: string;
     source?: string;
+    /** The attendee's IANA timezone; their day/time is interpreted in it. */
+    attendeeTimezone?: string | null;
   },
 ): Promise<{ success: boolean; message: string }> {
   if (!args.date || !args.time) {
     return { success: false, message: "What day and time would you like to book?" };
   }
-  const resolvedDate = resolveSpokenDate(args.date);
+  // Interpret the spoken day/time in the attendee's zone when we know it, so
+  // "11am" from a lead in India books 11am IST — not 11am Toronto.
+  const speakerTz = isValidTimezone(args.attendeeTimezone) ? args.attendeeTimezone : BOOKING_CONFIG.timezone;
+  const resolvedDate = resolveSpokenDate(args.date, new Date(), speakerTz);
   if (!resolvedDate) {
     return { success: false, message: "Which day would you like — for example 'tomorrow', 'next Tuesday', or a specific date?" };
   }
-  const iso = parseSpokenTimeToIso(resolvedDate, args.time);
+  const iso = parseSpokenTimeToIso(resolvedDate, args.time, speakerTz);
   if (!iso) {
     return { success: false, message: "I didn't quite catch the time — could you say it again, like '2 PM' or '10:30 in the morning'?" };
   }
@@ -232,6 +250,7 @@ export async function bookAppointmentFromCall(
       starts_at: iso,
       ends_at: endsAt,
       timezone: BOOKING_CONFIG.timezone,
+      attendee_timezone: isValidTimezone(args.attendeeTimezone) ? args.attendeeTimezone : null,
       source: args.source || "voice",
       status: "pending",
       lead_id: lead?.id || null,
@@ -258,6 +277,7 @@ export async function bookAppointmentFromCall(
     starts_at: iso,
     ends_at: endsAt,
     timezone: BOOKING_CONFIG.timezone,
+    attendee_timezone: isValidTimezone(args.attendeeTimezone) ? args.attendeeTimezone : null,
     source: args.source || "voice",
     lead_id: lead?.id || null,
   });

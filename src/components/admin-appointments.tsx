@@ -250,7 +250,11 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
 
       <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
         {selected ? (
-          <form action={saveAppointment}>
+          // key: the status select + notes textarea are uncontrolled (defaultValue),
+          // which only applies on mount. Without remounting per appointment they'd
+          // keep the previously-selected appointment's values — showing a stale
+          // status and risking saving one appointment's notes onto another.
+          <form key={selected.id} action={saveAppointment}>
             <div className="flex flex-col gap-4 border-b border-sidebar-border pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-2xl font-black text-foreground">{selected.name}</h2>

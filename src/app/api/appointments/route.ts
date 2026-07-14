@@ -1,5 +1,5 @@
 import { NextResponse, after } from "next/server";
-import { formatSlotForHumans, isValidSlot, slotEndsAt } from "@/lib/booking";
+import { formatSlotForHumans, isValidSlot, isValidTimezone, slotEndsAt } from "@/lib/booking";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { appointmentSchema } from "@/lib/validators";
 import { serverErrorResponse } from "@/lib/api-errors";
@@ -57,6 +57,7 @@ export async function POST(request: Request) {
       starts_at: startsAt,
       ends_at: endsAt,
       timezone: appointment.timezone,
+      attendee_timezone: isValidTimezone(appointment.attendeeTimezone) ? appointment.attendeeTimezone : null,
       source: appointment.source,
       status: "pending",
     })
@@ -86,6 +87,7 @@ export async function POST(request: Request) {
       starts_at: startsAt,
       ends_at: endsAt,
       timezone: appointment.timezone,
+      attendee_timezone: isValidTimezone(appointment.attendeeTimezone) ? appointment.attendeeTimezone : null,
       source: appointment.source,
       lead_id: null,
     });

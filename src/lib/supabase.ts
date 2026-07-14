@@ -298,6 +298,8 @@ export type Appointment = {
   lead_id?: string | null;
   meeting_url?: string | null;
   meeting_id?: string | null;
+  /** The attendee's IANA timezone; null => use `timezone` (the business zone). */
+  attendee_timezone?: string | null;
 };
 
 export function hasSupabasePublicConfig() {

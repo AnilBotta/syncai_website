@@ -193,6 +193,8 @@ export const appointmentSchema = z.object({
   notes: z.string().max(2000).optional().or(z.literal("")),
   startsAt: z.string().datetime({ offset: true }),
   timezone: z.string().max(60).default("America/Toronto"),
+  /** The visitor's own IANA zone (from the browser); "" when unknown. */
+  attendeeTimezone: z.string().max(60).optional().or(z.literal("")),
   source: z.string().max(80).default("booking_page"),
 });
 
