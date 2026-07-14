@@ -94,7 +94,7 @@ export async function PATCH(request: Request) {
 
   // Pipeline gates (batch / calls / book-call) are handled by the shared decision
   // router — the same path Telegram buttons use.
-  if (approval.type === "pipeline_batch" || approval.type === "pipeline_calls" || approval.type === "pipeline_bookcall") {
+  if (approval.type.startsWith("pipeline_")) {
     await decidePipelineApproval(supabase, approval.id, parsed.data.decision);
     return NextResponse.json({ ok: true });
   }

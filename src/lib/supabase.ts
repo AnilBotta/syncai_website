@@ -78,7 +78,8 @@ export type ApprovalType =
   | "sequence_autosend"
   | "pipeline_batch"
   | "pipeline_calls"
-  | "pipeline_bookcall";
+  | "pipeline_bookcall"
+  | "pipeline_start";
 
 export type PipelineStage =
   | "queued"

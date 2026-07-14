@@ -150,7 +150,7 @@ create index if not exists emails_lead_id_idx on public.emails (lead_id);
 create table if not exists public.approvals (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  type text not null check (type in ('email', 'negotiation_reply', 'document', 'invoice', 'icp', 'sequence_autosend', 'pipeline_batch', 'pipeline_calls', 'pipeline_bookcall')),
+  type text not null check (type in ('email', 'negotiation_reply', 'document', 'invoice', 'icp', 'sequence_autosend', 'pipeline_batch', 'pipeline_calls', 'pipeline_bookcall', 'pipeline_start')),
   entity_id uuid,
   lead_id uuid references public.leads(id) on delete cascade,
   title text not null,

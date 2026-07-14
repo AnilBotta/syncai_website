@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Handshake, Loader2, Mail, Microscope, Receipt, Sparkles, X } from "lucide-react";
+import { ChevronDown, Handshake, Loader2, Mail, Microscope, Receipt, Sparkles, Trash2, X } from "lucide-react";
 import { leadStatuses } from "@/lib/site-data";
 import type { Lead } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
@@ -18,9 +18,10 @@ type LeadDrawerProps = {
   getToken: () => Promise<string>;
   onClose: () => void;
   onSaved: (lead: Lead) => void;
+  onDeleted?: (leadId: string) => void;
 };
 
-export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps) {
+export function LeadDrawer({ lead, getToken, onClose, onSaved, onDeleted }: LeadDrawerProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [showRules, setShowRules] = useState(false);
@@ -33,6 +34,29 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
   const [showNegotiate, setShowNegotiate] = useState(false);
   const [threadContext, setThreadContext] = useState("");
   const [negotiationResult, setNegotiationResult] = useState<Record<string, unknown> | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function deleteLead() {
+    setDeleting(true);
+    setError("");
+    try {
+      const token = await getToken();
+      const response = await fetch("/api/admin/leads", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id: lead.id }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok === false) throw new Error(result.error || "Could not delete lead.");
+      onDeleted?.(lead.id);
+      onClose();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not delete lead.");
+      setDeleting(false);
+      setConfirmingDelete(false);
+    }
+  }
 
   async function runNegotiate() {
     if (!threadContext.trim()) return;
@@ -77,7 +101,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
       });
       const result = await response.json();
       if (!response.ok || result.ok === false) throw new Error(result.message || result.error || "Could not start automation.");
-      setAgentNotice(result.message || "Automation started — draft is in your Approval Inbox.");
+      setAgentNotice(result.message || "Asked you on Telegram — approve to start automating this lead.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not start automation.");
     } finally {
@@ -276,6 +300,38 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             Automate
           </button>
           {agentNotice ? <span className="text-xs font-bold text-success">{agentNotice}</span> : null}
+          {confirmingDelete ? (
+            <div className="ml-auto flex items-center gap-2">
+              <span className="text-xs font-bold text-danger">Delete this lead permanently?</span>
+              <button
+                type="button"
+                onClick={deleteLead}
+                disabled={deleting}
+                className="inline-flex h-9 items-center gap-1.5 rounded-full bg-danger px-3 text-xs font-bold text-white transition hover:brightness-110 disabled:opacity-50"
+              >
+                {deleting ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+                Yes, delete
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(false)}
+                disabled={deleting}
+                className="inline-flex h-9 items-center rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:text-foreground disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-full border border-sidebar-border px-3 text-xs font-bold text-muted transition hover:border-danger hover:text-danger"
+              title="Delete this lead (cancels any active automation)"
+            >
+              <Trash2 className="size-3.5" />
+              Delete
+            </button>
+          )}
         </div>
 
         {showNegotiate ? (

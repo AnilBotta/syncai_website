@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig, verifyAdminToken } from "@/lib/supabase";
-import { activateProspectBatch, pipelineStatus, startLeadPipeline } from "@/lib/pipeline";
+import { activateProspectBatch, offerLeadAutomation, pipelineStatus } from "@/lib/pipeline";
 import { serverErrorResponse } from "@/lib/api-errors";
 
 // Starting a batch drafts research/outreach for a few prospects synchronously.
@@ -26,7 +26,9 @@ export async function POST(request: Request) {
   const supabase = createSupabaseAdminClient();
   try {
     if (typeof body.leadId === "string") {
-      const res = await startLeadPipeline(supabase, body.leadId);
+      // Single-lead start asks the CEO on Telegram first (Approve/Skip), then
+      // drafts outreach on approval — same idempotent gate the button uses.
+      const res = await offerLeadAutomation(supabase, body.leadId);
       return NextResponse.json(res);
     }
     if (Array.isArray(body.prospectIds) && body.prospectIds.length) {
