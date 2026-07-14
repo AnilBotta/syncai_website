@@ -290,7 +290,10 @@ async function activateCalls(supabase: SupabaseClient, approval: Approval): Prom
 
 const intentSchema = z.object({
   intent: z.enum(["booked", "time_proposed", "positive_vague", "not_interested"]),
-  datetime_text: z.string().optional().default(""),
+  // Split so the booker can parse them independently: the date resolver and the
+  // time parser each expect their own fragment, not one combined phrase.
+  date_text: z.string().optional().default(""),
+  time_text: z.string().optional().default(""),
 });
 
 /** Advances an active pipeline based on a lead's email reply. Used by the Gmail poll AND the manual record_reply path. */
@@ -345,11 +348,11 @@ export async function advanceOnReply(supabase: SupabaseClient, pipeline: Pipelin
       await complete(supabase, pipeline, "not_interested");
       return;
     }
-    if (intent.intent === "time_proposed" && intent.datetime_text) {
+    if (intent.intent === "time_proposed" && intent.date_text && intent.time_text) {
       const booked = await bookAppointmentFromCall(supabase, {
         leadId,
-        date: intent.datetime_text,
-        time: intent.datetime_text,
+        date: intent.date_text,
+        time: intent.time_text,
         service: "Discovery call",
         notes: "Booked automatically from an email reply.",
         source: "pipeline",
@@ -395,11 +398,12 @@ async function parseReplyIntent(supabase: SupabaseClient, leadId: string, replyT
     agent: "qualify",
     leadId,
     systemPrompt: `Classify the intent of a lead's email reply about scheduling a 15-minute discovery call. Return strict JSON:
-{ "intent": "booked" | "time_proposed" | "positive_vague" | "not_interested", "datetime_text": "the day/time they proposed, verbatim, else empty" }
+{ "intent": "booked" | "time_proposed" | "positive_vague" | "not_interested", "date_text": "just the DAY, else empty", "time_text": "just the TIME, else empty" }
 - booked: they say they already booked / picked a slot on the link.
-- time_proposed: they suggest a specific day/time (e.g. "Tuesday at 2pm", "tomorrow morning").
-- positive_vague: interested but no concrete time ("sure", "sounds good", "ok").
-- not_interested: declining.`,
+- time_proposed: they suggest a specific day AND time. Split them: date_text is the day only ("Tuesday", "tomorrow", "July 18", "next Monday"); time_text is the clock time only ("2pm", "11am", "10:30"). If they gave a day but no clock time (or vice-versa), treat it as positive_vague instead.
+- positive_vague: interested but no concrete day+time ("sure", "sounds good", "ok", "sometime next week").
+- not_interested: declining.
+Examples: "Thursday at 11 works" -> {"intent":"time_proposed","date_text":"Thursday","time_text":"11"}. "tomorrow at 2pm" -> {"intent":"time_proposed","date_text":"tomorrow","time_text":"2pm"}. "sounds good" -> {"intent":"positive_vague","date_text":"","time_text":""}.`,
     userPrompt: `Reply:\n${replyText.slice(0, 1500)}`,
     schema: intentSchema,
     input: { leadId, kind: "reply_intent" },
