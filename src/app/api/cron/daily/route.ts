@@ -4,6 +4,8 @@ import { tickDueEnrollments } from "@/lib/sequences";
 import { buildBriefing } from "@/lib/briefing";
 import { sendEmail } from "@/lib/email/resend";
 import { notifyCeo } from "@/lib/telegram";
+import { pollReplies, hasGmailConfig } from "@/lib/gmail";
+import { tickPipelines } from "@/lib/pipeline";
 import { serverErrorResponse } from "@/lib/api-errors";
 
 // Hobby plan caps functions at 60s. Keep the work bounded to fit.
@@ -32,6 +34,11 @@ export async function GET(request: Request) {
 
   try {
     const supabase = createSupabaseAdminClient();
+
+    // Fallback for when the 10-min external inbox cron isn't configured: detect
+    // replies and run pipeline timers once a day too.
+    if (hasGmailConfig()) await pollReplies(supabase).catch(() => {});
+    await tickPipelines(supabase).catch(() => {});
 
     const tick = await tickDueEnrollments(supabase);
     const briefing = await buildBriefing(supabase, tick);
