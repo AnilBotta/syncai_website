@@ -52,7 +52,10 @@ create table if not exists public.appointments (
   timezone text not null default 'America/Toronto',
   status text not null default 'pending' check (status in ('pending', 'confirmed', 'completed', 'cancelled', 'no_show')),
   source text not null default 'booking_page',
-  lead_id uuid references public.leads(id) on delete set null
+  lead_id uuid references public.leads(id) on delete set null,
+  -- Video-meeting details (migration 012), populated when a booking is finalized.
+  meeting_url text,
+  meeting_id text
 );
 
 alter table public.appointments enable row level security;

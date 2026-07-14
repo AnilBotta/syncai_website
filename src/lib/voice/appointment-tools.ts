@@ -11,7 +11,7 @@ import {
   isValidSlot,
   slotEndsAt,
 } from "@/lib/booking";
-import { notifyCeo } from "@/lib/telegram";
+import { finalizeBooking } from "@/lib/appointments";
 
 const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const MONTHS = [
@@ -218,6 +218,8 @@ export async function bookAppointmentFromCall(
   if (!name) return { success: false, message: "Can I get your name for the booking?" };
   if (!email) return { success: false, message: "What's the best email to send your confirmation to?" };
 
+  const service = args.service || lead?.interest || "Discovery call";
+  const endsAt = slotEndsAt(iso);
   const { data, error } = await supabase
     .from("appointments")
     .insert({
@@ -225,10 +227,10 @@ export async function bookAppointmentFromCall(
       email,
       phone: lead?.phone || null,
       company: lead?.company || null,
-      service: args.service || lead?.interest || "Discovery call",
+      service,
       notes: args.notes || "Booked by the SyncAI voice agent during a call.",
       starts_at: iso,
-      ends_at: slotEndsAt(iso),
+      ends_at: endsAt,
       timezone: BOOKING_CONFIG.timezone,
       source: args.source || "voice",
       status: "pending",
@@ -245,16 +247,20 @@ export async function bookAppointmentFromCall(
   }
 
   const humanTime = formatSlotForHumans(iso);
-  if (lead?.id) {
-    await supabase.from("lead_activities").insert({
-      lead_id: lead.id,
-      type: "system",
-      title: `Appointment booked on a call: ${humanTime}`,
-      meta: { appointment_id: data.id, source: "voice" },
-      actor: "agent:voice",
-    });
-  }
-  await notifyCeo(`📅 ${name} booked an appointment on a voice call: ${humanTime}.`);
+  // Create the Zoom meeting, email the client, and ping the CEO with the link.
+  await finalizeBooking(supabase, {
+    id: data.id,
+    name,
+    email,
+    phone: lead?.phone || null,
+    company: lead?.company || null,
+    service,
+    starts_at: iso,
+    ends_at: endsAt,
+    timezone: BOOKING_CONFIG.timezone,
+    source: args.source || "voice",
+    lead_id: lead?.id || null,
+  });
 
   return {
     success: true,
