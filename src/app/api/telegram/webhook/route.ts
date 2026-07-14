@@ -1,8 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
-import { getTelegramFileUrl, isCeoChat, sendChatAction, sendTelegramMessage } from "@/lib/telegram";
+import {
+  answerCallbackQuery,
+  editMessageText,
+  getTelegramFileUrl,
+  isCeoChat,
+  sendChatAction,
+  sendTelegramMessage,
+} from "@/lib/telegram";
 import { transcribeRemoteAudio } from "@/lib/voice-transcribe";
 import { runManager, type ManagerMessage } from "@/lib/agents/manager";
+import { decidePipelineApproval } from "@/lib/pipeline";
 
 export const maxDuration = 120;
 
@@ -28,10 +36,47 @@ export async function POST(request: Request) {
       audio?: TelegramVoice;
       video_note?: TelegramVoice;
     };
+    callback_query?: {
+      id: string;
+      data?: string;
+      from?: { id?: number | string };
+      message?: { message_id?: number; chat?: { id?: number | string } };
+    };
   };
   try {
     update = await request.json();
   } catch {
+    return NextResponse.json({ ok: true });
+  }
+
+  // Inline-button tap: decide a pipeline approval.
+  if (update.callback_query) {
+    const cq = update.callback_query;
+    const fromId = cq.from?.id;
+    const cbChatId = cq.message?.chat?.id;
+    const messageId = cq.message?.message_id;
+    if (!isCeoChat(fromId) || !hasSupabaseAdminConfig()) {
+      await answerCallbackQuery(cq.id);
+      return NextResponse.json({ ok: true });
+    }
+    const parts = (cq.data || "").split("|"); // ap|<approvalId>|y|n
+    if (parts[0] !== "ap" || !parts[1]) {
+      await answerCallbackQuery(cq.id);
+      return NextResponse.json({ ok: true });
+    }
+    const approvalId = parts[1];
+    const decision = parts[2] === "y" ? "approved" : "rejected";
+    const label = decision === "approved" ? "✅ Approved" : "❌ Skipped";
+    await answerCallbackQuery(cq.id, label);
+    if (cbChatId && messageId) {
+      const original = cq.message && "text" in (cq.message as Record<string, unknown>) ? String((cq.message as { text?: string }).text || "") : "";
+      await editMessageText(cbChatId, messageId, `${original}\n\n${label}`);
+    }
+    // Heavy follow-up (drafts/calls) after we ack, within the function window.
+    after(async () => {
+      const supabase = createSupabaseAdminClient();
+      await decidePipelineApproval(supabase, approvalId, decision);
+    });
     return NextResponse.json({ ok: true });
   }
 

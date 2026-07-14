@@ -402,6 +402,13 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
                 <Loader2 className="mr-2 size-4 animate-spin" />
                 Loading email
               </div>
+            ) : selected.type.startsWith("pipeline_") ? (
+              <div className="mt-4 rounded-2xl bg-brand/[.05] p-4 text-sm text-foreground">
+                <p className="font-bold">Automation step</p>
+                <p className="mt-1 text-muted">
+                  {selected.summary || "Approve to let the Manager continue this automated step."} Approving here is the same as tapping ✅ on Telegram.
+                </p>
+              </div>
             ) : (
               <p className="mt-4 rounded-2xl bg-foreground/[.03] p-4 text-sm text-muted">
                 This approval type is handled in a later phase.

@@ -26,7 +26,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
   const [showRules, setShowRules] = useState(false);
   const [composing, setComposing] = useState(false);
   const [invoicing, setInvoicing] = useState(false);
-  const [agentBusy, setAgentBusy] = useState<"qualify" | "research" | "outreach" | null>(null);
+  const [agentBusy, setAgentBusy] = useState<"qualify" | "research" | "outreach" | "automate" | null>(null);
   const [agentNotice, setAgentNotice] = useState("");
   const [researchBrief, setResearchBrief] = useState<Record<string, unknown> | null>(null);
   const [negotiating, setNegotiating] = useState(false);
@@ -61,6 +61,27 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
       setError(e instanceof Error ? e.message : "Negotiation failed.");
     } finally {
       setNegotiating(false);
+    }
+  }
+
+  async function startAutomation() {
+    setAgentBusy("automate");
+    setAgentNotice("");
+    setError("");
+    try {
+      const token = await getToken();
+      const response = await fetch("/api/admin/pipeline", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ leadId: lead.id }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok === false) throw new Error(result.message || result.error || "Could not start automation.");
+      setAgentNotice(result.message || "Automation started — draft is in your Approval Inbox.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start automation.");
+    } finally {
+      setAgentBusy(null);
     }
   }
 
@@ -245,7 +266,16 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved }: LeadDrawerProps
             <Handshake className="size-3.5 text-brand-glow-text" />
             Negotiate
           </button>
-          {agentNotice ? <span className="text-xs font-bold text-emerald-700">{agentNotice}</span> : null}
+          <button
+            type="button"
+            onClick={startAutomation}
+            disabled={agentBusy !== null}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-brand-deep px-3 text-xs font-bold text-white transition hover:brightness-110 disabled:opacity-50"
+          >
+            {agentBusy === "automate" ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+            Automate
+          </button>
+          {agentNotice ? <span className="text-xs font-bold text-success">{agentNotice}</span> : null}
         </div>
 
         {showNegotiate ? (

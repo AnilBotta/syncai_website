@@ -75,7 +75,31 @@ export type ApprovalType =
   | "document"
   | "invoice"
   | "icp"
-  | "sequence_autosend";
+  | "sequence_autosend"
+  | "pipeline_batch"
+  | "pipeline_calls"
+  | "pipeline_bookcall";
+
+export type PipelineStage =
+  | "queued"
+  | "awaiting_email_approval"
+  | "awaiting_reply"
+  | "awaiting_booking"
+  | "paused_cold"
+  | "done";
+
+export type Pipeline = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  batch_id?: string | null;
+  prospect_id?: string | null;
+  lead_id?: string | null;
+  stage: PipelineStage;
+  status: "active" | "paused" | "completed" | "cancelled";
+  stage_changed_at: string;
+  meta: Record<string, unknown>;
+};
 
 export type Approval = {
   id: string;
