@@ -11,8 +11,8 @@ import { NavDropdown } from "@/components/nav/nav-dropdown";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useTheme } from "@/lib/use-theme";
 
+// The logo already links home, so there's no separate Home tab.
 const flatLinks = {
-  home: { label: "Home", href: "/" },
   about: { label: "About", href: "/about" },
   results: { label: "Results", href: "/case-studies" },
   blog: { label: "Blog", href: "/blog" },
@@ -31,7 +31,9 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const desktopLink = "text-sm font-medium text-muted transition hover:text-brand-glow-text";
+  // Nav sits at full foreground strength (same token as the hero heading) rather
+  // than the dimmer muted tone, so it reads clearly against the glass header.
+  const desktopLink = "text-sm font-medium text-foreground transition hover:text-brand-glow-text";
 
   return (
     <header
@@ -66,9 +68,6 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-6 xl:gap-7 lg:flex" aria-label="Main navigation">
-          <Link href={flatLinks.home.href} className={desktopLink}>
-            {flatLinks.home.label}
-          </Link>
           <Link href={flatLinks.about.href} className={desktopLink}>
             {flatLinks.about.label}
           </Link>
@@ -133,7 +132,6 @@ export function SiteHeader() {
       {/* Mobile menu */}
       <div className={cn("max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-border-subtle bg-card/95 backdrop-blur-xl lg:hidden", open ? "block" : "hidden")}>
         <div className="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:px-6">
-          <MobileLink href={flatLinks.home.href} label={flatLinks.home.label} onNavigate={() => setOpen(false)} />
           <MobileLink href={flatLinks.about.href} label={flatLinks.about.label} onNavigate={() => setOpen(false)} />
           <MobileAccordion
             label="Services"
