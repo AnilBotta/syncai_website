@@ -76,7 +76,7 @@ export function HeroOrbStation() {
         </bufferGeometry>
         <PointMaterial
           transparent
-          color="#d0bcff"
+          color="#c0c1ff"
           size={0.028}
           sizeAttenuation
           depthWrite={false}
@@ -90,7 +90,7 @@ export function HeroOrbStation() {
         </bufferGeometry>
         <PointMaterial
           transparent
-          color="#a078ff"
+          color="#8e90ee"
           size={0.022}
           sizeAttenuation
           depthWrite={false}
@@ -105,7 +105,7 @@ export function HeroOrbStation() {
         <lineBasicMaterial
           transparent
           opacity={0.16}
-          color="#9400D3"
+          color="#7577e0"
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
@@ -113,8 +113,8 @@ export function HeroOrbStation() {
 
       <Sphere args={[0.55, 48, 48]}>
         <MeshDistortMaterial
-          color="#4B0082"
-          emissive="#6001d1"
+          color="#5d60cc"
+          emissive="#5d60cc"
           emissiveIntensity={1.4}
           roughness={0.25}
           metalness={0.4}

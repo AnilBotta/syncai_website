@@ -160,7 +160,7 @@ export function ConversionAudit() {
             {answeredCount}/{totalQuestions} answered
           </span>
         </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e4e7ea]">
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-border-subtle">
           <div
             className="h-full rounded-full bg-gradient-to-r from-brand-electric to-brand-soft transition-[width] duration-500"
             style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
@@ -192,7 +192,7 @@ export function ConversionAudit() {
                               className={`cursor-pointer rounded-xl border px-2 py-2.5 text-xs font-semibold transition ${
                                 selected
                                   ? "border-brand-soft bg-brand/10 text-brand"
-                                  : "border-border-subtle bg-[#f5f5f5] text-muted hover:border-brand-soft/40 hover:text-foreground/90"
+                                  : "border-border-subtle bg-[var(--nav-hover-bg)] text-muted hover:border-brand-soft/40 hover:text-foreground/90"
                               }`}
                             >
                               {label}
@@ -212,7 +212,7 @@ export function ConversionAudit() {
           type="button"
           disabled={!allAnswered}
           onClick={() => setFinished(true)}
-          className="mt-8 inline-flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-8 inline-flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Get my conversion score <ArrowRight className="size-4" />
         </button>
@@ -299,7 +299,7 @@ export function ConversionAudit() {
             </button>
           </form>
         )}
-        {captureState === "error" ? <p className="mt-3 text-sm text-red-300">{captureMessage}</p> : null}
+        {captureState === "error" ? <p className="mt-3 text-sm text-danger">{captureMessage}</p> : null}
       </GlassCard>
 
       <ToolCta />

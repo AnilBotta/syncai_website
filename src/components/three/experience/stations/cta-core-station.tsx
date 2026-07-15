@@ -21,8 +21,8 @@ export function CtaCoreStation() {
     <group>
       <Sphere args={[0.9, 48, 48]}>
         <MeshDistortMaterial
-          color="#4B0082"
-          emissive="#a078ff"
+          color="#5d60cc"
+          emissive="#8e90ee"
           emissiveIntensity={2.2}
           roughness={0.15}
           metalness={0.4}
@@ -33,7 +33,7 @@ export function CtaCoreStation() {
       <mesh ref={halo} rotation={[Math.PI / 2.4, 0, 0]}>
         <torusGeometry args={[1.6, 0.02, 12, 96]} />
         <meshBasicMaterial
-          color="#d0bcff"
+          color="#c0c1ff"
           transparent
           opacity={0.55}
           blending={THREE.AdditiveBlending}

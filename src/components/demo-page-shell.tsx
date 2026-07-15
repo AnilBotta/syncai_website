@@ -20,7 +20,7 @@ export function DemoPageShell({ title, tagline, description, children }: DemoPag
         <section className="relative overflow-hidden bg-bg-deep px-4 pt-28 pb-20 sm:px-6 sm:py-32 lg:px-8">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(125,60,152,0.09),transparent_40%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,var(--accent-glow),transparent_40%)]"
           />
           <div
             aria-hidden

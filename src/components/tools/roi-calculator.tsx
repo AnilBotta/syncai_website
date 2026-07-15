@@ -134,7 +134,7 @@ export function RoiCalculator() {
           </label>
           <button
             type="submit"
-            className="mt-2 inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)]"
+            className="mt-2 inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_var(--accent-glow)]"
           >
             <Calculator className="size-4" />
             Calculate my savings
@@ -184,8 +184,8 @@ export function RoiCalculator() {
               </div>
             ) : (
               // Honest negative case — no fake positives.
-              <GlassCard className="mt-5 border-red-400/30 p-5">
-                <p className="font-bold text-red-300">
+              <GlassCard className="mt-5 border-danger/30 p-5">
+                <p className="font-bold text-danger">
                   This setup costs {money(Math.abs(results.netMonthlySavings))}/month more than it saves
                   at your current volume.
                 </p>

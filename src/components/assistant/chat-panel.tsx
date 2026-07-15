@@ -287,7 +287,7 @@ export function ChatPanel() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Ask about our AI services…"
-          className="h-11 flex-1 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm text-foreground outline-none transition focus:border-[#4B0082] focus:ring-4 focus:ring-[#9400D3]/20"
+          className="h-11 flex-1 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm text-foreground outline-none transition focus:border-brand-deep focus:ring-4 focus:ring-brand/20"
         />
         <button
           type="submit"

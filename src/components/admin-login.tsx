@@ -1,26 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { createSupabaseBrowserClient, hasSupabasePublicConfig } from "@/lib/supabase";
 import { BrandLogo } from "@/components/admin/shell/brand-logo";
+import { useTheme } from "@/lib/use-theme";
 
 export function AdminLogin() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // Match the dashboard's persisted Luminary theme (dark default, no toggle here).
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  // Shared product theme (no toggle here — just render the right logo variant).
+  const { theme } = useTheme();
   const configured = hasSupabasePublicConfig();
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const stored = window.localStorage.getItem("syncai-admin-theme");
-      if (stored === "light" || stored === "dark") setTheme(stored);
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   async function login(formData: FormData) {
     setLoading(true);
@@ -47,7 +40,7 @@ export function AdminLogin() {
   }
 
   return (
-    <div className={`admin-luminary admin-${theme} min-h-screen px-4 py-12`}>
+    <div className="min-h-screen bg-admin-canvas px-4 py-12">
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-md items-center">
         <form
           action={login}

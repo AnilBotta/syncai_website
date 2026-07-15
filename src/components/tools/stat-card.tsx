@@ -15,7 +15,7 @@ export function StatCard({ value, label, sublabel, negative = false }: StatCardP
       <p
         className={cn(
           "text-3xl font-black sm:text-4xl",
-          negative ? "text-red-300" : "text-brand-glow-text"
+          negative ? "text-danger" : "text-brand-glow-text"
         )}
       >
         {value}

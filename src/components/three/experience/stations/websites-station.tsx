@@ -34,7 +34,7 @@ export function WebsitesStation() {
           <mesh>
             <planeGeometry args={[panel.size[0], panel.size[1]]} />
             <meshBasicMaterial
-              color="#4B0082"
+              color="#5d60cc"
               transparent
               opacity={0.12}
               side={THREE.DoubleSide}
@@ -45,14 +45,14 @@ export function WebsitesStation() {
           {/* Glowing frame */}
           <lineSegments>
             <edgesGeometry args={[new THREE.PlaneGeometry(panel.size[0], panel.size[1])]} />
-            <lineBasicMaterial color="#a078ff" transparent opacity={0.85} />
+            <lineBasicMaterial color="#8e90ee" transparent opacity={0.85} />
           </lineSegments>
           {/* Content lines */}
           {[0.3, 0.05, -0.2].map((y, lineIndex) => (
             <mesh key={lineIndex} position={[-panel.size[0] * 0.12, y * panel.size[1], 0.01]}>
               <planeGeometry args={[panel.size[0] * 0.55, 0.045]} />
               <meshBasicMaterial
-                color="#d0bcff"
+                color="#c0c1ff"
                 transparent
                 opacity={0.5 - lineIndex * 0.12}
                 blending={THREE.AdditiveBlending}
@@ -66,7 +66,7 @@ export function WebsitesStation() {
       {/* Lead-capture core */}
       <mesh position={[0, -0.2, 1.4]}>
         <sphereGeometry args={[0.22, 32, 32]} />
-        <meshStandardMaterial color="#4B0082" emissive="#9400D3" emissiveIntensity={2.2} />
+        <meshStandardMaterial color="#5d60cc" emissive="#7577e0" emissiveIntensity={2.2} />
       </mesh>
     </group>
   );

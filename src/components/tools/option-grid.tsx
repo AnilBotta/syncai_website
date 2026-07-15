@@ -32,7 +32,7 @@ export function OptionGrid({ options, value, onChange, columns = 1 }: OptionGrid
               "cursor-pointer rounded-2xl border px-4 py-3.5 text-left text-sm font-semibold transition",
               selected
                 ? "border-brand-soft bg-brand/10 text-brand"
-                : "border-border-subtle bg-[#f5f5f5] text-foreground/90 hover:border-brand-soft/40"
+                : "border-border-subtle bg-[var(--nav-hover-bg)] text-foreground/90 hover:border-brand-soft/40"
             )}
           >
             {option.label}
