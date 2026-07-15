@@ -341,7 +341,7 @@ export function AdminDashboard() {
 
           {view === "approvals" ? enter(<ApprovalInbox getToken={getToken} onCountChange={setApprovalsCount} />) : null}
           {view === "targeting" ? enter(<Targeting getToken={getToken} />) : null}
-          {view === "prospects" ? enter(<ProspectsTable getToken={getToken} />) : null}
+          {view === "prospects" ? enter(<ProspectsTable getToken={getToken} onLeadsChanged={loadLeads} />) : null}
           {view === "sequences" ? enter(<Sequences getToken={getToken} />) : null}
           {view === "finance" ? enter(<Finance getToken={getToken} />) : null}
           {view === "tasks" ? enter(<TaskList getToken={getToken} leads={leads} />) : null}
