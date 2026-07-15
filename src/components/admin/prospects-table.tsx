@@ -6,9 +6,15 @@ import type { Prospect } from "@/lib/supabase";
 
 type ProspectsTableProps = {
   getToken: () => Promise<string>;
+  /**
+   * Called when a prospect is promoted into a lead (drafting outreach creates the
+   * lead). The dashboard loads leads once, so without this the Leads tab keeps
+   * showing a stale list and the new lead looks missing.
+   */
+  onLeadsChanged?: () => void;
 };
 
-export function ProspectsTable({ getToken }: ProspectsTableProps) {
+export function ProspectsTable({ getToken, onLeadsChanged }: ProspectsTableProps) {
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -57,9 +63,11 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
       setNotice(
         agent === "research"
           ? `Research brief ready for ${prospect.company}.`
-          : `Outreach drafted for ${prospect.company} → Approval Inbox.`,
+          : `Outreach drafted for ${prospect.company} → Approval Inbox. It's now a lead.`,
       );
       await load();
+      // Drafting outreach promotes the prospect into a lead — refresh the Leads tab.
+      if (agent === "outreach") onLeadsChanged?.();
     } catch (e) {
       setError(e instanceof Error ? e.message : `${agent} failed.`);
     } finally {
@@ -84,6 +92,8 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
       if (!response.ok || result.ok === false) throw new Error(result.message || result.error || "Could not start automation.");
       setNotice(result.message || "Automation started — drafts are landing in your Approval Inbox.");
       await load();
+      // Automating drafts outreach, which promotes each prospect into a lead.
+      onLeadsChanged?.();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not start automation.");
     } finally {
@@ -170,7 +180,11 @@ export function ProspectsTable({ getToken }: ProspectsTableProps) {
                       type="button"
                       onClick={() => runAgent(prospect, "outreach")}
                       disabled={busyId === prospect.id || !prospect.email}
-                      title={!prospect.email ? "No email — research to find a contact, or add one" : "Draft outreach"}
+                      title={
+                        !prospect.email
+                          ? "No email — research to find a contact, or add one"
+                          : "Draft outreach — this promotes the prospect into a lead"
+                      }
                       className="inline-flex h-9 items-center gap-1.5 rounded-full bg-brand-deep px-3 text-xs font-bold text-white disabled:opacity-50"
                     >
                       <Mail className="size-3.5" />
