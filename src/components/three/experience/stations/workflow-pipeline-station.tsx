@@ -83,8 +83,8 @@ export function WorkflowPipelineStation() {
         <mesh key={index} position={node}>
           <sphereGeometry args={[index === 4 ? 0.28 : 0.16, 24, 24]} />
           <meshStandardMaterial
-            color="#4B0082"
-            emissive={index === 4 ? "#9400D3" : "#6001d1"}
+            color="#5d60cc"
+            emissive={index === 4 ? "#7577e0" : "#5d60cc"}
             emissiveIntensity={index === 4 ? 2.4 : 1.2}
           />
         </mesh>
@@ -96,7 +96,7 @@ export function WorkflowPipelineStation() {
           <bufferAttribute attach="attributes-position" args={[edgePositions, 3]} />
         </bufferGeometry>
         <lineBasicMaterial
-          color="#a078ff"
+          color="#8e90ee"
           transparent
           opacity={0.35}
           blending={THREE.AdditiveBlending}
@@ -108,7 +108,7 @@ export function WorkflowPipelineStation() {
       <instancedMesh ref={pulses} args={[undefined, undefined, EDGES.length * PULSES_PER_EDGE]}>
         <sphereGeometry args={[0.05, 12, 12]} />
         <meshBasicMaterial
-          color="#d0bcff"
+          color="#c0c1ff"
           transparent
           opacity={0.95}
           blending={THREE.AdditiveBlending}

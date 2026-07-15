@@ -48,6 +48,23 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Stamps `data-theme` on <html> before first paint so a light-theme visitor
+ * never sees a flash of the dark default. The pages are statically generated,
+ * so this has to run inline in <head> — it can't wait for React to hydrate.
+ * Dark is the default when nothing is stored.
+ */
+const themeInitScript = `
+(function(){
+  try {
+    var stored = localStorage.getItem("syncai-theme");
+    document.documentElement.setAttribute("data-theme", stored === "light" ? "light" : "dark");
+  } catch (e) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -56,8 +73,13 @@ export default function RootLayout({
   return (
     <html
       lang="en-CA"
+      // The inline script mutates data-theme before hydration.
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${plusJakarta.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <AmbientGradient />
         <a

@@ -16,7 +16,7 @@ export function CategoryBars({ categories }: CategoryBarsProps) {
                 {Math.round(category.score)}/{category.max}
               </span>
             </div>
-            <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-[#e4e7ea]">
+            <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-border-subtle">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-brand-electric to-brand-soft transition-[width] duration-700"
                 style={{ width: `${percent}%` }}

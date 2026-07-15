@@ -45,7 +45,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
             opacity: live ? 0.9 : 0.5,
           }}
           transition={{ duration: 0.12 }}
-          className="absolute size-40 rounded-full bg-[radial-gradient(circle,rgba(148,0,211,0.5)_0%,rgba(75,0,130,0.15)_60%,transparent_75%)] blur-md"
+          className="absolute size-40 rounded-full bg-[radial-gradient(circle,var(--accent-glow)_0%,var(--accent-glow)_60%,transparent_75%)] blur-md"
         />
         <motion.div
           animate={
@@ -62,7 +62,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
                 ? { duration: 1.6, repeat: Infinity, ease: "linear" }
                 : {}
           }
-          className="grid size-28 place-items-center rounded-full border border-brand-glow-text/30 bg-gradient-to-br from-brand-deep to-brand shadow-[0_0_60px_rgba(148,0,211,0.45)]"
+          className="grid size-28 place-items-center rounded-full border border-brand-glow-text/30 bg-gradient-to-br from-brand-deep to-brand shadow-[0_0_60px_var(--accent-glow)]"
         >
           {connecting ? (
             <Loader2 className="size-8 animate-spin text-white" />
@@ -75,11 +75,11 @@ export function VoicePanel({ active }: VoicePanelProps) {
       {/* Caption / status */}
       <div className="min-h-16 w-full">
         {caption ? (
-          <p className="mx-auto max-w-xs text-center text-sm leading-6 text-[#d0bcff]">{caption}</p>
+          <p className="mx-auto max-w-xs text-center text-sm leading-6 text-brand-soft">{caption}</p>
         ) : null}
 
         {booking ? (
-          <div className="mx-auto mt-3 flex w-fit items-center gap-2 rounded-xl border border-[#d0bcff]/30 bg-bg-elevated/5 px-4 py-2 text-xs font-bold text-[#d0bcff]">
+          <div className="mx-auto mt-3 flex w-fit items-center gap-2 rounded-xl border border-brand-soft/30 bg-bg-elevated/5 px-4 py-2 text-xs font-bold text-brand-soft">
             <CalendarCheck className="size-4" />
             Booked: {booking.humanTime}
             {booking.demoMode ? " (demo)" : ""}
@@ -97,7 +97,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
         ) : null}
 
         {error ? (
-          <p className="mx-auto max-w-xs text-center text-xs leading-5 text-red-300">{error}</p>
+          <p className="mx-auto max-w-xs text-center text-xs leading-5 text-danger">{error}</p>
         ) : null}
       </div>
 
@@ -131,7 +131,7 @@ export function VoicePanel({ active }: VoicePanelProps) {
             type="button"
             onClick={start}
             disabled={connecting}
-            className="inline-flex h-13 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-8 text-sm font-bold text-white shadow-[0_8px_30px_rgba(148,0,211,0.4)] transition hover:opacity-90 disabled:opacity-60"
+            className="inline-flex h-13 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-8 text-sm font-bold text-white shadow-[0_8px_30px_var(--accent-glow)] transition hover:opacity-90 disabled:opacity-60"
           >
             <Phone className="size-4" />
             {status === "ended" ? "Start another session" : "Start voice session"}

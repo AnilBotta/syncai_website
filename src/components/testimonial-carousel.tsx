@@ -29,7 +29,7 @@ export function TestimonialCarousel() {
     <section className="relative overflow-hidden bg-bg-base py-20 text-foreground sm:py-28">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,rgba(148,0,211,0.1),transparent_55%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,var(--accent-glow),transparent_55%)]"
       />
       <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
         <p className="text-sm font-black uppercase tracking-[.25em] text-brand">Testimonials</p>
@@ -62,7 +62,7 @@ export function TestimonialCarousel() {
                   aria-label={`Go to testimonial ${i + 1}`}
                   onClick={() => setCurrent(i)}
                   className={`size-2 cursor-pointer rounded-full transition ${
-                    i === current ? "bg-brand-soft shadow-[0_0_10px_rgba(160,120,255,0.8)]" : "bg-white/20"
+                    i === current ? "bg-brand-soft shadow-[0_0_10px_var(--accent-glow)]" : "bg-white/20"
                   }`}
                 />
               ))}

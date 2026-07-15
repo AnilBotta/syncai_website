@@ -17,7 +17,7 @@ export function AssistantWidget() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label={open ? "Close SyncAI assistant" : "Open SyncAI assistant"}
-        className="fixed bottom-5 right-5 z-[60] flex size-15 items-center justify-center rounded-full bg-gradient-to-r from-brand-electric to-brand-soft text-white shadow-[0_8px_30px_rgba(75,0,130,0.45)] transition hover:scale-105 sm:bottom-6 sm:right-6"
+        className="fixed bottom-5 right-5 z-[60] flex size-15 items-center justify-center rounded-full bg-gradient-to-r from-brand-electric to-brand-soft text-white shadow-[0_8px_30px_var(--accent-glow)] transition hover:scale-105 sm:bottom-6 sm:right-6"
       >
         {!open ? (
           <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-brand/40" />
@@ -70,7 +70,7 @@ export function AssistantWidget() {
                   onClick={() => setTab(item.value)}
                   className={`flex flex-1 items-center justify-center gap-2 py-3 text-sm font-bold transition ${
                     tab === item.value
-                      ? "border-b-2 border-[#4B0082] text-brand-glow-text"
+                      ? "border-b-2 border-brand-deep text-brand-glow-text"
                       : "text-muted hover:text-foreground/90"
                   }`}
                 >

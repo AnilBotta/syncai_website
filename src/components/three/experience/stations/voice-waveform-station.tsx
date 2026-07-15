@@ -52,7 +52,7 @@ export function VoiceWaveformStation() {
       <instancedMesh ref={bars} args={[undefined, undefined, BAR_COUNT]}>
         <boxGeometry args={[0.07, 1, 0.07]} />
         <meshBasicMaterial
-          color="#a078ff"
+          color="#8e90ee"
           transparent
           opacity={0.9}
           blending={THREE.AdditiveBlending}
@@ -63,7 +63,7 @@ export function VoiceWaveformStation() {
       {/* Voice core */}
       <mesh ref={core}>
         <sphereGeometry args={[0.45, 32, 32]} />
-        <meshStandardMaterial color="#4B0082" emissive="#9400D3" emissiveIntensity={2} />
+        <meshStandardMaterial color="#5d60cc" emissive="#7577e0" emissiveIntensity={2} />
       </mesh>
 
       {/* Halo rings */}
@@ -71,7 +71,7 @@ export function VoiceWaveformStation() {
         <mesh key={index} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[radius, 0.012, 12, 96]} />
           <meshBasicMaterial
-            color="#d0bcff"
+            color="#c0c1ff"
             transparent
             opacity={0.35 - index * 0.12}
             blending={THREE.AdditiveBlending}

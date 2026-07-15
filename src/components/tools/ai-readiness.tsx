@@ -252,7 +252,7 @@ export function AiReadiness() {
             {Object.keys(answers).length}/{CATEGORIES.length * QUESTIONS_PER_CATEGORY} answered
           </span>
         </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e4e7ea]">
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-border-subtle">
           <div
             className="h-full rounded-full bg-gradient-to-r from-brand-electric to-brand-soft transition-[width] duration-500"
             style={{ width: `${((step + (answeredInStep ? 1 : 0.35)) / CATEGORIES.length) * 100}%` }}
@@ -278,7 +278,7 @@ export function AiReadiness() {
                         className={`cursor-pointer rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
                           selected
                             ? "border-brand-soft bg-brand/10 text-brand"
-                            : "border-border-subtle bg-[#f5f5f5] text-foreground/90 hover:border-brand-soft/40"
+                            : "border-border-subtle bg-[var(--nav-hover-bg)] text-foreground/90 hover:border-brand-soft/40"
                         }`}
                       >
                         {option}
@@ -389,7 +389,7 @@ export function AiReadiness() {
               Unlock
             </button>
           </form>
-          {gateError ? <p className="mt-3 text-sm text-red-300">{gateError}</p> : null}
+          {gateError ? <p className="mt-3 text-sm text-danger">{gateError}</p> : null}
         </GlassCard>
       )}
     </div>

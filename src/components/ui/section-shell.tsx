@@ -19,10 +19,11 @@ const tiers = {
   deep: "bg-bg-deep",
 };
 
+// Brand glow follows the active theme via --accent-glow.
 const glows = {
-  left: "bg-[radial-gradient(circle_at_15%_20%,rgba(125,60,152,0.06),transparent_45%)]",
-  right: "bg-[radial-gradient(circle_at_85%_30%,rgba(125,60,152,0.06),transparent_45%)]",
-  center: "bg-[radial-gradient(circle_at_50%_35%,rgba(125,60,152,0.05),transparent_55%)]",
+  left: "bg-[radial-gradient(circle_at_15%_20%,var(--accent-glow),transparent_45%)]",
+  right: "bg-[radial-gradient(circle_at_85%_30%,var(--accent-glow),transparent_45%)]",
+  center: "bg-[radial-gradient(circle_at_50%_35%,var(--accent-glow),transparent_55%)]",
   none: "",
 };
 

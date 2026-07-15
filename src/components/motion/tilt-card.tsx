@@ -30,7 +30,7 @@ export function TiltCard({ children, className, max = 8 }: TiltCardProps) {
   const glareY = useTransform(pointerY, [0, 1], ["20%", "80%"]);
   const glare = useTransform(
     [glareX, glareY],
-    ([x, y]) => `radial-gradient(400px circle at ${x} ${y}, rgba(148,0,211,0.08), transparent 60%)`
+    ([x, y]) => `radial-gradient(400px circle at ${x} ${y}, var(--accent-glow), transparent 60%)`
   );
 
   if (reduceMotion) {

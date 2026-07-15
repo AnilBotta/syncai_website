@@ -73,7 +73,7 @@ export function DemoAnalyzer() {
     <section id="demo" className="relative overflow-hidden bg-bg-deep py-20 text-foreground sm:py-28">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(125,60,152,0.07),transparent_40%),radial-gradient(circle_at_85%_80%,rgba(125,60,152,0.05),transparent_45%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,var(--accent-glow),transparent_40%),radial-gradient(circle_at_85%_80%,var(--accent-glow),transparent_45%)]"
       />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
@@ -136,7 +136,7 @@ export function DemoAnalyzer() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-black text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)] disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-black text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
                 Generate AI Opportunity Map

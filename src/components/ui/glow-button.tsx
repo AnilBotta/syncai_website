@@ -18,7 +18,7 @@ const base =
 
 const variants = {
   primary:
-    "bg-gradient-to-r from-brand-electric to-brand-soft text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)] [.theme-dark_&]:shadow-[0_0_20px_rgba(160,120,255,0.15)] [.theme-dark_&]:hover:shadow-[0_0_36px_rgba(160,120,255,0.45)]",
+    "bg-gradient-to-r from-brand-electric to-brand-soft text-white shadow-[0_6px_20px_var(--accent-glow)] hover:-translate-y-0.5 hover:shadow-[0_8px_26px_var(--accent-glow)]",
   ghost:
     "border border-border-subtle bg-surface text-foreground backdrop-blur-md hover:border-brand-soft/40 hover:text-brand-glow-text",
 };

@@ -161,7 +161,7 @@ export function ChatbotCostCalculator() {
                   className={`flex cursor-pointer items-center gap-2.5 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
                     checked
                       ? "border-brand-soft bg-brand/10 text-brand"
-                      : "border-border-subtle bg-[#f5f5f5] text-foreground/90 hover:border-brand-soft/40"
+                      : "border-border-subtle bg-[var(--nav-hover-bg)] text-foreground/90 hover:border-brand-soft/40"
                   }`}
                 >
                   <span
@@ -198,7 +198,7 @@ export function ChatbotCostCalculator() {
           type="button"
           disabled={!ready}
           onClick={() => setShowResults(true)}
-          className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-[52px] cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           Estimate my cost <ArrowRight className="size-4" />
         </button>
@@ -262,7 +262,7 @@ export function ChatbotCostCalculator() {
               </ul>
             </GlassCard>
 
-            <div className="mt-6 rounded-[16px] border border-brand/25 bg-[radial-gradient(circle_at_50%_0%,rgba(148,0,211,0.14),transparent_70%)] p-6 text-center">
+            <div className="mt-6 rounded-[16px] border border-brand/25 bg-[radial-gradient(circle_at_50%_0%,var(--accent-glow),transparent_70%)] p-6 text-center">
               <p className="font-black text-foreground">This is a ballpark — book a call for an exact quote.</p>
               <div className="mt-4 flex justify-center">
                 <GlowButton href="/book">

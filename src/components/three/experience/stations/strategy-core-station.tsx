@@ -35,7 +35,7 @@ export function StrategyCoreStation() {
       <mesh ref={shell}>
         <icosahedronGeometry args={[1.9, 1]} />
         <meshBasicMaterial
-          color="#a078ff"
+          color="#8e90ee"
           wireframe
           transparent
           opacity={0.28}
@@ -47,8 +47,8 @@ export function StrategyCoreStation() {
       {/* Molten core */}
       <Sphere args={[0.7, 48, 48]}>
         <MeshDistortMaterial
-          color="#4B0082"
-          emissive="#9400D3"
+          color="#5d60cc"
+          emissive="#7577e0"
           emissiveIntensity={1.8}
           roughness={0.2}
           metalness={0.5}
@@ -62,7 +62,7 @@ export function StrategyCoreStation() {
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[1.35, 0.015, 12, 96]} />
           <meshBasicMaterial
-            color="#d0bcff"
+            color="#c0c1ff"
             transparent
             opacity={0.6}
             blending={THREE.AdditiveBlending}
@@ -74,7 +74,7 @@ export function StrategyCoreStation() {
         <mesh rotation={[0, 0, Math.PI / 3]}>
           <torusGeometry args={[1.6, 0.01, 12, 96]} />
           <meshBasicMaterial
-            color="#a078ff"
+            color="#8e90ee"
             transparent
             opacity={0.4}
             blending={THREE.AdditiveBlending}

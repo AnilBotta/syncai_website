@@ -81,7 +81,7 @@ export function NavDropdown({ label, items, viewAllHref, viewAllLabel }: NavDrop
                     <Link
                       href={item.href}
                       onClick={() => setOpen(false)}
-                      className="flex items-baseline gap-3 px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[#f5f5f5] hover:text-brand-glow-text"
+                      className="flex items-baseline gap-3 px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-[var(--nav-hover-bg)] hover:text-brand-glow-text"
                     >
                       <span className="text-xs font-medium tabular-nums text-muted">
                         {item.number} ·

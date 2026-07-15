@@ -40,7 +40,7 @@ export default function ExperienceCanvas({ paused = false }: ExperienceCanvasPro
     >
       <QualityProvider>
         <ambientLight intensity={0.5} />
-        <directionalLight position={[6, 8, 6]} intensity={1.2} color="#c9b8ff" />
+        <directionalLight position={[6, 8, 6]} intensity={1.2} color="#c0c1ff" />
 
         <CameraRig />
         <AmbientField />

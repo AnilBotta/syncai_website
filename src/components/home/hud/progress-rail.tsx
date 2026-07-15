@@ -64,7 +64,7 @@ export function ProgressRail({ targetRef }: ProgressRailProps) {
           <span
             className={
               active === index
-                ? "size-2.5 rounded-full bg-brand-soft shadow-[0_0_12px_rgba(160,120,255,0.8)] transition-all"
+                ? "size-2.5 rounded-full bg-brand-soft shadow-[0_0_12px_var(--accent-glow)] transition-all"
                 : "size-2 rounded-full bg-white/25 transition-all group-hover:bg-white/50"
             }
           />

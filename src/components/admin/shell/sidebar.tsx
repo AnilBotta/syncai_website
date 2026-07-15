@@ -6,7 +6,7 @@ import { LifeBuoy, LogOut, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navGroups, type View } from "@/components/admin/shell/nav-config";
 import { BrandLogo } from "@/components/admin/shell/brand-logo";
-import { ThemeToggle } from "@/components/admin/shell/theme-toggle";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 type SidebarProps = {
   view: View;

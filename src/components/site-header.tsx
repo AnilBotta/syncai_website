@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { contact } from "@/lib/site-data";
 import { servicesDropdown, toolsDropdown, type DropdownItem } from "@/lib/nav-data";
 import { NavDropdown } from "@/components/nav/nav-dropdown";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useTheme } from "@/lib/use-theme";
 
 const flatLinks = {
   home: { label: "Home", href: "/" },
@@ -21,6 +23,7 @@ const flatLinks = {
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -35,19 +38,30 @@ export function SiteHeader() {
       className={cn(
         "fixed top-0 z-50 w-full border-b backdrop-blur-xl transition-all duration-300",
         scrolled
-          ? "border-[#e4e7ea] bg-white/90 shadow-sm"
-          : "border-transparent bg-white/70",
+          ? "border-border-subtle bg-card/90 shadow-sm"
+          : "border-transparent bg-card/70",
       )}
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="SyncAI Technology home">
+          {/* Both variants ship in the markup and CSS picks one, so the correct
+              logo paints immediately with the anti-FOUC theme — no JS wait. */}
           <Image
             src="/brand/syncai-logo-light.png"
             alt="SyncAI logo"
             width={154}
             height={50}
             priority
-            className="h-10 w-auto"
+            className="h-10 w-auto dark-hidden"
+          />
+          <Image
+            src="/brand/syncai-logo-dark.png"
+            alt=""
+            aria-hidden
+            width={154}
+            height={50}
+            priority
+            className="h-10 w-auto light-hidden"
           />
         </Link>
 
@@ -92,28 +106,32 @@ export function SiteHeader() {
             <span className="size-2 animate-pulse rounded-full bg-brand-soft" />
             {contact.phonePrimary}
           </a>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
           <Link
             href="/book"
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 text-sm font-bold text-white shadow-[0_6px_20px_rgba(125,60,152,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_rgba(125,60,152,0.4)]"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_var(--accent-glow)]"
           >
             Let&apos;s talk
             <ArrowRight className="size-4" />
           </Link>
         </div>
 
-        <button
-          type="button"
-          className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-[#d6dbdf] text-foreground lg:hidden"
-          onClick={() => setOpen((value) => !value)}
-          aria-label="Toggle navigation"
-          aria-expanded={open}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          <button
+            type="button"
+            className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full border border-border-subtle text-foreground"
+            onClick={() => setOpen((value) => !value)}
+            aria-label="Toggle navigation"
+            aria-expanded={open}
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
-      <div className={cn("max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-[#e4e7ea] bg-white/95 backdrop-blur-xl lg:hidden", open ? "block" : "hidden")}>
+      <div className={cn("max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-border-subtle bg-card/95 backdrop-blur-xl lg:hidden", open ? "block" : "hidden")}>
         <div className="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:px-6">
           <MobileLink href={flatLinks.home.href} label={flatLinks.home.label} onNavigate={() => setOpen(false)} />
           <MobileLink href={flatLinks.about.href} label={flatLinks.about.label} onNavigate={() => setOpen(false)} />
@@ -161,7 +179,7 @@ function MobileLink({ href, label, onNavigate }: { href: string; label: string; 
   return (
     <Link
       href={href}
-      className="rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-[#f5f5f5]"
+      className="rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-[var(--nav-hover-bg)]"
       onClick={onNavigate}
     >
       {label}
@@ -190,7 +208,7 @@ function MobileAccordion({
         type="button"
         aria-expanded={expanded}
         onClick={() => setExpanded((value) => !value)}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-[#f5f5f5]"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold text-foreground hover:bg-[var(--nav-hover-bg)]"
       >
         {label}
         <ChevronDown className={cn("size-4 text-muted transition-transform duration-200", expanded && "rotate-180")} />
@@ -201,7 +219,7 @@ function MobileAccordion({
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-baseline gap-3 rounded-xl px-4 py-3 text-sm text-foreground/90 hover:bg-[#f5f5f5]"
+              className="flex items-baseline gap-3 rounded-xl px-4 py-3 text-sm text-foreground/90 hover:bg-[var(--nav-hover-bg)]"
               onClick={onNavigate}
             >
               <span className="text-xs font-medium tabular-nums text-muted">{item.number} ·</span>
