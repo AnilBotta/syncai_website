@@ -180,7 +180,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
 
   return (
     <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[.95fr_1.05fr] lg:px-8">
-      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
           <label className="relative">
             <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted" />
@@ -221,14 +221,14 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
           <span className="flex-1" />
           <button
             onClick={loadAppointments}
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-sidebar-border bg-white px-3 text-xs font-bold text-muted"
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-sidebar-border bg-card px-3 text-xs font-bold text-muted"
           >
             <RefreshCcw className="size-3.5" />
             Refresh
           </button>
           <button
             onClick={exportCsv}
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-sidebar-border bg-white px-3 text-xs font-bold text-muted"
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-sidebar-border bg-card px-3 text-xs font-bold text-muted"
           >
             <Download className="size-3.5" />
             CSV
@@ -283,7 +283,7 @@ export function AdminAppointments({ getToken }: AdminAppointmentsProps) {
         </div>
       </section>
 
-      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
         {selected ? (
           // key: the status select + notes textarea are uncontrolled (defaultValue),
           // which only applies on mount. Without remounting per appointment they'd

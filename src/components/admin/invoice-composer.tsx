@@ -63,8 +63,8 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      <div className="relative w-full max-w-lg rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-6 shadow-pop">
+      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-overlay backdrop-blur-sm" />
+      <div className="relative w-full max-w-lg rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-6 shadow-pop backdrop-blur-xl">
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-black text-foreground">New invoice · {lead.name}</h2>
           <button
@@ -78,7 +78,7 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
         </div>
 
         {done ? (
-          <div className="mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-700">
+          <div className="mt-5 rounded-2xl border border-success/30 bg-success-soft p-4 text-sm text-success">
             Invoice drafted and sent to your Approval Inbox. It goes to the client only after you approve it there.
             <button
               type="button"
@@ -119,7 +119,7 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
                     type="button"
                     onClick={() => setItems((current) => current.filter((_, idx) => idx !== i))}
                     disabled={items.length === 1}
-                    className="grid size-8 place-items-center rounded-full border border-sidebar-border text-muted transition hover:text-red-600 disabled:opacity-40"
+                    className="grid size-8 place-items-center rounded-full border border-sidebar-border text-muted transition hover:text-danger disabled:opacity-40"
                     aria-label="Remove line"
                   >
                     <Trash2 className="size-3.5" />
@@ -172,7 +172,7 @@ export function InvoiceComposer({ getToken, lead, onClose, onCreated }: InvoiceC
               className="resize-none rounded-2xl border border-sidebar-border p-3 text-sm leading-6 outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
             />
 
-            {error ? <p className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+            {error ? <p className="rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
             <button
               type="button"

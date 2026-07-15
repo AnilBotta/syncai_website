@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, LockKeyhole } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { createSupabaseBrowserClient, hasSupabasePublicConfig } from "@/lib/supabase";
+import { BrandLogo } from "@/components/admin/shell/brand-logo";
 
 export function AdminLogin() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Match the dashboard's persisted Luminary theme (dark default, no toggle here).
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const configured = hasSupabasePublicConfig();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const stored = window.localStorage.getItem("syncai-admin-theme");
+      if (stored === "light" || stored === "dark") setTheme(stored);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   async function login(formData: FormData) {
     setLoading(true);
@@ -36,19 +47,20 @@ export function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-deep px-4 py-12 text-white">
+    <div className={`admin-luminary admin-${theme} min-h-screen px-4 py-12`}>
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-md items-center">
-        <form action={login} className="w-full rounded-[2rem] border border-border-subtle bg-bg-elevated/[.06] p-6 shadow-2xl backdrop-blur">
-          <span className="grid size-[52px] place-items-center rounded-2xl bg-gradient-to-r from-brand-electric to-brand text-white">
-            <LockKeyhole className="size-6" />
-          </span>
-          <h1 className="mt-6 text-3xl font-black">SyncAi Admin</h1>
+        <form
+          action={login}
+          className="w-full rounded-[2rem] border border-sidebar-border bg-card p-6 shadow-card backdrop-blur-xl"
+        >
+          <BrandLogo theme={theme} width={160} />
+          <h1 className="mt-6 text-3xl font-black text-foreground">Control Center</h1>
           <p className="mt-2 text-sm leading-6 text-muted">
             Sign in with the private Supabase admin account to manage website leads.
           </p>
 
           {!configured ? (
-            <div className="mt-5 rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100">
+            <div className="mt-5 rounded-2xl border border-warn/30 bg-warn-soft p-4 text-sm text-warn">
               Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY before logging in.
             </div>
           ) : null}
@@ -60,7 +72,7 @@ export function AdminLogin() {
                 name="email"
                 type="email"
                 required
-                className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none focus:ring-4 focus:ring-purple-500/20"
+                className="h-12 rounded-2xl border border-sidebar-border bg-input-bg px-4 text-foreground outline-none backdrop-blur-md focus:border-brand-soft focus:ring-4 focus:ring-brand/20"
               />
             </label>
             <label className="grid gap-2 text-sm font-semibold text-foreground/90">
@@ -69,7 +81,7 @@ export function AdminLogin() {
                 name="password"
                 type="password"
                 required
-                className="h-12 rounded-2xl border border-border-subtle bg-bg-elevated px-4 text-foreground outline-none focus:ring-4 focus:ring-purple-500/20"
+                className="h-12 rounded-2xl border border-sidebar-border bg-input-bg px-4 text-foreground outline-none backdrop-blur-md focus:border-brand-soft focus:ring-4 focus:ring-brand/20"
               />
             </label>
           </div>
@@ -77,12 +89,12 @@ export function AdminLogin() {
           <button
             type="submit"
             disabled={loading || !configured}
-            className="mt-6 inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-black text-white transition hover:bg-bg-elevated hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-6 text-sm font-black text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? <Loader2 className="size-4 animate-spin" /> : null}
             Sign in
           </button>
-          {error ? <p className="mt-4 text-sm text-red-200">{error}</p> : null}
+          {error ? <p className="mt-4 text-sm text-danger">{error}</p> : null}
         </form>
       </div>
     </div>

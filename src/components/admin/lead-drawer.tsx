@@ -215,10 +215,10 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved, onDeleted }: Lead
         type="button"
         aria-label="Close lead details"
         onClick={onClose}
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-overlay backdrop-blur-sm"
       />
-      <aside className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto rounded-l-[24px] border-l border-sidebar-border bg-white shadow-pop">
-        <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-sidebar-border bg-white/90 px-6 py-5 backdrop-blur">
+      <aside className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto rounded-l-[24px] border-l border-sidebar-border bg-card shadow-pop backdrop-blur-xl">
+        <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-sidebar-border bg-card/90 px-6 py-5 backdrop-blur">
           <div>
             <h2 className="text-2xl font-black text-foreground">{lead.name}</h2>
             <p className="mt-1 text-sm text-muted">
@@ -374,12 +374,12 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved, onDeleted }: Lead
                   {String(negotiationResult.our_leverage ?? "—")}
                 </p>
                 {negotiationResult.escalated ? (
-                  <div className="mt-1 rounded-2xl border border-amber-300/40 bg-amber-400/10 p-3 text-amber-700">
+                  <div className="mt-1 rounded-2xl border border-warn/30 bg-warn-soft p-3 text-warn">
                     <p className="font-black">Escalated to you</p>
                     <p className="mt-1">{String(negotiationResult.reason ?? negotiationResult.rationale ?? "")}</p>
                   </div>
                 ) : (
-                  <div className="mt-1 rounded-2xl border border-emerald-300/40 bg-emerald-400/10 p-3 text-emerald-700">
+                  <div className="mt-1 rounded-2xl border border-success/30 bg-success-soft p-3 text-success">
                     <p className="font-black">
                       Drafted: ${String(negotiationResult.proposed_price ?? "—")}
                       {negotiationResult.discount_pct != null ? ` (${String(negotiationResult.discount_pct)}% off)` : ""}
@@ -531,7 +531,7 @@ export function LeadDrawer({ lead, getToken, onClose, onSaved, onDeleted }: Lead
             />
           </label>
 
-          {error ? <p className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+          {error ? <p className="rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
           <button
             type="submit"

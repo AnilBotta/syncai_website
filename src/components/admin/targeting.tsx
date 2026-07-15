@@ -109,7 +109,7 @@ export function Targeting({ getToken }: TargetingProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
-      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
         <h2 className="text-lg font-black text-foreground">New target (ICP)</h2>
         <p className="mt-1 text-sm text-muted">Define who to hunt for. The scraper only searches active ICPs.</p>
         <div className="mt-4 grid gap-3">
@@ -130,7 +130,7 @@ export function Targeting({ getToken }: TargetingProps) {
         </div>
       </section>
 
-      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
         <h2 className="text-lg font-black text-foreground">Active targets</h2>
         {demoMode ? (
           <p className="mt-3 rounded-2xl border border-warn/20 bg-warn-soft p-3 text-xs text-warn">

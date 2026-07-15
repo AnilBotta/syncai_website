@@ -58,6 +58,13 @@
   --chart-grad-end: rgba(125, 60, 152, 0);
   --chart-grid: rgba(26, 26, 31, 0.06);
 
+  /* Card/overlay/input surfaces (defaults = current solid-white admin look;
+     the .admin-dark/.admin-light Luminary scopes below override them). */
+  --card-bg: #ffffff;
+  --card-bg-elevated: #ffffff;
+  --overlay: rgba(26, 26, 31, 0.4);
+  --input-bg: #ffffff;
+
   /* Back-compat name */
   --background: var(--bg-base);
 }
@@ -87,6 +94,153 @@
   color: var(--foreground);
 }
 
+/*
+ * ─────────────────────────────────────────────────────────────────
+ * Luminary admin theme islands (ported from the syncai-office
+ * dashboard design system). Applied ONLY on the admin root wrapper
+ * (`admin-luminary admin-dark|admin-light`), so the public marketing
+ * site is untouched. Same scoping pattern as .theme-dark above.
+ * ─────────────────────────────────────────────────────────────────
+ */
+.admin-luminary {
+  font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+  color: var(--foreground);
+}
+.admin-luminary h1,
+.admin-luminary h2,
+.admin-luminary h3,
+.admin-luminary h4,
+.admin-luminary h5,
+.admin-luminary h6 {
+  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+.admin-luminary ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.admin-luminary ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-luminary ::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+/* Deep-navy Luminary dark theme (admin default) */
+.admin-dark {
+  --foreground: #dae2fd;
+  --muted: #a9aec9;
+  --surface: rgba(23, 31, 51, 0.7);
+  --surface-strong: rgba(34, 42, 61, 0.75);
+  --bg-elevated: #131b2e;
+  --border-subtle: rgba(218, 226, 253, 0.1);
+
+  --brand: #8e90ee;
+  --brand-soft: #c0c1ff;
+  --brand-glow-text: #c0c1ff;
+  --brand-deep: #5d60cc;
+  --brand-electric: #7577e0;
+  --accent-glow: rgba(142, 144, 238, 0.2);
+
+  --admin-canvas: #0b1326;
+  --sidebar-bg: rgba(11, 19, 38, 0.85);
+  --sidebar-border: rgba(218, 226, 253, 0.08);
+  --nav-active-bg: rgba(192, 193, 255, 0.14);
+  --nav-active-fg: #c0c1ff;
+  --nav-hover-bg: rgba(218, 226, 253, 0.06);
+
+  --card-bg: rgba(23, 31, 51, 0.7);
+  --card-bg-elevated: rgba(34, 42, 61, 0.65);
+  --overlay: rgba(11, 19, 38, 0.7);
+  --input-bg: rgba(11, 19, 38, 0.5);
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(218, 226, 253, 0.06);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.35), 0 0 16px rgba(192, 193, 255, 0.1),
+    inset 0 1px 0 rgba(218, 226, 253, 0.06);
+  --shadow-pop: 0 16px 48px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.28);
+
+  --success: #4edea3;
+  --success-soft: rgba(78, 222, 163, 0.15);
+  --warn: #f5c26b;
+  --warn-soft: rgba(245, 194, 107, 0.15);
+  --danger: #ef6b7a;
+  --danger-soft: rgba(239, 107, 122, 0.15);
+  --info: #6ea8ff;
+  --info-soft: rgba(110, 168, 255, 0.15);
+
+  --chart-line: #c0c1ff;
+  --chart-line-compare: #b48bff;
+  --chart-grad-start: rgba(192, 193, 255, 0.3);
+  --chart-grad-end: rgba(192, 193, 255, 0);
+  --chart-grid: rgba(218, 226, 253, 0.08);
+
+  background: radial-gradient(ellipse at top, #131b2e 0%, #0b1326 55%, #080f1e 100%);
+  color: var(--foreground);
+}
+.admin-dark ::selection {
+  background: rgba(192, 193, 255, 0.32);
+  color: #ffffff;
+}
+
+/* Soft-lavender Luminary light theme */
+.admin-light {
+  --foreground: #1c1f3a;
+  --muted: #474a6d;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.85);
+  --bg-elevated: #ffffff;
+  --border-subtle: rgba(93, 96, 204, 0.14);
+
+  --brand: #5d60cc;
+  --brand-soft: #8e90ee;
+  --brand-glow-text: #474ab0;
+  --brand-deep: #474ab0;
+  --brand-electric: #7577e0;
+  --accent-glow: rgba(93, 96, 204, 0.16);
+
+  --admin-canvas: #f6f5ff;
+  --sidebar-bg: rgba(255, 255, 255, 0.74);
+  --sidebar-border: rgba(93, 96, 204, 0.14);
+  --nav-active-bg: rgba(93, 96, 204, 0.1);
+  --nav-active-fg: #474ab0;
+  --nav-hover-bg: rgba(93, 96, 204, 0.05);
+
+  --card-bg: rgba(255, 255, 255, 0.72);
+  --card-bg-elevated: rgba(255, 255, 255, 0.85);
+  --overlay: rgba(28, 31, 58, 0.4);
+  --input-bg: rgba(255, 255, 255, 0.82);
+
+  --shadow-card: 0 4px 24px rgba(93, 96, 204, 0.08), 0 1px 3px rgba(28, 31, 58, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --shadow-card-hover: 0 8px 32px rgba(93, 96, 204, 0.14), 0 0 16px rgba(93, 96, 204, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --shadow-pop: 0 16px 48px rgba(28, 31, 58, 0.12), 0 8px 16px rgba(28, 31, 58, 0.06);
+
+  --success: #1a8a62;
+  --success-soft: rgba(40, 170, 120, 0.1);
+  --warn: #b87b22;
+  --warn-soft: rgba(220, 155, 60, 0.12);
+  --danger: #c5394b;
+  --danger-soft: rgba(220, 80, 90, 0.1);
+  --info: #2a5fb8;
+  --info-soft: rgba(80, 130, 220, 0.1);
+
+  --chart-line: #5d60cc;
+  --chart-line-compare: #8e90ee;
+  --chart-grad-start: rgba(93, 96, 204, 0.25);
+  --chart-grad-end: rgba(93, 96, 204, 0);
+  --chart-grid: rgba(28, 31, 58, 0.06);
+
+  background: radial-gradient(ellipse at top, #f6f5ff 0%, #eceaff 50%, #e0deff 100%);
+  color: var(--foreground);
+}
+.admin-light ::selection {
+  background: rgba(93, 96, 204, 0.2);
+  color: #1c1f3a;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -108,6 +262,10 @@
   --color-admin-canvas: var(--admin-canvas);
   --color-sidebar-bg: var(--sidebar-bg);
   --color-sidebar-border: var(--sidebar-border);
+  --color-card: var(--card-bg);
+  --color-card-elevated: var(--card-bg-elevated);
+  --color-overlay: var(--overlay);
+  --color-input-bg: var(--input-bg);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-warn: var(--warn);

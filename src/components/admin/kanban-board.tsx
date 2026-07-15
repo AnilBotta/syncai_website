@@ -68,7 +68,7 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
               "min-w-56 rounded-[var(--radius-card-lg)] border p-3 transition",
               dragOver === column.value
                 ? "border-brand-soft bg-brand/[.06] ring-2 ring-brand/40"
-                : "border-sidebar-border bg-white/60",
+                : "border-sidebar-border bg-card/70 backdrop-blur-lg",
             )}
           >
             <header className="flex items-center justify-between px-1">
@@ -95,7 +95,7 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
                     event.dataTransfer.effectAllowed = "move";
                   }}
                   onClick={() => onSelect(lead)}
-                  className="min-w-0 cursor-pointer overflow-hidden rounded-[var(--radius-card)] border border-sidebar-border bg-white p-3 shadow-card transition-shadow hover:shadow-card-hover"
+                  className="min-w-0 cursor-pointer overflow-hidden rounded-[var(--radius-card)] border border-sidebar-border bg-card p-3 shadow-card transition-shadow hover:shadow-card-hover"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <p className="min-w-0 truncate text-sm font-black text-foreground">{lead.name}</p>

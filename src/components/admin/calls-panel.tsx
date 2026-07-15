@@ -13,11 +13,11 @@ type CallsPanelProps = {
 
 const statusStyles: Record<Call["status"], string> = {
   queued: "bg-surface text-muted",
-  ringing: "bg-amber-400/15 text-amber-600",
+  ringing: "bg-warn-soft text-warn",
   in_progress: "bg-brand-deep/15 text-brand-glow-text",
-  completed: "bg-emerald-400/15 text-emerald-600",
-  failed: "bg-red-500/10 text-red-600",
-  no_answer: "bg-red-500/10 text-red-600",
+  completed: "bg-success-soft text-success",
+  failed: "bg-danger-soft text-danger",
+  no_answer: "bg-danger-soft text-danger",
 };
 
 export function CallsPanel({ leadId, hasPhone, getToken }: CallsPanelProps) {
@@ -97,8 +97,8 @@ export function CallsPanel({ leadId, hasPhone, getToken }: CallsPanelProps) {
         ) : null}
       </div>
 
-      {notice ? <p className="text-xs font-bold text-emerald-700">{notice}</p> : null}
-      {error ? <p className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+      {notice ? <p className="text-xs font-bold text-success">{notice}</p> : null}
+      {error ? <p className="rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
       <div className="grid gap-2">
         {loading ? (

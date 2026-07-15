@@ -116,7 +116,7 @@ export function Topbar({
         <button
           type="button"
           onClick={onOpenMobileNav}
-          className="grid size-9 shrink-0 place-items-center rounded-xl border border-sidebar-border bg-white text-muted lg:hidden"
+          className="grid size-9 shrink-0 place-items-center rounded-xl border border-sidebar-border bg-card text-muted lg:hidden"
           aria-label="Open navigation"
         >
           <Menu className="size-4.5" />
@@ -146,10 +146,10 @@ export function Topbar({
             }}
             placeholder="Search leads, pages…"
             aria-label="Search leads and pages"
-            className="h-10 w-full rounded-full border border-sidebar-border bg-white pl-10 pr-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/20"
+            className="h-10 w-full rounded-full border border-sidebar-border bg-input-bg pl-10 pr-4 text-sm text-foreground outline-none backdrop-blur-md focus:border-brand-soft focus:ring-4 focus:ring-brand/20"
           />
           {open && term ? (
-            <div className="absolute left-0 right-0 top-12 z-40 max-h-96 overflow-y-auto rounded-2xl border border-sidebar-border bg-white p-1.5 shadow-pop">
+            <div className="absolute left-0 right-0 top-12 z-40 max-h-96 overflow-y-auto rounded-2xl border border-sidebar-border bg-card-elevated p-1.5 shadow-pop backdrop-blur-2xl">
               {!hasResults ? (
                 <p className="px-3 py-3 text-sm text-muted">No matches for “{q}”.</p>
               ) : null}
@@ -257,7 +257,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => onNavigate("approvals")}
-            className="relative grid size-9 place-items-center rounded-xl border border-sidebar-border bg-white text-muted transition hover:text-foreground"
+            className="relative grid size-9 place-items-center rounded-xl border border-sidebar-border bg-card text-muted transition hover:text-foreground"
             aria-label={`Notifications${approvalsCount > 0 ? `, ${approvalsCount} pending approvals` : ""}`}
           >
             <Bell className="size-4.5" />

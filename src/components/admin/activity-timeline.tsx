@@ -128,7 +128,7 @@ export function ActivityTimeline({ leadId, getToken }: ActivityTimelineProps) {
         </button>
       </div>
 
-      {error ? <p className="mt-3 rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="mt-3 rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
       <div className="mt-4 grid gap-3">
         {loading ? (

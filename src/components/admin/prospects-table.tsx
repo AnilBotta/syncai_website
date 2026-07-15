@@ -112,7 +112,7 @@ export function ProspectsTable({ getToken, onLeadsChanged }: ProspectsTableProps
   }
 
   return (
-    <div className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+    <div className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
       {automatable.length ? (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-brand-soft/40 bg-brand/[.05] p-3">
           <p className="text-sm font-bold text-foreground">

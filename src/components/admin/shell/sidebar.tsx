@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { m } from "framer-motion";
 import { LifeBuoy, LogOut, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navGroups, type View } from "@/components/admin/shell/nav-config";
+import { BrandLogo } from "@/components/admin/shell/brand-logo";
+import { ThemeToggle } from "@/components/admin/shell/theme-toggle";
 
 type SidebarProps = {
   view: View;
@@ -12,9 +15,20 @@ type SidebarProps = {
   onSignOut: () => void;
   mobileOpen: boolean;
   onMobileClose: () => void;
+  theme: "dark" | "light";
+  onToggleTheme: () => void;
 };
 
-export function Sidebar({ view, onNavigate, approvalsCount, onSignOut, mobileOpen, onMobileClose }: SidebarProps) {
+export function Sidebar({
+  view,
+  onNavigate,
+  approvalsCount,
+  onSignOut,
+  mobileOpen,
+  onMobileClose,
+  theme,
+  onToggleTheme,
+}: SidebarProps) {
   // Close the mobile drawer on Escape.
   useEffect(() => {
     if (!mobileOpen) return;
@@ -24,18 +38,10 @@ export function Sidebar({ view, onNavigate, approvalsCount, onSignOut, mobileOpe
   }, [mobileOpen, onMobileClose]);
 
   const nav = (
-    <div className="flex h-full flex-col bg-sidebar-bg">
-      {/* Brand */}
+    <div className="flex h-full flex-col bg-sidebar-bg backdrop-blur-xl">
+      {/* Brand — SyncAI wordmark, theme-matched variant */}
       <div className="flex items-center justify-between px-5 pb-5 pt-6">
-        <div className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-brand-electric to-brand-soft text-white shadow-[0_6px_18px_rgba(125,60,152,.35)]">
-            <Sparkles className="size-4.5" />
-          </span>
-          <div>
-            <p className="text-sm font-black leading-tight text-foreground">SyncAI Admin</p>
-            <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted">Control Center</p>
-          </div>
-        </div>
+        <BrandLogo theme={theme} width={132} />
         <button
           type="button"
           onClick={onMobileClose}
@@ -62,23 +68,41 @@ export function Sidebar({ view, onNavigate, approvalsCount, onSignOut, mobileOpe
                     onClick={() => onNavigate(item.view)}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+                      "group relative flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
                       active
-                        ? "bg-[var(--nav-active-bg)] text-[var(--nav-active-fg)] shadow-[0_6px_16px_rgba(91,44,111,.25)]"
+                        ? "bg-[var(--nav-active-bg)] text-[var(--nav-active-fg)]"
                         : "text-muted hover:bg-[var(--nav-hover-bg)] hover:text-foreground",
                     )}
                   >
-                    <Icon className="size-4.5 shrink-0" />
+                    {/* Icon plate (Luminary) */}
+                    <span
+                      className={cn(
+                        "grid size-7 shrink-0 place-items-center rounded-md transition-colors",
+                        active
+                          ? "bg-brand-soft/20 text-[var(--nav-active-fg)]"
+                          : "bg-[var(--nav-hover-bg)] text-muted group-hover:text-foreground",
+                      )}
+                    >
+                      <Icon className="size-4" strokeWidth={active ? 2.4 : 2} />
+                    </span>
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.view === "approvals" && approvalsCount > 0 ? (
                       <span
                         className={cn(
                           "grid min-w-5 place-items-center rounded-full px-1.5 text-[11px] font-black",
-                          active ? "bg-white/25 text-white" : "bg-brand-deep text-white",
+                          active ? "bg-brand-soft/25 text-[var(--nav-active-fg)]" : "bg-brand-deep text-white",
                         )}
                       >
                         {approvalsCount}
                       </span>
+                    ) : null}
+                    {/* Right-edge glowing active indicator (Luminary) */}
+                    {active ? (
+                      <m.span
+                        layoutId="admin-nav-indicator"
+                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                        className="pointer-events-none absolute right-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-brand-soft shadow-[0_0_12px_var(--brand-soft)]"
+                      />
                     ) : null}
                   </button>
                 );
@@ -88,12 +112,12 @@ export function Sidebar({ view, onNavigate, approvalsCount, onSignOut, mobileOpe
         ))}
       </nav>
 
-      {/* Footer: AI Manager CTA + support + sign out */}
+      {/* Footer: AI Manager CTA + theme + support + sign out */}
       <div className="space-y-2 border-t border-sidebar-border px-3 py-4">
         <button
           type="button"
           onClick={() => onNavigate("manager")}
-          className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-br from-brand-electric to-brand-deep px-3 py-2.5 text-left text-white shadow-[0_10px_24px_rgba(91,44,111,.28)] transition hover:brightness-110"
+          className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-br from-brand-electric to-brand-deep px-3 py-2.5 text-left text-white shadow-[0_10px_24px_var(--accent-glow)] transition hover:brightness-110"
         >
           <Sparkles className="size-4.5 shrink-0" />
           <span className="flex-1">
@@ -101,6 +125,10 @@ export function Sidebar({ view, onNavigate, approvalsCount, onSignOut, mobileOpe
             <span className="block text-[11px] text-white/80">Run the business by chat</span>
           </span>
         </button>
+        <div className="flex items-center justify-between rounded-xl px-3 py-2">
+          <span className="text-[11px] font-bold text-muted">Theme</span>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        </div>
         <a
           href="mailto:support@syncai.tech"
           className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold text-muted transition hover:bg-[var(--nav-hover-bg)] hover:text-foreground"
@@ -134,7 +162,7 @@ export function Sidebar({ view, onNavigate, approvalsCount, onSignOut, mobileOpe
             type="button"
             aria-label="Close navigation"
             onClick={onMobileClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-overlay backdrop-blur-sm"
           />
           <div className="absolute inset-y-0 left-0 w-72 border-r border-sidebar-border shadow-pop">{nav}</div>
         </div>
