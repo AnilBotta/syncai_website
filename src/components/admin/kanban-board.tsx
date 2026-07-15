@@ -82,6 +82,11 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
 
             <div className="mt-3 grid gap-2">
               {columnLeads.map((lead) => (
+                // min-w-0: the card is a grid item, so it defaults to min-width:auto and
+                // won't shrink below its content's min-content. The truncated lines below
+                // are `white-space: nowrap`, whose min-content is the WHOLE string — so a
+                // long company name blew the card way past its column and painted over the
+                // next one. min-w-0 lets it shrink; overflow-hidden clips any stray child.
                 <article
                   key={lead.id}
                   draggable
@@ -90,7 +95,7 @@ export function KanbanBoard({ leads, onMove, onSelect }: KanbanBoardProps) {
                     event.dataTransfer.effectAllowed = "move";
                   }}
                   onClick={() => onSelect(lead)}
-                  className="cursor-pointer rounded-[var(--radius-card)] border border-sidebar-border bg-white p-3 shadow-card transition-shadow hover:shadow-card-hover"
+                  className="min-w-0 cursor-pointer overflow-hidden rounded-[var(--radius-card)] border border-sidebar-border bg-white p-3 shadow-card transition-shadow hover:shadow-card-hover"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <p className="min-w-0 truncate text-sm font-black text-foreground">{lead.name}</p>
