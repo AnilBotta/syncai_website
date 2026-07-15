@@ -107,7 +107,7 @@ export function SequenceEnroll({ leadId, getToken }: SequenceEnrollProps) {
               </div>
               <div className="flex shrink-0 gap-1">
                 {e.status === "paused" ? (
-                  <button type="button" onClick={() => act(e, "resume")} className="grid size-8 place-items-center rounded-full text-muted hover:text-emerald-600" title="Resume">
+                  <button type="button" onClick={() => act(e, "resume")} className="grid size-8 place-items-center rounded-full text-muted hover:text-success" title="Resume">
                     <Play className="size-4" />
                   </button>
                 ) : (
@@ -115,7 +115,7 @@ export function SequenceEnroll({ leadId, getToken }: SequenceEnrollProps) {
                     Pause
                   </button>
                 )}
-                <button type="button" onClick={() => act(e, "cancel")} className="grid size-8 place-items-center rounded-full text-muted hover:text-red-600" title="Cancel">
+                <button type="button" onClick={() => act(e, "cancel")} className="grid size-8 place-items-center rounded-full text-muted hover:text-danger" title="Cancel">
                   <X className="size-4" />
                 </button>
               </div>
@@ -148,7 +148,7 @@ export function SequenceEnroll({ leadId, getToken }: SequenceEnrollProps) {
               Enroll
             </button>
           </div>
-          {error ? <p className="mt-2 text-xs text-red-600">{error}</p> : null}
+          {error ? <p className="mt-2 text-xs text-danger">{error}</p> : null}
         </>
       )}
     </div>

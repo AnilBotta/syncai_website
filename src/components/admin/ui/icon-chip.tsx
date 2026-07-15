@@ -28,7 +28,7 @@ export function IconChip({ icon: Icon, tone = "brand", size = "md", className, g
         "grid shrink-0 place-items-center rounded-xl",
         size === "sm" ? "size-8" : size === "md" ? "size-10" : "size-12",
         gradient
-          ? "bg-gradient-to-br from-brand-electric to-brand-soft text-white shadow-[0_6px_18px_rgba(125,60,152,.35)]"
+          ? "bg-gradient-to-br from-brand-electric to-brand-soft text-white shadow-[0_6px_18px_var(--accent-glow)]"
           : tones[tone],
         className,
       )}

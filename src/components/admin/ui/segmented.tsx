@@ -24,7 +24,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className={cn("inline-flex rounded-full border border-sidebar-border bg-white p-0.5", className)}
+      className={cn("inline-flex rounded-full border border-sidebar-border bg-card p-0.5", className)}
     >
       {options.map((option) => {
         const active = option.value === value;

@@ -194,7 +194,7 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+        <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
           <p className="text-sm font-black text-foreground">Invoices</p>
           <div className="mt-4 grid gap-2">
             {invoices.length ? (
@@ -250,7 +250,7 @@ export function Finance({ getToken }: { getToken: () => Promise<string> }) {
           </div>
         </section>
 
-        <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+        <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
           <p className="text-sm font-black text-foreground">Expenses</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-[auto_1fr_auto]">
             <input

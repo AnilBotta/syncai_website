@@ -125,7 +125,7 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-13rem)] max-w-3xl flex-col rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white shadow-card">
+    <div className="mx-auto flex h-[calc(100vh-13rem)] max-w-3xl flex-col rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card shadow-card backdrop-blur-xl">
       <header className="flex items-center justify-between border-b border-sidebar-border px-5 py-4">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-brand-deep to-brand text-white">
@@ -162,7 +162,7 @@ export function ManagerChat({ getToken }: ManagerChatProps) {
                   {message.trace.map((entry, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1 rounded-full border border-sidebar-border bg-white px-2.5 py-1 text-[11px] font-bold text-muted"
+                      className="inline-flex items-center gap-1 rounded-full border border-sidebar-border bg-card px-2.5 py-1 text-[11px] font-bold text-muted"
                     >
                       <Wrench className="size-3 text-brand-glow-text" />
                       {toolLabels[entry.tool] || entry.tool}: {entry.summary}

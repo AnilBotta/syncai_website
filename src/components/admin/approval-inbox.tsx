@@ -203,7 +203,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[.85fr_1.15fr]">
-      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
         <div className="flex items-center justify-between">
           <p className="text-sm font-black text-foreground">Pending ({approvals.length})</p>
         </div>
@@ -255,7 +255,7 @@ export function ApprovalInbox({ getToken, onCountChange }: ApprovalInboxProps) {
         </div>
       </section>
 
-      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+      <section className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
         {selected ? (
           <div>
             <div className="flex items-start justify-between gap-3 border-b border-sidebar-border pb-4">

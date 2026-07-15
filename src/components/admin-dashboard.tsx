@@ -40,6 +40,24 @@ export function AdminDashboard() {
   const [approvalsCount, setApprovalsCount] = useState(0);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  // Luminary theme island: dark is the default; the choice persists per browser.
+  const [adminTheme, setAdminTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const stored = window.localStorage.getItem("syncai-admin-theme");
+      if (stored === "light" || stored === "dark") setAdminTheme(stored);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const toggleAdminTheme = useCallback(() => {
+    setAdminTheme((current) => {
+      const next = current === "dark" ? "light" : "dark";
+      window.localStorage.setItem("syncai-admin-theme", next);
+      return next;
+    });
+  }, []);
 
   const filtered = useMemo(() => {
     return leads.filter((lead) => {
@@ -258,7 +276,7 @@ export function AdminDashboard() {
       {view === "pipeline" || view === "leads" ? (
         <button
           onClick={loadLeads}
-          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-sidebar-border bg-white px-3 text-sm font-bold text-muted transition hover:text-foreground"
+          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-sidebar-border bg-card px-3 text-sm font-bold text-muted transition hover:text-foreground"
         >
           <RefreshCcw className="size-4" />
           <span className="hidden sm:inline">Refresh</span>
@@ -267,7 +285,7 @@ export function AdminDashboard() {
       {view === "leads" ? (
         <button
           onClick={exportCsv}
-          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-sidebar-border bg-white px-3 text-sm font-bold text-muted transition hover:text-foreground"
+          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-sidebar-border bg-card px-3 text-sm font-bold text-muted transition hover:text-foreground"
         >
           <Download className="size-4" />
           <span className="hidden sm:inline">CSV</span>
@@ -293,7 +311,9 @@ export function AdminDashboard() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <div className="min-h-screen bg-admin-canvas text-foreground lg:grid lg:grid-cols-[16rem_1fr]">
+      <div
+        className={`admin-luminary admin-${adminTheme} min-h-screen text-foreground lg:grid lg:grid-cols-[16rem_1fr]`}
+      >
         <Sidebar
           view={view}
           onNavigate={(v) => {
@@ -304,6 +324,8 @@ export function AdminDashboard() {
           onSignOut={signOut}
           mobileOpen={mobileNavOpen}
           onMobileClose={() => setMobileNavOpen(false)}
+          theme={adminTheme}
+          onToggleTheme={toggleAdminTheme}
         />
 
         <div className="flex min-w-0 flex-col">

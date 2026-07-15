@@ -91,7 +91,7 @@ export function Sequences({ getToken }: SequencesProps) {
       ) : (
         <div className="grid gap-4">
           {sequences.map((seq) => (
-            <div key={seq.id} className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-5 shadow-card">
+            <div key={seq.id} className="rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-5 shadow-card backdrop-blur-xl">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-black text-foreground">{seq.name}</p>

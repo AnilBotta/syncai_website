@@ -164,7 +164,7 @@ export function TaskList({ getToken, leadId, leads, compact = false }: TaskListP
         </button>
       </div>
 
-      {error ? <p className="mt-3 rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="mt-3 rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
       <div className="mt-4 grid gap-2">
         {loading ? (
@@ -184,7 +184,7 @@ export function TaskList({ getToken, leadId, leads, compact = false }: TaskListP
                 <button
                   type="button"
                   onClick={() => resolveTask(task, "done")}
-                  className="grid size-8 shrink-0 place-items-center rounded-full border border-sidebar-border text-muted transition hover:border-emerald-500 hover:text-emerald-600"
+                  className="grid size-8 shrink-0 place-items-center rounded-full border border-sidebar-border text-muted transition hover:border-success hover:text-success"
                   title="Mark done"
                 >
                   <Check className="size-4" />
@@ -193,7 +193,7 @@ export function TaskList({ getToken, leadId, leads, compact = false }: TaskListP
                   <p className="truncate text-sm font-bold text-foreground">{task.title}</p>
                   <p className="text-xs text-muted">
                     {task.due_at ? (
-                      <span className={overdue ? "font-bold text-red-600" : ""}>
+                      <span className={overdue ? "font-bold text-danger" : ""}>
                         Due {formatDate(task.due_at)}
                       </span>
                     ) : (
@@ -205,7 +205,7 @@ export function TaskList({ getToken, leadId, leads, compact = false }: TaskListP
                 <button
                   type="button"
                   onClick={() => resolveTask(task, "dismissed")}
-                  className="grid size-8 shrink-0 place-items-center rounded-full text-muted transition hover:text-red-600"
+                  className="grid size-8 shrink-0 place-items-center rounded-full text-muted transition hover:text-danger"
                   title="Dismiss"
                 >
                   <X className="size-4" />

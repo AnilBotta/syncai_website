@@ -66,9 +66,9 @@ export function EmailComposer({ getToken, lead, defaultTo, onClose, onCreated }:
         type="button"
         aria-label="Close composer"
         onClick={onClose}
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-overlay backdrop-blur-sm"
       />
-      <div className="relative w-full max-w-lg rounded-[var(--radius-card-lg)] border border-sidebar-border bg-white p-6 shadow-pop">
+      <div className="relative w-full max-w-lg rounded-[var(--radius-card-lg)] border border-sidebar-border bg-card p-6 shadow-pop backdrop-blur-xl">
         <div className="flex items-start justify-between">
           <h2 className="text-xl font-black text-foreground">Compose email</h2>
           <button
@@ -82,7 +82,7 @@ export function EmailComposer({ getToken, lead, defaultTo, onClose, onCreated }:
         </div>
 
         {done ? (
-          <div className="mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-700">
+          <div className="mt-5 rounded-2xl border border-success/30 bg-success-soft p-4 text-sm text-success">
             Draft created and sent to your Approval Inbox. Nothing is emailed until you approve it there.
             <button
               type="button"
@@ -125,7 +125,7 @@ export function EmailComposer({ getToken, lead, defaultTo, onClose, onCreated }:
               A CASL-compliant footer (business address + one-click unsubscribe) is added automatically at send time.
             </p>
 
-            {error ? <p className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+            {error ? <p className="rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
             <button
               type="button"

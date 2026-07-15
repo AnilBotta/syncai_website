@@ -15,9 +15,9 @@ const statusStyles: Record<Document["status"], string> = {
   draft: "bg-surface text-muted",
   approved: "bg-brand-deep/15 text-brand-glow-text",
   sent: "bg-brand-deep/15 text-brand-glow-text",
-  viewed: "bg-amber-400/15 text-amber-600",
-  accepted: "bg-emerald-400/15 text-emerald-600",
-  cancelled: "bg-red-500/10 text-red-600",
+  viewed: "bg-warn-soft text-warn",
+  accepted: "bg-success-soft text-success",
+  cancelled: "bg-danger-soft text-danger",
 };
 
 export function DocumentsPanel({ leadId, getToken }: DocumentsPanelProps) {
@@ -118,8 +118,8 @@ export function DocumentsPanel({ leadId, getToken }: DocumentsPanelProps) {
         className="h-10 rounded-full border border-sidebar-border px-4 text-sm outline-none focus:border-brand-soft focus:ring-4 focus:ring-brand/25"
       />
 
-      {notice ? <p className="text-xs font-bold text-emerald-700">{notice}</p> : null}
-      {error ? <p className="rounded-2xl bg-red-500/10 p-3 text-sm text-red-600">{error}</p> : null}
+      {notice ? <p className="text-xs font-bold text-success">{notice}</p> : null}
+      {error ? <p className="rounded-2xl bg-danger-soft p-3 text-sm text-danger">{error}</p> : null}
 
       <div className="grid gap-2">
         {loading ? (
