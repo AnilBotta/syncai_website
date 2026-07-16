@@ -6,7 +6,20 @@ import { PointMaterial } from "@react-three/drei";
 import type { Points } from "three";
 import * as THREE from "three";
 
-const COUNT = 2200;
+/*
+ * The field has to extend well BEYOND the end of the camera path, not just to
+ * it. The camera descends to y -17 / z -52.5 and looks at the CTA station at
+ * z -60, so a field stopping at z -72 left almost nothing in front of the lens
+ * by the later chapters — visible stars fell from ~1050 (hero) to ~64 (cta) and
+ * the sky read as empty from chapter 3 on. These bounds clear the last station
+ * with margin, and COUNT scales with the larger volume to hold density steady.
+ */
+const SPREAD_X = 52; // -26 .. 26
+const TOP_Y = 8;
+const DEPTH_Y = 46; // 8 .. -38   (last station y -18)
+const NEAR_Z = 12;
+const DEPTH_Z = 124; // 12 .. -112 (last station z -60)
+const COUNT = 5600;
 
 /** Sparse dust/starfield spanning the whole camera path for depth. */
 export function AmbientField() {
@@ -25,9 +38,9 @@ export function AmbientField() {
 
     const array = new Float32Array(COUNT * 3);
     for (let i = 0; i < COUNT; i += 1) {
-      array[i * 3] = (random() - 0.5) * 44; // x
-      array[i * 3 + 1] = 6 - random() * 32; // y: from above hero to below cta
-      array[i * 3 + 2] = 10 - random() * 82; // z: spans the full path
+      array[i * 3] = (random() - 0.5) * SPREAD_X; // x
+      array[i * 3 + 1] = TOP_Y - random() * DEPTH_Y; // y: above hero to well below cta
+      array[i * 3 + 2] = NEAR_Z - random() * DEPTH_Z; // z: past the final station
     }
     return array;
   }, []);
