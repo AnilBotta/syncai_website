@@ -94,43 +94,98 @@ export function resolveSpokenDate(
   return null;
 }
 
-/**
- * Turns a spoken date + time ("2026-07-15", "2 PM" / "2:30pm" / "14:00" / "nine am")
- * into a UTC slot ISO in the business timezone. Snaps to the 30-minute grid and,
- * when a bare hour like "2" is given with no am/pm, assumes afternoon since
- * business hours are 9-5. Returns null if it can't be parsed.
- */
-const WORD_HOURS: Record<string, string> = {
-  one: "1", two: "2", three: "3", four: "4", five: "5", six: "6",
-  seven: "7", eight: "8", nine: "9", ten: "10", eleven: "11", twelve: "12",
+const NUM_WORDS: Record<string, number> = {
+  oh: 0, zero: 0,
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
+  ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
+  sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
+  twenty: 20, thirty: 30, forty: 40, fifty: 50,
 };
 
+const COMPOUND_RE = /\b(twenty|thirty|forty|fifty)[\s-](one|two|three|four|five|six|seven|eight|nine)\b/g;
+const NUM_WORD_RE = new RegExp(`\\b(${Object.keys(NUM_WORDS).join("|")})\\b`, "g");
+
+/** "nine thirty" -> "9 30"; "ten forty five" -> "10 45". */
+function spokenNumbersToDigits(input: string): string {
+  return input
+    .replace(COMPOUND_RE, (_full, tens: string, units: string) => String(NUM_WORDS[tens] + NUM_WORDS[units]))
+    .replace(NUM_WORD_RE, (word) => String(NUM_WORDS[word]));
+}
+
+/**
+ * Parses a spoken clock time to 24-hour hour/minute, or null.
+ *
+ * Callers say times as words far more often than digits, and the tool-calling
+ * model passes them straight through — "nine thirty", "ten o'clock", "half
+ * past nine". Anything this can't read makes the agent re-ask a caller who
+ * already answered clearly, so it's deliberately generous.
+ */
+function parseSpokenClock(raw: string): { hour: number; minute: number } | null {
+  const s = raw.trim().toLowerCase().replace(/[.,]/g, "");
+  if (/\b(noon|midday)\b/.test(s)) return { hour: 12, minute: 0 };
+  if (/\bmidnight\b/.test(s)) return { hour: 0, minute: 0 };
+
+  // Read the meridiem before stripping it out of the digits.
+  const pm = /(\bp\s?m\b|afternoon|evening|tonight)/.test(s);
+  const am = /(\ba\s?m\b|morning)/.test(s);
+
+  let body = s
+    .replace(/\b[ap]\s?m\b/g, " ")
+    .replace(/\bin the (morning|afternoon|evening)\b/g, " ")
+    .replace(/\bo'?clock\b/g, " ")
+    .replace(/^\s*at\b/, " ");
+
+  // "half past nine" -> "nine 30"; "quarter past nine" -> "nine 15".
+  body = body.replace(/\bhalf past\s+(\S+)/, "$1 30").replace(/\bquarter past\s+(\S+)/, "$1 15");
+  const quarterTo = body.match(/\bquarter to\s+(\S+)/);
+  body = spokenNumbersToDigits(body);
+
+  if (quarterTo) {
+    const target = parseInt(spokenNumbersToDigits(quarterTo[1]), 10);
+    if (!Number.isInteger(target) || target < 1 || target > 12) return null;
+    return applyMeridiem(target === 1 ? 12 : target - 1, 45, am, pm);
+  }
+
+  // Anchored at the start so junk can't be read as a time, but trailing words
+  // ("9 30 eastern") are tolerated.
+  const m = body.trim().match(/^(\d{1,2})\s*(?::\s*)?(\d{1,2})?\b/);
+  if (!m) return null;
+  const hour = parseInt(m[1], 10);
+  const minute = m[2] ? parseInt(m[2], 10) : 0;
+  if (hour > 24 || minute > 59) return null;
+  return applyMeridiem(hour, minute, am, pm);
+}
+
+function applyMeridiem(
+  hour: number,
+  minute: number,
+  am: boolean,
+  pm: boolean,
+): { hour: number; minute: number } | null {
+  let h = hour;
+  if (pm && h < 12) h += 12;
+  else if (am && h === 12) h = 0;
+  else if (!am && !pm && h >= 1 && h <= 8) h += 12; // bare "2" -> 2 PM (within 9-5)
+  if (h < 0 || h > 23) return null;
+  return { hour: h, minute };
+}
+
+/**
+ * Turns a spoken date + time ("2026-07-15", "2 PM" / "nine thirty" / "14:00")
+ * into a UTC slot ISO in the business timezone. Snaps to the 30-minute grid the
+ * booker offers. Returns null if it can't be parsed.
+ */
 export function parseSpokenTimeToIso(
   date: string,
   time: string,
   tz: string = BOOKING_CONFIG.timezone,
 ): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !time) return null;
-  // The tool-calling model sometimes sends the hour as a word ("nine am")
-  // instead of a digit even when told not to — normalize it rather than
-  // fail the whole parse and make the agent re-ask a caller who already
-  // answered clearly.
-  const normalized = time
-    .trim()
-    .toLowerCase()
-    .replace(/\bnoon\b/, "12 pm")
-    .replace(/\bmidnight\b/, "12 am")
-    .replace(/^(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/, (w) => WORD_HOURS[w]);
-  const m = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?$/);
-  if (!m) return null;
+  const clock = parseSpokenClock(time);
+  if (!clock) return null;
 
-  let hour = parseInt(m[1], 10);
-  let minute = m[2] ? parseInt(m[2], 10) : 0;
-  const meridiem = m[3]?.replace(/\./g, "");
-
-  if (meridiem === "pm" && hour < 12) hour += 12;
-  else if (meridiem === "am" && hour === 12) hour = 0;
-  else if (!meridiem && hour >= 1 && hour <= 8) hour += 12; // bare "2" -> 2 PM (within 9-5)
+  let { hour } = clock;
+  let minute = clock.minute;
 
   // Snap to the nearest half hour the booker uses (:00 / :30).
   if (minute >= 45) {
