@@ -95,18 +95,33 @@ export function resolveSpokenDate(
 }
 
 /**
- * Turns a spoken date + time ("2026-07-15", "2 PM" / "2:30pm" / "14:00") into a
- * UTC slot ISO in the business timezone. Snaps to the 30-minute grid and, when a
- * bare hour like "2" is given with no am/pm, assumes afternoon since business
- * hours are 9-5. Returns null if it can't be parsed.
+ * Turns a spoken date + time ("2026-07-15", "2 PM" / "2:30pm" / "14:00" / "nine am")
+ * into a UTC slot ISO in the business timezone. Snaps to the 30-minute grid and,
+ * when a bare hour like "2" is given with no am/pm, assumes afternoon since
+ * business hours are 9-5. Returns null if it can't be parsed.
  */
+const WORD_HOURS: Record<string, string> = {
+  one: "1", two: "2", three: "3", four: "4", five: "5", six: "6",
+  seven: "7", eight: "8", nine: "9", ten: "10", eleven: "11", twelve: "12",
+};
+
 export function parseSpokenTimeToIso(
   date: string,
   time: string,
   tz: string = BOOKING_CONFIG.timezone,
 ): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !time) return null;
-  const m = time.trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?$/);
+  // The tool-calling model sometimes sends the hour as a word ("nine am")
+  // instead of a digit even when told not to — normalize it rather than
+  // fail the whole parse and make the agent re-ask a caller who already
+  // answered clearly.
+  const normalized = time
+    .trim()
+    .toLowerCase()
+    .replace(/\bnoon\b/, "12 pm")
+    .replace(/\bmidnight\b/, "12 am")
+    .replace(/^(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/, (w) => WORD_HOURS[w]);
+  const m = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?$/);
   if (!m) return null;
 
   let hour = parseInt(m[1], 10);
@@ -185,6 +200,7 @@ export async function bookAppointmentFromCall(
     time?: string;
     name?: string;
     email?: string;
+    phone?: string;
     service?: string;
     notes?: string;
     source?: string;
@@ -233,6 +249,7 @@ export async function bookAppointmentFromCall(
 
   const name = args.name?.trim() || lead?.name;
   const email = args.email?.trim() || lead?.email;
+  const phone = args.phone?.trim() || lead?.phone || null;
   if (!name) return { success: false, message: "Can I get your name for the booking?" };
   if (!email) return { success: false, message: "What's the best email to send your confirmation to?" };
 
@@ -243,7 +260,7 @@ export async function bookAppointmentFromCall(
     .insert({
       name,
       email,
-      phone: lead?.phone || null,
+      phone,
       company: lead?.company || null,
       service,
       notes: args.notes || "Booked by the SyncAI voice agent during a call.",
@@ -271,7 +288,7 @@ export async function bookAppointmentFromCall(
     id: data.id,
     name,
     email,
-    phone: lead?.phone || null,
+    phone,
     company: lead?.company || null,
     service,
     starts_at: iso,

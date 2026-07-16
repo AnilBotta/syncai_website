@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     time: str(args.time),
     name: str(args.name),
     email: str(args.email),
+    phone: str(args.phone),
     service: str(args.service),
     notes: str(args.notes),
   });
