@@ -25,7 +25,7 @@ export const navItems = [
 
 export const contact = {
   email: "support@syncai.tech",
-  phonePrimary: "+1 437-925-2349",
+  phonePrimary: "+1 365-777-7336",
   phoneSecondary: "+1 365-536-6441",
   location: "Brampton, Ontario",
 };

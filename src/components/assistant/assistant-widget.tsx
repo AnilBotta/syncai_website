@@ -1,14 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bot, MessageSquareText, Mic, X } from "lucide-react";
 import { ChatPanel } from "./chat-panel";
 import { VoicePanel } from "./voice-panel";
+import { OPEN_VOICE_EVENT } from "@/lib/assistant-bus";
 
 export function AssistantWidget() {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"chat" | "voice">("chat");
+  // Bumping this tells the voice panel to auto-start a call (the header's
+  // "Let's talk" button already counts as the user's intent to talk).
+  const [autoStart, setAutoStart] = useState(0);
+
+  useEffect(() => {
+    const openVoice = () => {
+      setOpen(true);
+      setTab("voice");
+      setAutoStart((n) => n + 1);
+    };
+    window.addEventListener(OPEN_VOICE_EVENT, openVoice);
+    return () => window.removeEventListener(OPEN_VOICE_EVENT, openVoice);
+  }, []);
 
   return (
     <>
@@ -86,7 +100,7 @@ export function AssistantWidget() {
               <ChatPanel />
             </div>
             <div className={tab === "voice" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
-              <VoicePanel active={tab === "voice"} />
+              <VoicePanel active={tab === "voice"} autoStart={autoStart} />
             </div>
           </motion.div>
         ) : null}
