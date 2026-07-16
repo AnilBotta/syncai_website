@@ -1,53 +1,48 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { RetellWebClient } from "retell-client-js-sdk";
 
 export type VoiceStatus = "idle" | "connecting" | "live" | "ended" | "demo" | "error";
-
-export type VoiceBooking = {
-  humanTime: string;
-  demoMode: boolean;
-};
 
 type CaptionLine = {
   id: number;
   text: string;
 };
 
+/**
+ * Browser voice session backed by the Retell agent — the same agent that answers
+ * the phone, so web and phone callers get identical answers and one prompt to
+ * maintain (edited in the Retell dashboard, no deploy needed).
+ *
+ * The agent's tools (availability + booking) run server-side as Retell custom
+ * functions against /api/voice/tools/*, so unlike the previous implementation
+ * there are no client-side tool calls here.
+ */
 export function useVoiceSession() {
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [error, setError] = useState("");
   const [muted, setMuted] = useState(false);
   const [caption, setCaption] = useState<CaptionLine | null>(null);
-  const [micLevel, setMicLevel] = useState(0);
-  const [booking, setBooking] = useState<VoiceBooking | null>(null);
+  // Drives the orb's pulse. Retell owns the mic, so rather than capture a second
+  // stream just to meter it, this tracks when the AGENT is speaking.
+  const [level, setLevel] = useState(0);
 
-  const pcRef = useRef<RTCPeerConnection | null>(null);
-  const dcRef = useRef<RTCDataChannel | null>(null);
-  const micStreamRef = useRef<MediaStream | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const levelTimerRef = useRef<number | null>(null);
+  const clientRef = useRef<RetellWebClient | null>(null);
   const captionIdRef = useRef(0);
 
   const cleanup = useCallback(() => {
-    if (levelTimerRef.current !== null) {
-      window.clearInterval(levelTimerRef.current);
-      levelTimerRef.current = null;
+    const client = clientRef.current;
+    if (client) {
+      try {
+        client.stopCall();
+      } catch {
+        // Already torn down.
+      }
+      client.removeAllListeners();
+      clientRef.current = null;
     }
-    audioContextRef.current?.close().catch(() => undefined);
-    audioContextRef.current = null;
-    dcRef.current?.close();
-    dcRef.current = null;
-    micStreamRef.current?.getTracks().forEach((track) => track.stop());
-    micStreamRef.current = null;
-    pcRef.current?.close();
-    pcRef.current = null;
-    if (audioRef.current) {
-      audioRef.current.srcObject = null;
-      audioRef.current = null;
-    }
-    setMicLevel(0);
+    setLevel(0);
   }, []);
 
   useEffect(() => cleanup, [cleanup]);
@@ -61,101 +56,63 @@ export function useVoiceSession() {
   const toggleMute = useCallback(() => {
     setMuted((current) => {
       const next = !current;
-      micStreamRef.current?.getAudioTracks().forEach((track) => {
-        track.enabled = !next;
-      });
+      const client = clientRef.current;
+      if (!client) return next;
+      try {
+        if (next) client.mute();
+        else client.unmute();
+      } catch {
+        // SDK not connected yet — the next start() resets muted to false anyway.
+      }
       return next;
     });
   }, []);
 
   const start = useCallback(async () => {
     setError("");
-    setBooking(null);
     setCaption(null);
     setMuted(false);
     setStatus("connecting");
 
     try {
-      const tokenResponse = await fetch("/api/voice/token", { method: "POST" });
-      const tokenData = await tokenResponse.json();
+      const response = await fetch("/api/voice/web-call", { method: "POST" });
+      const data = await response.json();
 
-      if (tokenData.demoMode) {
+      if (data.demoMode) {
         setStatus("demo");
         return;
       }
-      if (!tokenResponse.ok || !tokenData.clientSecret) {
-        throw new Error(tokenData.error || "Could not start a voice session.");
+      if (!response.ok || !data.accessToken) {
+        throw new Error(data.error || "Could not start a voice session.");
       }
 
-      const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      micStreamRef.current = micStream;
+      const client = new RetellWebClient();
+      clientRef.current = client;
 
-      // Mic level meter for the orb animation.
-      const audioContext = new AudioContext();
-      audioContextRef.current = audioContext;
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256;
-      audioContext.createMediaStreamSource(micStream).connect(analyser);
-      const levelData = new Uint8Array(analyser.frequencyBinCount);
-      levelTimerRef.current = window.setInterval(() => {
-        analyser.getByteFrequencyData(levelData);
-        const average = levelData.reduce((sum, value) => sum + value, 0) / levelData.length;
-        setMicLevel(Math.min(1, average / 140));
-      }, 80);
+      client.on("call_started", () => setStatus("live"));
+      client.on("call_ended", () => {
+        setStatus("ended");
+        setLevel(0);
+      });
+      client.on("agent_start_talking", () => setLevel(0.55));
+      client.on("agent_stop_talking", () => setLevel(0));
+      client.on("update", (update: { transcript?: { role: string; content: string }[] }) => {
+        // Show the agent's latest line as a caption.
+        const last = [...(update.transcript ?? [])].reverse().find((t) => t.role === "agent");
+        if (!last?.content) return;
+        setCaption((current) =>
+          current && current.text === last.content
+            ? current
+            : { id: (captionIdRef.current += 1), text: last.content },
+        );
+      });
+      client.on("error", (message: unknown) => {
+        setError(typeof message === "string" ? message : "The voice session hit an error.");
+        cleanup();
+        setStatus("error");
+      });
 
-      const pc = new RTCPeerConnection();
-      pcRef.current = pc;
-
-      for (const track of micStream.getAudioTracks()) {
-        pc.addTrack(track, micStream);
-      }
-
-      pc.ontrack = (event) => {
-        const audio = new Audio();
-        audio.autoplay = true;
-        audio.srcObject = event.streams[0];
-        audioRef.current = audio;
-      };
-
-      pc.onconnectionstatechange = () => {
-        if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
-          setError("Voice connection lost.");
-          end();
-        }
-      };
-
-      const dc = pc.createDataChannel("oai-events");
-      dcRef.current = dc;
-
-      dc.onopen = () => setStatus("live");
-      dc.onmessage = (event) => {
-        try {
-          void handleServerEvent(JSON.parse(event.data));
-        } catch {
-          // Ignore malformed events.
-        }
-      };
-
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-
-      const sdpResponse = await fetch(
-        `https://api.openai.com/v1/realtime/calls?model=${encodeURIComponent(tokenData.model)}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${tokenData.clientSecret}`,
-            "Content-Type": "application/sdp",
-          },
-          body: offer.sdp,
-        }
-      );
-
-      if (!sdpResponse.ok) {
-        throw new Error("The voice service rejected the connection.");
-      }
-
-      await pc.setRemoteDescription({ type: "answer", sdp: await sdpResponse.text() });
+      await client.startCall({ accessToken: data.accessToken });
     } catch (startError) {
       cleanup();
       setStatus("error");
@@ -164,136 +121,19 @@ export function useVoiceSession() {
           ? "Microphone access was blocked. Allow the mic and try again."
           : startError instanceof Error
             ? startError.message
-            : "Could not start the voice session."
+            : "Could not start the voice session.",
       );
     }
+  }, [cleanup]);
 
-    async function handleServerEvent(event: Record<string, unknown>) {
-      const type = String(event.type || "");
-
-      if (type === "response.created") {
-        captionIdRef.current += 1;
-        setCaption({ id: captionIdRef.current, text: "" });
-      }
-
-      if (type === "response.output_audio_transcript.delta" && typeof event.delta === "string") {
-        const delta = event.delta;
-        setCaption((current) =>
-          current ? { ...current, text: current.text + delta } : { id: captionIdRef.current, text: delta }
-        );
-      }
-
-      if (type === "response.function_call_arguments.done") {
-        const name = String(event.name || "");
-        const callId = String(event.call_id || "");
-        let args: Record<string, unknown> = {};
-        try {
-          args = JSON.parse(String(event.arguments || "{}"));
-        } catch {
-          // Executor reports the problem back to the model.
-        }
-
-        const output = await executeVoiceTool(name, args);
-
-        if (name === "book_appointment" && output.booked) {
-          setBooking({
-            humanTime: String(output.humanTime || ""),
-            demoMode: Boolean(output.demoMode),
-          });
-        }
-
-        dcRef.current?.send(
-          JSON.stringify({
-            type: "conversation.item.create",
-            item: {
-              type: "function_call_output",
-              call_id: callId,
-              output: JSON.stringify(output),
-            },
-          })
-        );
-        dcRef.current?.send(JSON.stringify({ type: "response.create" }));
-      }
-    }
-  }, [cleanup, end]);
-
-  return { status, error, muted, caption: caption?.text || "", micLevel, booking, start, end, toggleMute };
-}
-
-/** Voice tool calls run against the same public APIs the site already uses. */
-async function executeVoiceTool(
-  name: string,
-  args: Record<string, unknown>
-): Promise<Record<string, unknown>> {
-  try {
-    if (name === "get_available_slots") {
-      const date = String(args.date || "");
-      const response = await fetch(`/api/appointments/availability?date=${encodeURIComponent(date)}`);
-      const data = await response.json();
-      if (!response.ok) {
-        return { error: data.error || "Could not load availability." };
-      }
-      return {
-        date,
-        timezone: "America/Toronto",
-        slots: (data.slots || []).map((slot: { startsAt: string; label: string }) => ({
-          startsAt: slot.startsAt,
-          label: slot.label,
-        })),
-        ...(data.demoMode ? { demoMode: true } : {}),
-      };
-    }
-
-    if (name === "book_appointment") {
-      const response = await fetch("/api/appointments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: String(args.name || ""),
-          email: String(args.email || ""),
-          phone: String(args.phone || ""),
-          service: String(args.service || ""),
-          notes: String(args.notes || ""),
-          startsAt: String(args.startsAt || ""),
-          timezone: "America/Toronto",
-          source: "voice_bot",
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        return { error: data.error || "Could not book that time." };
-      }
-      return {
-        booked: true,
-        humanTime: data.appointment?.humanTime || "",
-        ...(data.demoMode ? { demoMode: true } : {}),
-      };
-    }
-
-    if (name === "capture_lead") {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: String(args.name || ""),
-          email: String(args.email || ""),
-          phone: String(args.phone || ""),
-          company: String(args.company || ""),
-          industry: String(args.industry || ""),
-          interest: String(args.interest || ""),
-          painPoint: String(args.painPoint || ""),
-          source: "voice_bot",
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        return { error: data.error || "Could not save the details." };
-      }
-      return { saved: true, ...(data.demoMode ? { demoMode: true } : {}) };
-    }
-
-    return { error: `Unknown tool: ${name}` };
-  } catch {
-    return { error: "The tool call failed. Apologize and offer the booking page at /book." };
-  }
+  return {
+    status,
+    error,
+    muted,
+    caption: caption?.text || "",
+    micLevel: level,
+    start,
+    end,
+    toggleMute,
+  };
 }

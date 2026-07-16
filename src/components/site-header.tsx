@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, Mic, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { contact } from "@/lib/site-data";
@@ -10,6 +10,7 @@ import { servicesDropdown, toolsDropdown, type DropdownItem } from "@/lib/nav-da
 import { NavDropdown } from "@/components/nav/nav-dropdown";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useTheme } from "@/lib/use-theme";
+import { requestVoiceCall } from "@/lib/assistant-bus";
 
 // The logo already links home, so there's no separate Home tab.
 const flatLinks = {
@@ -106,13 +107,14 @@ export function SiteHeader() {
             {contact.phonePrimary}
           </a>
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
-          <Link
-            href="/book"
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_var(--accent-glow)]"
+          <button
+            type="button"
+            onClick={requestVoiceCall}
+            className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_26px_var(--accent-glow)]"
           >
             Let&apos;s talk
-            <ArrowRight className="size-4" />
-          </Link>
+            <Mic className="size-4" />
+          </button>
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -159,14 +161,17 @@ export function SiteHeader() {
             <span className="size-2 animate-pulse rounded-full bg-brand-soft" />
             {contact.phonePrimary}
           </a>
-          <Link
-            href="/book"
+          <button
+            type="button"
             className="mt-1 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand-electric to-brand-soft px-4 py-3 text-center text-sm font-bold text-white"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              requestVoiceCall();
+            }}
           >
             Let&apos;s talk
-            <ArrowRight className="size-4" />
-          </Link>
+            <Mic className="size-4" />
+          </button>
         </div>
       </div>
     </header>
