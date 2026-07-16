@@ -185,6 +185,7 @@ export async function bookAppointmentFromCall(
     time?: string;
     name?: string;
     email?: string;
+    phone?: string;
     service?: string;
     notes?: string;
     source?: string;
@@ -233,6 +234,7 @@ export async function bookAppointmentFromCall(
 
   const name = args.name?.trim() || lead?.name;
   const email = args.email?.trim() || lead?.email;
+  const phone = args.phone?.trim() || lead?.phone || null;
   if (!name) return { success: false, message: "Can I get your name for the booking?" };
   if (!email) return { success: false, message: "What's the best email to send your confirmation to?" };
 
@@ -243,7 +245,7 @@ export async function bookAppointmentFromCall(
     .insert({
       name,
       email,
-      phone: lead?.phone || null,
+      phone,
       company: lead?.company || null,
       service,
       notes: args.notes || "Booked by the SyncAI voice agent during a call.",
@@ -271,7 +273,7 @@ export async function bookAppointmentFromCall(
     id: data.id,
     name,
     email,
-    phone: lead?.phone || null,
+    phone,
     company: lead?.company || null,
     service,
     starts_at: iso,
