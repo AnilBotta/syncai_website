@@ -36,7 +36,7 @@ export async function resolveOrCreateVoiceLead(
   if (args.leadId) {
     const { data } = await supabase.from("leads").select("*").eq("id", args.leadId).maybeSingle<Lead>();
     if (data) {
-      await fillMissingFields(supabase, data, { phone, service: args.service });
+      await fillMissingFields(supabase, data, { name, phone, service: args.service });
       return { lead: data, isNewLead: false };
     }
   }
@@ -53,7 +53,7 @@ export async function resolveOrCreateVoiceLead(
     if (callRow?.lead_id) {
       const { data: lead } = await supabase.from("leads").select("*").eq("id", callRow.lead_id).maybeSingle<Lead>();
       if (lead) {
-        await fillMissingFields(supabase, lead, { phone, service: args.service });
+        await fillMissingFields(supabase, lead, { name, phone, service: args.service });
         return { lead, isNewLead: false };
       }
     }
@@ -73,7 +73,7 @@ export async function resolveOrCreateVoiceLead(
 
   let isNewLead = false;
   if (lead) {
-    await fillMissingFields(supabase, lead, { phone, service: args.service });
+    await fillMissingFields(supabase, lead, { name, phone, service: args.service });
   } else if (name && email) {
     const { data, error } = await supabase
       .from("leads")
@@ -124,17 +124,43 @@ export async function resolveOrCreateVoiceLead(
   return { lead, isNewLead };
 }
 
-/** Backfills phone/interest on an existing lead — never overwrites what's already on file. */
+/**
+ * Backfills details on an existing lead as the call reveals them. Only ever
+ * fills blanks, with one deliberate exception: a name the agent later corrects
+ * to a fuller version of the same name (see `isFullerName`).
+ */
 async function fillMissingFields(
   supabase: SupabaseClient,
   lead: Lead,
-  fill: { phone?: string; service?: string },
+  fill: { name?: string; phone?: string; service?: string },
 ): Promise<void> {
   const patch: Record<string, unknown> = {};
   if (!lead.phone && fill.phone) patch.phone = normalizePhoneE164(fill.phone) || fill.phone;
   if (!lead.interest && fill.service) patch.interest = fill.service;
+  if (fill.name && isFullerName(lead.name, fill.name)) patch.name = fill.name.trim();
   if (Object.keys(patch).length) {
     await supabase.from("leads").update(patch).eq("id", lead.id);
     Object.assign(lead, patch);
   }
+}
+
+/**
+ * True when `next` is the same name as `current` but more complete — "Anil Babu"
+ * -> "Anil Babu Botta". Speech recognition regularly clips a surname, and the
+ * agent corrects itself a turn later (often once it hears the email), so we let
+ * that correction land.
+ *
+ * Deliberately strict: `next` must extend `current` on a whole-word boundary.
+ * A different name ("Bob Smith"), a shortening, or a garbled retry is left
+ * alone — a wrong overwrite is worse than a missing surname, and a shared
+ * mailbox can legitimately reach a different person.
+ */
+function isFullerName(current: string, next: string): boolean {
+  const a = normalizeName(current);
+  const b = normalizeName(next);
+  return b.length > a.length && b.startsWith(`${a} `);
+}
+
+function normalizeName(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
