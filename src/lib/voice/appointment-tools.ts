@@ -1,7 +1,6 @@
 import { addDays } from "date-fns";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Lead } from "@/lib/supabase";
 import {
   BOOKING_CONFIG,
   formatDayLabel,
@@ -13,6 +12,7 @@ import {
   slotEndsAt,
 } from "@/lib/booking";
 import { finalizeBooking } from "@/lib/appointments";
+import { resolveOrCreateVoiceLead } from "@/lib/voice/lead-capture";
 
 const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const MONTHS = [
@@ -230,22 +230,17 @@ export async function bookAppointmentFromCall(
     };
   }
 
-  // Resolve the lead: an explicit leadId (email-reply booking) wins, else from the call.
-  let lead: Lead | null = null;
-  if (args.leadId) {
-    const { data } = await supabase.from("leads").select("*").eq("id", args.leadId).maybeSingle<Lead>();
-    lead = data ?? null;
-  } else if (args.callId) {
-    const { data: call } = await supabase
-      .from("calls")
-      .select("lead_id")
-      .eq("provider_call_id", args.callId)
-      .maybeSingle<{ lead_id: string | null }>();
-    if (call?.lead_id) {
-      const { data } = await supabase.from("leads").select("*").eq("id", call.lead_id).maybeSingle<Lead>();
-      lead = data ?? null;
-    }
-  }
+  // Resolve (or create) the lead this booking belongs to — same helper
+  // save_contact uses, so a caller who books ends up in the CRM even if
+  // save_contact was never triggered earlier in the call.
+  const { lead } = await resolveOrCreateVoiceLead(supabase, {
+    callId: args.callId,
+    leadId: args.leadId,
+    name: args.name,
+    email: args.email,
+    phone: args.phone,
+    service: args.service,
+  });
 
   const name = args.name?.trim() || lead?.name;
   const email = args.email?.trim() || lead?.email;
