@@ -36,7 +36,7 @@ export async function resolveOrCreateVoiceLead(
   if (args.leadId) {
     const { data } = await supabase.from("leads").select("*").eq("id", args.leadId).maybeSingle<Lead>();
     if (data) {
-      await fillMissingFields(supabase, data, { name, phone, service: args.service });
+      await fillMissingFields(supabase, data, { name, phone, service: args.service }, false);
       return { lead: data, isNewLead: false };
     }
   }
@@ -53,7 +53,9 @@ export async function resolveOrCreateVoiceLead(
     if (callRow?.lead_id) {
       const { data: lead } = await supabase.from("leads").select("*").eq("id", callRow.lead_id).maybeSingle<Lead>();
       if (lead) {
-        await fillMissingFields(supabase, lead, { name, phone, service: args.service });
+        // Same call: the agent is correcting what it captured moments ago
+        // (a mis-heard name, a fixed spelling), so a full replacement is safe.
+        await fillMissingFields(supabase, lead, { name, phone, service: args.service }, true);
         return { lead, isNewLead: false };
       }
     }
@@ -73,7 +75,9 @@ export async function resolveOrCreateVoiceLead(
 
   let isNewLead = false;
   if (lead) {
-    await fillMissingFields(supabase, lead, { name, phone, service: args.service });
+    // Cross-call match: this could be a different person on a shared mailbox,
+    // so only extend a name, never replace it.
+    await fillMissingFields(supabase, lead, { name, phone, service: args.service }, false);
   } else if (name && email) {
     const { data, error } = await supabase
       .from("leads")
@@ -125,19 +129,20 @@ export async function resolveOrCreateVoiceLead(
 }
 
 /**
- * Backfills details on an existing lead as the call reveals them. Only ever
- * fills blanks, with one deliberate exception: a name the agent later corrects
- * to a fuller version of the same name (see `isFullerName`).
+ * Backfills details on an existing lead as the call reveals them. Phone and
+ * interest only ever fill blanks. Name follows `shouldReplaceName`, whose rules
+ * depend on whether this is the same call (`sameCall`).
  */
 async function fillMissingFields(
   supabase: SupabaseClient,
   lead: Lead,
   fill: { name?: string; phone?: string; service?: string },
+  sameCall: boolean,
 ): Promise<void> {
   const patch: Record<string, unknown> = {};
   if (!lead.phone && fill.phone) patch.phone = normalizePhoneE164(fill.phone) || fill.phone;
   if (!lead.interest && fill.service) patch.interest = fill.service;
-  if (fill.name && isFullerName(lead.name, fill.name)) patch.name = fill.name.trim();
+  if (fill.name && shouldReplaceName(lead.name, fill.name, sameCall)) patch.name = fill.name.trim();
   if (Object.keys(patch).length) {
     await supabase.from("leads").update(patch).eq("id", lead.id);
     Object.assign(lead, patch);
@@ -145,16 +150,36 @@ async function fillMissingFields(
 }
 
 /**
- * True when `next` is the same name as `current` but more complete — "Anil Babu"
- * -> "Anil Babu Botta". Speech recognition regularly clips a surname, and the
- * agent corrects itself a turn later (often once it hears the email), so we let
- * that correction land.
+ * Decides whether a newly-heard name should overwrite the one on file.
  *
- * Deliberately strict: `next` must extend `current` on a whole-word boundary.
- * A different name ("Bob Smith"), a shortening, or a garbled retry is left
- * alone — a wrong overwrite is worse than a missing surname, and a shared
- * mailbox can legitimately reach a different person.
+ * Speech recognition mangles names constantly — a clipped surname ("Anil Babu"
+ * for "Anil Babu Botta"), or a wholesale mis-hear ("Anish Butter" for "Anil
+ * Botta") that the agent fixes a turn later once it hears the spelling or the
+ * email. We want those corrections to land, without ever letting one caller's
+ * bad audio clobber a different real person.
+ *
+ * - Always accept a name that *extends* the current one on a word boundary
+ *   ("Anil Babu" -> "Anil Babu Botta"), regardless of call.
+ * - `sameCall` (the agent correcting itself within one live call) also accepts
+ *   a genuine replacement — but never one that drops to fewer words, so a
+ *   partial re-mention ("Anil") can't shrink a good full name.
+ * - Cross-call matches stay strict (extend only): a match by shared email or
+ *   phone might be a colleague on the same mailbox, and a stranger's ASR must
+ *   not rename them.
  */
+export function shouldReplaceName(current: string, next: string, sameCall: boolean): boolean {
+  const a = normalizeName(current);
+  const b = normalizeName(next);
+  if (!b || b === a) return false;
+  if (isFullerName(a, b)) return true;
+  if (!sameCall) return false;
+  // Same call: allow a real correction, but never lose information.
+  if (wordCount(b) < wordCount(a)) return false;
+  if (a.startsWith(`${b} `)) return false; // b is a truncation of a
+  return true;
+}
+
+/** True when `next` extends `current` on a whole-word boundary. */
 function isFullerName(current: string, next: string): boolean {
   const a = normalizeName(current);
   const b = normalizeName(next);
@@ -163,4 +188,8 @@ function isFullerName(current: string, next: string): boolean {
 
 function normalizeName(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function wordCount(value: string): number {
+  return value ? value.split(" ").length : 0;
 }
