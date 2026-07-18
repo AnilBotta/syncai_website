@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { resolveOrCreateVoiceLead } from "@/lib/voice/lead-capture";
+import { normalizeSpokenEmail } from "@/lib/voice/normalize-email";
 import { parseToolPayload, str, voiceToolAuthorized } from "@/lib/voice/tool-auth";
 
 /**
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
   const supabase = createSupabaseAdminClient();
 
   const name = str(args.name);
-  const email = str(args.email);
+  const email = normalizeSpokenEmail(str(args.email)) || undefined;
   if (!name || !email) {
     // Not enough to be worth a CRM row yet — ack quietly, no error.
     return NextResponse.json({ success: true, message: "Got it." });
