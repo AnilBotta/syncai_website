@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { bookAppointmentFromCall } from "@/lib/voice/appointment-tools";
+import { normalizeSpokenEmail } from "@/lib/voice/normalize-email";
 import { parseToolPayload, str, voiceToolAuthorized } from "@/lib/voice/tool-auth";
 
 /**
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     date: str(args.date),
     time: str(args.time),
     name: str(args.name),
-    email: str(args.email),
+    email: normalizeSpokenEmail(str(args.email)) || undefined,
     phone: str(args.phone),
     service: str(args.service),
     notes: str(args.notes),
