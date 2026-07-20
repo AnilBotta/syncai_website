@@ -36,8 +36,8 @@ export const contact = {
  * Supported `platform` values: "linkedin" | "youtube" | "instagram" | "x" | "facebook".
  */
 export const socials: { platform: "linkedin" | "youtube" | "instagram" | "x" | "facebook"; href: string }[] = [
-  // { platform: "linkedin", href: "https://www.linkedin.com/company/…" },
-  // { platform: "youtube", href: "https://www.youtube.com/@…" },
+  { platform: "facebook", href: "https://www.facebook.com/share/1946GqPPfq/?mibextid=wwXIfr" },
+  { platform: "instagram", href: "https://www.instagram.com/anilbabubotta?igsh=b2s2ZHl0bWFmbHVs" },
 ];
 
 export const services = [

@@ -17,6 +17,13 @@ const companyLinks = [
 
 const pillars = ["AI Automation", "AI Consulting", "AI Voice Agents", "AI Chatbots"];
 
+const legalLinks = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Cookie Policy", href: "/cookies" },
+  { label: "Accessibility", href: "/accessibility" },
+];
+
 const trustBadges: { icon: LucideIcon; label: string }[] = [
   { icon: Cpu, label: "AI Automation Experts" },
   { icon: MapPin, label: "Canadian Company" },
@@ -162,9 +169,16 @@ export function SiteFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border-subtle pt-6 text-xs text-muted sm:flex-row">
-          <p>© {year} SyncAI Technologies. All rights reserved.</p>
-          <div className="flex items-center gap-3">
+        <div className="mt-10 flex flex-col items-center gap-5 border-t border-border-subtle pt-6 text-xs text-muted lg:flex-row lg:justify-between">
+          <p className="order-2 lg:order-1">© {year} SyncAI Technologies. All rights reserved.</p>
+          <nav aria-label="Legal" className="order-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:order-2">
+            {legalLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="transition hover:text-brand-glow-text">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="order-3 flex items-center gap-3">
             {socials.length > 0 ? (
               <div className="flex items-center gap-2">
                 {socials.map(({ platform, href }) => (
