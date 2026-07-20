@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Building2, Cpu, Mail, MapPin, Phone, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
+import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { contact, socials } from "@/lib/site-data";
 import { servicesDropdown } from "@/lib/nav-data";
 import { FooterSubscribe, BackToTop } from "@/components/footer-subscribe";
@@ -22,14 +22,6 @@ const legalLinks = [
   { label: "Terms of Service", href: "/terms" },
   { label: "Cookie Policy", href: "/cookies" },
   { label: "Accessibility", href: "/accessibility" },
-];
-
-const trustBadges: { icon: LucideIcon; label: string }[] = [
-  { icon: Cpu, label: "AI Automation Experts" },
-  { icon: MapPin, label: "Canadian Company" },
-  { icon: Building2, label: "Enterprise Solutions" },
-  { icon: ShieldCheck, label: "Secure & Confidential" },
-  { icon: Zap, label: "Fast Deployment" },
 ];
 
 const socialLabels: Record<(typeof socials)[number]["platform"], string> = {
@@ -156,20 +148,8 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Trust badges */}
-        <div className="mt-14 grid grid-cols-2 gap-4 border-t border-border-subtle pt-8 sm:grid-cols-3 lg:grid-cols-5">
-          {trustBadges.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
-              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-border-subtle bg-[var(--input-bg)] text-brand-soft">
-                <Icon className="size-4" />
-              </span>
-              {label}
-            </div>
-          ))}
-        </div>
-
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center gap-5 border-t border-border-subtle pt-6 text-xs text-muted lg:flex-row lg:justify-between">
+        <div className="mt-12 flex flex-col items-center gap-5 border-t border-border-subtle pt-6 text-xs text-muted lg:flex-row lg:justify-between">
           <p className="order-2 lg:order-1">© {year} SyncAI Technologies. All rights reserved.</p>
           <nav aria-label="Legal" className="order-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:order-2">
             {legalLinks.map((link) => (
