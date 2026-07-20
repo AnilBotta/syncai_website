@@ -30,16 +30,47 @@ export type ToolTraceEntry = { tool: string; summary: string };
  */
 export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntry[]) {
   async function findLead(idOrName: string): Promise<Lead | null> {
-    // Try exact id first, then a name/company ilike match.
-    const byId = await supabase.from("leads").select("*").eq("id", idOrName).maybeSingle();
+    const q = idOrName.trim();
+    if (!q) return null;
+
+    // 1. Exact id.
+    const byId = await supabase.from("leads").select("*").eq("id", q).maybeSingle();
     if (byId.data) return byId.data as Lead;
 
+    // 2. Looks like an email → match by email. Voice/website leads are often
+    //    only findable this way when the spoken name came through mis-heard.
+    if (q.includes("@")) {
+      const byEmail = await supabase
+        .from("leads")
+        .select("*")
+        .ilike("email", `%${q}%`)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (byEmail.data?.[0]) return byEmail.data[0] as Lead;
+    }
+
+    // 3. Full name / company substring.
     const byName = await supabase
       .from("leads")
       .select("*")
-      .or(`name.ilike.%${idOrName}%,company.ilike.%${idOrName}%`)
+      .or(`name.ilike.%${q}%,company.ilike.%${q}%`)
+      .order("created_at", { ascending: false })
       .limit(1);
-    return (byName.data?.[0] as Lead) ?? null;
+    if (byName.data?.[0]) return byName.data[0] as Lead;
+
+    // 4. Token fallback: a mis-heard surname ("Shiv IR" for a saved "Shiv
+    //    Ayer") still resolves on the first name. Newest match wins.
+    for (const token of q.split(/\s+/).filter((t) => t.length >= 2)) {
+      const byToken = await supabase
+        .from("leads")
+        .select("*")
+        .or(`name.ilike.%${token}%,company.ilike.%${token}%`)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (byToken.data?.[0]) return byToken.data[0] as Lead;
+    }
+
+    return null;
   }
 
   const getPipelineSummary = tool(
@@ -114,6 +145,20 @@ export function buildManagerTools(supabase: SupabaseClient, trace: ToolTraceEntr
 
   const createLead = tool(
     async ({ name, email, painPoint, phone, company, industry, interest }) => {
+      // Never create a duplicate: a voice/website call may already have saved
+      // this person under a (possibly mis-heard) name with the same email.
+      const existing = await supabase
+        .from("leads")
+        .select("*")
+        .ilike("email", email)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      const dupe = existing.data?.[0] as Lead | undefined;
+      if (dupe) {
+        trace.push({ tool: "create_lead", summary: `existing ${dupe.name}` });
+        return `A lead with that email already exists: ${dupe.name}${dupe.company ? ` (${dupe.company})` : ""} · stage ${dupe.status} · id ${dupe.id}. I did NOT create a duplicate. Want me to automate them, draft an email, or update their details?`;
+      }
+
       const { data, error } = await supabase
         .from("leads")
         .insert({

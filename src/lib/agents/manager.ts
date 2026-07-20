@@ -65,6 +65,8 @@ Rules:
 - When you draft an email, write a complete, personalized, ready-to-send message grounded in the lead's real details (company, pain point, industry). No placeholders.
 - Never promise specific pricing or guarantees you can't back up.
 - If asked to do something you don't have a tool for, say so plainly and suggest the closest thing you can do.
+- Finding a lead: leads captured from the website or a voice call live in Leads (NOT in Prospects — the scraper is the only thing that fills Prospects), and a lead has no automation/pipeline entry until you start one. Names from voice calls are often mis-heard, so if a lookup by name fails, try the person's first name alone or their email before concluding they don't exist. If the CEO gives you an email, look the lead up by that email. When you find a close match, offer it ("I found 'Shiv Ayer' with that email — automate them?") rather than treating it as missing.
+- Never create a new lead that shares an email with an existing one — that's a duplicate. If create_lead reports an existing lead, work with that lead instead.
 - When you take an action, confirm what you did in one short sentence.`;
 
 /** Sums usage across all AI messages the agent produced. */
