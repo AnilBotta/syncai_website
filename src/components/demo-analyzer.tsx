@@ -82,15 +82,16 @@ export function DemoAnalyzer() {
               Live AI demo
             </p>
             <h2 className="mt-5 max-w-2xl text-3xl font-black tracking-tight text-foreground sm:text-5xl">
-              Let prospects experience your AI strategy before the call.
+              See what AI could do for your business — in seconds.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">
-              This demo shows the kind of AI experience your site can use to educate a prospect,
-              reveal their business challenge, and convert them into a qualified lead.
+              Tell us about your business and your biggest bottleneck. Our AI instantly maps your
+              highest-impact opportunities, quick wins, and the admin hours you could win back — no
+              call required.
             </p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              {["Instant audit", "Qualified context", "Lead handoff"].map((item) => (
+              {["Instant analysis", "Tailored to your business", "Free to try"].map((item) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-border-subtle bg-surface px-4 py-3 text-sm font-bold text-brand-glow-text backdrop-blur"
@@ -125,14 +126,17 @@ export function DemoAnalyzer() {
               </label>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2 text-sm font-semibold text-brand-glow-text">
-                  Monthly leads
+                  Leads you get per month
                   <input name="monthlyLeads" type="number" min="0" defaultValue="50" className={inputClass} />
                 </label>
                 <label className="grid gap-2 text-sm font-semibold text-brand-glow-text">
-                  Admin hours lost weekly
+                  Hours a week lost to admin
                   <input name="hoursLostWeekly" type="number" min="0" defaultValue="8" className={inputClass} />
                 </label>
               </div>
+              <p className="-mt-1 text-xs leading-5 text-muted">
+                Rough estimates about your business today — they just help tailor your results.
+              </p>
               <button
                 type="submit"
                 disabled={loading}
