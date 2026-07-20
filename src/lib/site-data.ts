@@ -30,6 +30,16 @@ export const contact = {
   location: "Brampton, Ontario",
 };
 
+/**
+ * Social profiles shown in the footer. Add real URLs here to light up the
+ * icons — the footer renders only the platforms present in this list.
+ * Supported `platform` values: "linkedin" | "youtube" | "instagram" | "x" | "facebook".
+ */
+export const socials: { platform: "linkedin" | "youtube" | "instagram" | "x" | "facebook"; href: string }[] = [
+  { platform: "facebook", href: "https://www.facebook.com/share/1946GqPPfq/?mibextid=wwXIfr" },
+  { platform: "instagram", href: "https://www.instagram.com/anilbabubotta?igsh=b2s2ZHl0bWFmbHVs" },
+];
+
 export const services = [
   {
     title: "AI Strategy and Consulting",
