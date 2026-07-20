@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HeartPulse, Home, Store, Building2, GraduationCap, Truck, Scale, Stethoscope } from "lucide-react";
+import { HeartPulse, Home, Store, Building2, GraduationCap, Truck, Scale, Briefcase } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { SectionShell } from "@/components/ui/section-shell";
@@ -13,7 +13,7 @@ const industries = [
   { name: "Education", icon: GraduationCap, href: "/industries" },
   { name: "Logistics & Supply Chain", icon: Truck, href: "/industries" },
   { name: "Legal & Professional", icon: Scale, href: "/industries" },
-  { name: "Small Business", icon: Stethoscope, href: "/industries" },
+  { name: "Small Business", icon: Briefcase, href: "/industries" },
 ];
 
 export function IndustriesGrid() {

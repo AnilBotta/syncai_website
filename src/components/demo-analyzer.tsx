@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Bot, ClipboardList, Loader2, Sparkles } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
@@ -82,15 +81,16 @@ export function DemoAnalyzer() {
               Live AI demo
             </p>
             <h2 className="mt-5 max-w-2xl text-3xl font-black tracking-tight text-foreground sm:text-5xl">
-              Let prospects experience your AI strategy before the call.
+              See what AI could do for your business — in seconds.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">
-              This demo shows the kind of AI experience your site can use to educate a prospect,
-              reveal their business challenge, and convert them into a qualified lead.
+              Tell us about your business and your biggest bottleneck. Our AI instantly maps your
+              highest-impact opportunities, quick wins, and the admin hours you could win back — no
+              call required.
             </p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              {["Instant audit", "Qualified context", "Lead handoff"].map((item) => (
+              {["Instant analysis", "Tailored to your business", "Free to try"].map((item) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-border-subtle bg-surface px-4 py-3 text-sm font-bold text-brand-glow-text backdrop-blur"
@@ -125,14 +125,17 @@ export function DemoAnalyzer() {
               </label>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2 text-sm font-semibold text-brand-glow-text">
-                  Monthly leads
+                  Leads you get per month
                   <input name="monthlyLeads" type="number" min="0" defaultValue="50" className={inputClass} />
                 </label>
                 <label className="grid gap-2 text-sm font-semibold text-brand-glow-text">
-                  Admin hours lost weekly
+                  Hours a week lost to admin
                   <input name="hoursLostWeekly" type="number" min="0" defaultValue="8" className={inputClass} />
                 </label>
               </div>
+              <p className="-mt-1 text-xs leading-5 text-muted">
+                Rough estimates about your business today — they just help tailor your results.
+              </p>
               <button
                 type="submit"
                 disabled={loading}
@@ -143,35 +146,6 @@ export function DemoAnalyzer() {
               </button>
               {error ? <p className="text-sm text-red-600">{error}</p> : null}
             </form>
-
-            <div className="theme-dark mt-8 overflow-hidden rounded-[16px] border border-border-subtle shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-              <div className="relative h-[420px]">
-                <Image
-                  src="/brand/syncai-lead-handoff-visual.png"
-                  alt="AI lead handoff preview showing visitor inquiries becoming a qualified admin lead"
-                  width={1792}
-                  height={1024}
-                  className="h-full w-full object-cover object-center opacity-95"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.74),rgba(0,0,0,.12)),linear-gradient(0deg,rgba(0,0,0,.66),transparent_58%)]" />
-                <div className="absolute left-5 top-5 rounded-2xl border border-border-subtle bg-black/45 px-4 py-3 backdrop-blur-md">
-                  <p className="text-xs font-black uppercase tracking-[.22em] text-brand-glow-text">Lead handoff</p>
-                  <p className="mt-2 max-w-xs text-lg font-black leading-6 text-foreground">
-                    Turn visitor intent into a verified opportunity record.
-                  </p>
-                </div>
-                <div className="absolute bottom-5 left-5 right-5 grid gap-3 sm:grid-cols-3">
-                  {["Website", "AI agent", "Admin lead"].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-2xl border border-border-subtle bg-white/[.09] px-4 py-3 text-sm font-bold text-foreground backdrop-blur-md"
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="rounded-[16px] border border-border-subtle bg-bg-elevated/95 p-4 text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.07)]">
