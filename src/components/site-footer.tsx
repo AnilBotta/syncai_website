@@ -1,64 +1,188 @@
 import Link from "next/link";
 import Image from "next/image";
-import { contact } from "@/lib/site-data";
+import { ArrowRight, Building2, Cpu, Mail, MapPin, Phone, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
+import { contact, socials } from "@/lib/site-data";
+import { servicesDropdown } from "@/lib/nav-data";
+import { FooterSubscribe, BackToTop } from "@/components/footer-subscribe";
+
+const companyLinks = [
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Industries", href: "/industries" },
+  { label: "Case Studies", href: "/case-studies" },
+  { label: "Process", href: "/process" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
+
+const pillars = ["AI Automation", "AI Consulting", "AI Voice Agents", "AI Chatbots"];
+
+const trustBadges: { icon: LucideIcon; label: string }[] = [
+  { icon: Cpu, label: "AI Automation Experts" },
+  { icon: MapPin, label: "Canadian Company" },
+  { icon: Building2, label: "Enterprise Solutions" },
+  { icon: ShieldCheck, label: "Secure & Confidential" },
+  { icon: Zap, label: "Fast Deployment" },
+];
+
+const socialLabels: Record<(typeof socials)[number]["platform"], string> = {
+  linkedin: "LinkedIn",
+  youtube: "YouTube",
+  instagram: "Instagram",
+  x: "X",
+  facebook: "Facebook",
+};
 
 export function SiteFooter() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="theme-dark border-t border-border-subtle bg-bg-deep text-foreground">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_.7fr_.7fr] lg:px-8">
-        <div>
-          <div className="flex items-center gap-3">
-            <Image
-              src="/brand/syncai-logo-dark.png"
-              alt="SyncAI logo"
-              width={154}
-              height={50}
-              className="h-9 w-auto"
-            />
-            <div>
-              <p className="font-bold text-foreground">Technology</p>
-              <p className="text-sm text-muted">AI solutions that deliver ROI.</p>
+    <footer className="theme-dark relative overflow-hidden border-t border-border-subtle bg-bg-deep text-foreground">
+      {/* Ambient texture: a faint grid + a soft brand glow, both subtle. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div
+          className="absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage:
+              "linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+            maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%)",
+            WebkitMaskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%)",
+          }}
+        />
+        <div
+          className="absolute -top-24 left-1/2 h-64 w-[42rem] -translate-x-1/2 rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)" }}
+        />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        {/* Top: brand + link columns + contact/subscribe */}
+        <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr_1fr_1.5fr] lg:gap-12">
+          {/* Brand */}
+          <div>
+            <Link href="/" className="inline-flex items-center" aria-label="SyncAI Technology home">
+              <Image src="/brand/syncai-logo-dark.png" alt="SyncAI Technology" width={168} height={54} className="h-11 w-auto" />
+            </Link>
+            <p className="mt-5 text-base font-semibold text-foreground">AI systems built for measurable ROI.</p>
+            <p className="mt-3 max-w-sm text-sm leading-6 text-muted">
+              Built from Brampton, Ontario for businesses that want AI tied to real challenges — measurable workflows,
+              qualified leads, and agents that plug into the tools they already run.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+              {pillars.map((p) => (
+                <li key={p} className="flex items-center gap-2 text-sm text-muted">
+                  <span className="size-1.5 rounded-full bg-brand-soft" />
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <nav aria-label="Company">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Company</p>
+            <ul className="mt-5 space-y-3">
+              {companyLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-muted transition hover:text-brand-glow-text">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Solutions */}
+          <nav aria-label="Solutions">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Solutions</p>
+            <ul className="mt-5 space-y-3">
+              {servicesDropdown.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-sm text-muted transition hover:text-brand-glow-text">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Contact + subscribe */}
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Contact</p>
+            <ul className="mt-5 space-y-3 text-sm text-muted">
+              <li className="flex items-center gap-3">
+                <MapPin className="size-4 shrink-0 text-brand-soft" />
+                {contact.location}, Canada
+              </li>
+              <li>
+                <a href={`tel:${contact.phonePrimary.replaceAll(" ", "")}`} className="flex items-center gap-3 transition hover:text-brand-glow-text">
+                  <Phone className="size-4 shrink-0 text-brand-soft" />
+                  {contact.phonePrimary}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${contact.email}`} className="flex items-center gap-3 transition hover:text-brand-glow-text">
+                  <Mail className="size-4 shrink-0 text-brand-soft" />
+                  {contact.email}
+                </a>
+              </li>
+            </ul>
+
+            <Link
+              href="/book"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 py-2.5 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5"
+            >
+              Schedule a discovery call
+              <ArrowRight className="size-4" />
+            </Link>
+
+            <div className="mt-6 rounded-2xl border border-border-subtle bg-[var(--card-bg)] p-5 backdrop-blur-sm">
+              <p className="text-sm font-bold text-foreground">Stay ahead with AI</p>
+              <p className="mt-1 text-xs leading-5 text-muted">
+                Practical automation ideas for growing businesses. No spam — unsubscribe anytime.
+              </p>
+              <div className="mt-3">
+                <FooterSubscribe />
+              </div>
             </div>
           </div>
-          <p className="mt-5 max-w-xl text-sm leading-6 text-muted">
-            Built from Brampton, Ontario for businesses that want AI systems tied to real challenges,
-            measurable workflows, and qualified leads.
-          </p>
         </div>
 
-        <div>
-          <p className="font-semibold text-foreground">Explore</p>
-          <div className="mt-4 grid gap-3 text-sm">
-            <Link href="/services" className="text-muted transition hover:text-brand-glow-text">Services</Link>
-            <Link href="/tools" className="text-muted transition hover:text-brand-glow-text">Tools</Link>
-            <Link href="/demos" className="text-muted transition hover:text-brand-glow-text">Demos</Link>
-            <Link href="/case-studies" className="text-muted transition hover:text-brand-glow-text">Case Studies</Link>
-            <Link href="/industries" className="text-muted transition hover:text-brand-glow-text">Industries</Link>
-            <Link href="/process" className="text-muted transition hover:text-brand-glow-text">Process</Link>
-            <Link href="/#faq" className="text-muted transition hover:text-brand-glow-text">FAQ</Link>
-            <Link href="/blog" className="text-muted transition hover:text-brand-glow-text">Blog</Link>
-            <Link href="/contact" className="text-muted transition hover:text-brand-glow-text">Contact</Link>
-          </div>
+        {/* Trust badges */}
+        <div className="mt-14 grid grid-cols-2 gap-4 border-t border-border-subtle pt-8 sm:grid-cols-3 lg:grid-cols-5">
+          {trustBadges.map(({ icon: Icon, label }) => (
+            <div key={label} className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-border-subtle bg-[var(--input-bg)] text-brand-soft">
+                <Icon className="size-4" />
+              </span>
+              {label}
+            </div>
+          ))}
         </div>
 
-        <div>
-          <p className="font-semibold text-foreground">Contact</p>
-          <div className="mt-4 grid gap-3 text-sm text-muted">
-            <a href={`mailto:${contact.email}`} className="transition hover:text-brand-glow-text">
-              {contact.email}
-            </a>
-            <a href={`tel:${contact.phonePrimary.replaceAll(" ", "")}`} className="transition hover:text-brand-glow-text">
-              {contact.phonePrimary}
-            </a>
-            <a href={`tel:${contact.phoneSecondary.replaceAll(" ", "")}`} className="transition hover:text-brand-glow-text">
-              {contact.phoneSecondary}
-            </a>
-            <span>{contact.location}</span>
+        {/* Bottom bar */}
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border-subtle pt-6 text-xs text-muted sm:flex-row">
+          <p>© {year} SyncAI Technologies. All rights reserved.</p>
+          <div className="flex items-center gap-3">
+            {socials.length > 0 ? (
+              <div className="flex items-center gap-2">
+                {socials.map(({ platform, href }) => (
+                  <a
+                    key={platform}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-border-subtle bg-[var(--input-bg)] px-3 py-1.5 font-semibold text-muted transition hover:border-brand-soft/50 hover:text-brand-glow-text"
+                  >
+                    {socialLabels[platform]}
+                  </a>
+                ))}
+              </div>
+            ) : null}
+            <BackToTop />
           </div>
         </div>
-      </div>
-      <div className="border-t border-border-subtle px-4 py-5 text-center text-xs text-muted">
-        (c) {new Date().getFullYear()} SyncAI Technology. All rights reserved.
       </div>
     </footer>
   );
