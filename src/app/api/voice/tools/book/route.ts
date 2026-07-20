@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient, hasSupabaseAdminConfig } from "@/lib/supabase";
 import { bookAppointmentFromCall } from "@/lib/voice/appointment-tools";
 import { normalizeSpokenEmail } from "@/lib/voice/normalize-email";
+import { spokenTimezoneToIana } from "@/lib/voice/timezone";
 import { parseToolPayload, str, voiceToolAuthorized } from "@/lib/voice/tool-auth";
 
 /**
@@ -35,6 +36,9 @@ export async function POST(request: Request) {
     phone: str(args.phone),
     service: str(args.service),
     notes: str(args.notes),
+    // Voice bookings default to Eastern; only set a zone when the caller
+    // actually named one and we can map it to a real IANA identifier.
+    attendeeTimezone: spokenTimezoneToIana(str(args.attendee_timezone)),
   });
   return NextResponse.json(result);
 }
