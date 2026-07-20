@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Bot, ClipboardList, Loader2, Sparkles } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
@@ -147,35 +146,6 @@ export function DemoAnalyzer() {
               </button>
               {error ? <p className="text-sm text-red-600">{error}</p> : null}
             </form>
-
-            <div className="theme-dark mt-8 overflow-hidden rounded-[16px] border border-border-subtle shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-              <div className="relative h-[420px]">
-                <Image
-                  src="/brand/syncai-lead-handoff-visual.png"
-                  alt="AI lead handoff preview showing visitor inquiries becoming a qualified admin lead"
-                  width={1792}
-                  height={1024}
-                  className="h-full w-full object-cover object-center opacity-95"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.74),rgba(0,0,0,.12)),linear-gradient(0deg,rgba(0,0,0,.66),transparent_58%)]" />
-                <div className="absolute left-5 top-5 rounded-2xl border border-border-subtle bg-black/45 px-4 py-3 backdrop-blur-md">
-                  <p className="text-xs font-black uppercase tracking-[.22em] text-brand-glow-text">Lead handoff</p>
-                  <p className="mt-2 max-w-xs text-lg font-black leading-6 text-foreground">
-                    Turn visitor intent into a verified opportunity record.
-                  </p>
-                </div>
-                <div className="absolute bottom-5 left-5 right-5 grid gap-3 sm:grid-cols-3">
-                  {["Website", "AI agent", "Admin lead"].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-2xl border border-border-subtle bg-white/[.09] px-4 py-3 text-sm font-bold text-foreground backdrop-blur-md"
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="rounded-[16px] border border-border-subtle bg-bg-elevated/95 p-4 text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.07)]">

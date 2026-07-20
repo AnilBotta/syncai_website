@@ -4,11 +4,16 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Turnstile } from "@/components/turnstile";
 
+// Mirrors the industries shown in the homepage IndustriesGrid.
 const industries = [
-  "Dental clinic",
-  "Physiotherapy clinic",
-  "Real estate",
-  "Small business",
+  "Healthcare & Clinics",
+  "Real Estate",
+  "E-commerce & Retail",
+  "Financial Services",
+  "Education",
+  "Logistics & Supply Chain",
+  "Legal & Professional",
+  "Small Business",
   "Other",
 ];
 
