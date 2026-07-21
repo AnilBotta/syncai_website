@@ -4,6 +4,8 @@ import { GlowButton } from "@/components/ui/glow-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { SectionShell } from "@/components/ui/section-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+import { whatsappHref } from "@/lib/whatsapp";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { services } from "@/lib/site-data";
@@ -115,9 +117,13 @@ export function StaticHome() {
             </GlassCard>
           ))}
         </div>
-        <div className="mt-10 text-center">
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
           <GlowButton href="/book" size="lg">
             Book Your Free Strategy Call <ArrowRight className="size-4" />
+          </GlowButton>
+          <GlowButton href={whatsappHref("Hi SyncAI, I'd like to know more about your AI solutions.")} variant="whatsapp" size="lg" external>
+            <WhatsAppIcon className="size-5" />
+            Message on WhatsApp
           </GlowButton>
         </div>
       </SectionShell>
