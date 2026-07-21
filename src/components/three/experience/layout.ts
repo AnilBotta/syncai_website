@@ -49,7 +49,7 @@ export const cameraCurve = new THREE.CatmullRomCurve3(CAMERA_POINTS, false, "cat
  * clear of the overlay text.
  */
 const LOOK_OFFSETS: Record<ChapterId, number> = {
-  hero: -3.2, // copy left → image pushed right (looks good, unchanged)
+  hero: -2.0, // copy left → screen right, but eased toward center so it sits straighter (less keystone)
   websites: -2.5, // copy left → image right, pulled toward center to fill the gap
   voice: 2.4, // copy right → waveform left (3D scene, unchanged)
   workflow: -2.4, // copy left → image right, pulled toward the text
