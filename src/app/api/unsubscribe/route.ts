@@ -23,51 +23,62 @@ function page(title: string, message: string, ok: boolean): Response {
   });
 }
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const leadId = url.searchParams.get("lid");
-  const sig = url.searchParams.get("sig");
-
-  if (!leadId || !sig || !verifyUnsubscribe(leadId, sig)) {
-    return page(
-      "Invalid unsubscribe link",
-      "This unsubscribe link is invalid or has expired. Please contact us directly to be removed.",
-      false,
-    );
-  }
-
+/** Marks the lead opted-out. Returns false only on a real DB error. */
+async function unsubscribeLead(leadId: string): Promise<boolean> {
   if (!hasSupabaseAdminConfig()) {
-    return page(
-      "You're unsubscribed",
-      "You will no longer receive emails from us. (Demo mode: no change was saved.)",
-      true,
-    );
+    return true; // demo mode: nothing to persist
   }
-
   try {
     const supabase = createSupabaseAdminClient();
     await supabase
       .from("leads")
       .update({ unsubscribed_at: new Date().toISOString() })
       .eq("id", leadId);
-
     await supabase.from("lead_activities").insert({
       lead_id: leadId,
       type: "system",
       title: "Lead unsubscribed from emails",
       actor: "system",
     });
-
-    return page(
-      "You're unsubscribed",
-      "You will no longer receive marketing emails from us. We're sorry to see you go.",
-      true,
-    );
+    return true;
   } catch {
+    return false;
+  }
+}
+
+function readParams(request: Request): { leadId: string | null; sig: string | null; valid: boolean } {
+  const url = new URL(request.url);
+  const leadId = url.searchParams.get("lid");
+  const sig = url.searchParams.get("sig");
+  return { leadId, sig, valid: Boolean(leadId && sig && verifyUnsubscribe(leadId, sig)) };
+}
+
+/** Human-facing unsubscribe (the visible footer link). */
+export async function GET(request: Request) {
+  const { leadId, valid } = readParams(request);
+  if (!valid || !leadId) {
     return page(
-      "Something went wrong",
-      "We couldn't process your request right now. Please contact us directly to be removed.",
+      "Invalid unsubscribe link",
+      "This unsubscribe link is invalid or has expired. Please contact us directly to be removed.",
       false,
     );
   }
+  const ok = await unsubscribeLead(leadId);
+  return ok
+    ? page("You're unsubscribed", "You will no longer receive marketing emails from us. We're sorry to see you go.", true)
+    : page("Something went wrong", "We couldn't process your request right now. Please contact us directly to be removed.", false);
+}
+
+/**
+ * RFC 8058 one-click unsubscribe: mail providers (Gmail, Yahoo) POST here when
+ * a recipient taps the native "Unsubscribe" button, sending the same signed
+ * query params. No page to render — just a 2xx once the opt-out is recorded.
+ */
+export async function POST(request: Request) {
+  const { leadId, valid } = readParams(request);
+  if (!valid || !leadId) {
+    return new Response("Invalid unsubscribe request", { status: 400 });
+  }
+  const ok = await unsubscribeLead(leadId);
+  return new Response(ok ? "Unsubscribed" : "Failed", { status: ok ? 200 : 500 });
 }
