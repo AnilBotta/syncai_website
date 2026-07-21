@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Chapter } from "./chapter";
 import { GlowButton } from "@/components/ui/glow-button";
 import { GlassCard } from "@/components/ui/glass-card";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+import { whatsappHref } from "@/lib/whatsapp";
 
 const serviceChapters = [
   {
@@ -146,8 +148,9 @@ export function TourChapters() {
           <GlowButton href="/book" size="lg" className="animate-pulse-glow">
             Book Your Free Strategy Call <ArrowRight className="size-4" />
           </GlowButton>
-          <GlowButton href="/contact" variant="ghost" size="lg">
-            Send a Message
+          <GlowButton href={whatsappHref("Hi SyncAI, I'd like to know more about your AI solutions.")} variant="whatsapp" size="lg" external>
+            <WhatsAppIcon className="size-5" />
+            Message on WhatsApp
           </GlowButton>
         </div>
       </Chapter>

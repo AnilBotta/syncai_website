@@ -11,6 +11,8 @@ import { NavDropdown } from "@/components/nav/nav-dropdown";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useTheme } from "@/lib/use-theme";
 import { requestVoiceCall } from "@/lib/assistant-bus";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+import { whatsappHref } from "@/lib/whatsapp";
 
 // The logo already links home, so there's no separate Home tab.
 const flatLinks = {
@@ -100,10 +102,13 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <a
-            href={`tel:${contact.phonePrimary.replaceAll(" ", "")}`}
-            className="hidden items-center gap-2 rounded-full border border-border-subtle bg-surface px-4 py-2 text-sm font-semibold text-foreground/90 backdrop-blur-md transition hover:border-brand-soft/40 hover:text-brand-glow-text xl:inline-flex"
+            href={whatsappHref()}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Message us on WhatsApp at ${contact.phonePrimary}`}
+            className="hidden items-center gap-2 rounded-full border border-border-subtle bg-surface px-4 py-2 text-sm font-semibold text-foreground/90 backdrop-blur-md transition hover:border-[#25D366]/50 hover:text-[#25D366] xl:inline-flex"
           >
-            <span className="size-2 animate-pulse rounded-full bg-brand-soft" />
+            <WhatsAppIcon className="size-4 text-[#25D366]" />
             {contact.phonePrimary}
           </a>
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -155,10 +160,13 @@ export function SiteHeader() {
           <MobileLink href={flatLinks.contact.href} label={flatLinks.contact.label} onNavigate={() => setOpen(false)} />
 
           <a
-            href={`tel:${contact.phonePrimary.replaceAll(" ", "")}`}
+            href={whatsappHref()}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Message us on WhatsApp at ${contact.phonePrimary}`}
             className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-border-subtle bg-surface px-4 py-3 text-sm font-semibold text-foreground"
           >
-            <span className="size-2 animate-pulse rounded-full bg-brand-soft" />
+            <WhatsAppIcon className="size-4 text-[#25D366]" />
             {contact.phonePrimary}
           </a>
           <button
