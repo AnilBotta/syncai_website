@@ -7,6 +7,7 @@ import { QualityProvider, useQuality } from "./quality";
 import { AmbientField } from "./ambient-field";
 import { Station } from "./stations/station";
 import { ImageScreenStation } from "./stations/image-screen-station";
+import { VideoScreenStation } from "./stations/video-screen-station";
 import { VoiceWaveformStation } from "./stations/voice-waveform-station";
 
 // Postprocessing is its own lazy chunk — only fetched on high-tier desktops.
@@ -48,7 +49,7 @@ export default function ExperienceCanvas({ paused = false }: ExperienceCanvasPro
         {/* Image "screens" the camera flies to (Suspense covers texture load). */}
         <Suspense fallback={null}>
           <Station id="hero" chapterIndex={0}>
-            <ImageScreenStation src="/brand/step-inside-the-ai.png" />
+            <VideoScreenStation src="/brand/Business_owner_using_AI_system_202607202213.mp4" />
           </Station>
           <Station id="websites" chapterIndex={1}>
             <ImageScreenStation src="/brand/tour-websites.png" height={3.8} />
