@@ -10,7 +10,7 @@ import { createHmac, timingSafeEqual } from "crypto";
  */
 
 const UNSUBSCRIBE_SECRET = process.env.UNSUBSCRIBE_SECRET;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://syncaitechnologies.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.syncai.tech";
 const COMPANY_LEGAL_NAME = process.env.COMPANY_LEGAL_NAME || "SyncAI Technologies";
 const COMPANY_ADDRESS =
   process.env.COMPANY_ADDRESS || "Ontario, Canada"; // TODO: set a real mailing address before sending.
@@ -40,6 +40,22 @@ export function verifyUnsubscribe(leadId: string, signature: string): boolean {
 export function unsubscribeUrl(leadId: string): string {
   const sig = signUnsubscribe(leadId);
   return `${SITE_URL}/api/unsubscribe?lid=${encodeURIComponent(leadId)}&sig=${sig}`;
+}
+
+/**
+ * RFC 8058 one-click unsubscribe headers. Gmail and Yahoo require these from
+ * bulk senders (since Feb 2024) and render a native "Unsubscribe" button from
+ * them — the single biggest unsubscribe-related deliverability lever. Returned
+ * only when we have a lead to sign a per-recipient link for.
+ */
+export function unsubscribeHeaders(leadId: string | null | undefined): Record<string, string> {
+  if (!leadId || !UNSUBSCRIBE_SECRET) {
+    return {};
+  }
+  return {
+    "List-Unsubscribe": `<${unsubscribeUrl(leadId)}>`,
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  };
 }
 
 /** Plain-text CASL footer appended to every outbound email body. */

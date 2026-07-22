@@ -17,6 +17,8 @@ export type SendEmailInput = {
   html: string;
   text: string;
   attachments?: EmailAttachment[];
+  /** Extra SMTP headers, e.g. List-Unsubscribe for one-click opt-out. */
+  headers?: Record<string, string>;
 };
 
 export type SendEmailResult =
@@ -40,6 +42,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
       subject: input.subject,
       html: input.html,
       text: input.text,
+      ...(input.headers && Object.keys(input.headers).length ? { headers: input.headers } : {}),
       ...(EMAIL_REPLY_TO ? { replyTo: EMAIL_REPLY_TO } : {}),
       ...(input.attachments?.length
         ? { attachments: input.attachments.map((a) => ({ filename: a.filename, content: a.content })) }

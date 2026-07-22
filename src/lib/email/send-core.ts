@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Email } from "@/lib/supabase";
 import { sendEmail, type EmailAttachment } from "@/lib/email/resend";
 import { renderEmailHtml, renderEmailText } from "@/lib/email/render";
+import { unsubscribeHeaders } from "@/lib/email/compliance";
 
 export type SendRecordResult =
   | { ok: true; demoMode?: boolean }
@@ -60,6 +61,8 @@ export async function sendEmailRecord(
     html,
     text,
     attachments: options.attachments,
+    // One-click List-Unsubscribe (RFC 8058) — Gmail/Yahoo deliverability.
+    headers: unsubscribeHeaders(email.lead_id),
   });
 
   if (!result.ok) {
