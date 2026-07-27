@@ -45,7 +45,7 @@ export function StaticHome() {
                 </span>
               ))}
             </div>
-            <h1 className="mt-6 text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.05] tracking-tighter text-foreground">
+            <h1 className="mt-6 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-tight text-foreground">
               Step Inside the <span className="text-gradient-brand">AI Systems</span> That Run Your
               Business
             </h1>
