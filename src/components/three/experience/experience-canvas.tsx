@@ -49,7 +49,7 @@ export default function ExperienceCanvas({ paused = false }: ExperienceCanvasPro
         {/* Image "screens" the camera flies to (Suspense covers texture load). */}
         <Suspense fallback={null}>
           <Station id="hero" chapterIndex={0}>
-            <VideoScreenStation src="/brand/Business_owner_using_AI_system_202607202213.mp4" />
+            <VideoScreenStation src="/brand/SyncAi_tech_build_solutions_202607222256.mp4" />
           </Station>
           <Station id="websites" chapterIndex={1}>
             <ImageScreenStation src="/brand/tour-websites.png" height={3.8} />

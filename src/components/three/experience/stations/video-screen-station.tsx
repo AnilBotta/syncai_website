@@ -50,8 +50,10 @@ export function VideoScreenStation({ src, height = 3.0 }: VideoScreenStationProp
     if (!group.current) return;
     const t = state.clock.elapsedTime;
     group.current.position.y = Math.sin(t * 0.6) * 0.12;
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, state.pointer.x * 0.12, 0.05);
-    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, -state.pointer.y * 0.08, 0.05);
+    // Stay parallel to the camera's image plane. The screen is framed off to
+    // one side (copy sits left), so any fixed orientation reads as a skewed
+    // parallelogram; matching the camera keeps it a flat, straight rectangle.
+    group.current.quaternion.copy(state.camera.quaternion);
   });
 
   return (
