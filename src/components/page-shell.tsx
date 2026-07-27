@@ -2,15 +2,18 @@ import { ReactNode } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Reveal } from "@/components/motion/reveal";
+import { cn } from "@/lib/utils";
 
 type PageShellProps = {
   eyebrow: string;
   title: string;
   description: string;
+  /** Override the hero title size — for titles long enough to wrap past two lines. */
+  titleClassName?: string;
   children: ReactNode;
 };
 
-export function PageShell({ eyebrow, title, description, children }: PageShellProps) {
+export function PageShell({ eyebrow, title, description, titleClassName, children }: PageShellProps) {
   return (
     <>
       <SiteHeader />
@@ -26,7 +29,14 @@ export function PageShell({ eyebrow, title, description, children }: PageShellPr
           />
           <Reveal className="relative mx-auto max-w-5xl">
             <p className="text-sm font-black uppercase tracking-[.25em] text-brand">{eyebrow}</p>
-            <h1 className="mt-5 text-4xl font-black tracking-tight text-foreground sm:text-6xl">{title}</h1>
+            <h1
+              className={cn(
+                "mt-5 text-balance text-4xl font-black tracking-tight text-foreground sm:text-6xl",
+                titleClassName,
+              )}
+            >
+              {title}
+            </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-muted">{description}</p>
           </Reveal>
         </section>

@@ -18,7 +18,8 @@ export default function AboutPage() {
   return (
     <PageShell
       eyebrow="About"
-      title="Practical AI, built from Brampton for growing businesses"
+      title="Practical AI, built from Brampton for growing businesses across Canada and beyond"
+      titleClassName="text-3xl sm:text-[2.625rem]"
       description="SyncAI Technologies designs and implements custom AI systems — websites, voice agents, chatbots, and workflow automations — that solve real business bottlenecks, not technology trends."
     >
       <section className="bg-bg-base py-20 sm:py-28">
