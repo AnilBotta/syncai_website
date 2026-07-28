@@ -8,7 +8,6 @@ import { AmbientField } from "./ambient-field";
 import { Station } from "./stations/station";
 import { ImageScreenStation } from "./stations/image-screen-station";
 import { VideoScreenStation } from "./stations/video-screen-station";
-import { VoiceWaveformStation } from "./stations/voice-waveform-station";
 
 // Postprocessing is its own lazy chunk — only fetched on high-tier desktops.
 const Effects = lazy(() => import("./effects"));
@@ -52,7 +51,10 @@ export default function ExperienceCanvas({ paused = false }: ExperienceCanvasPro
             <VideoScreenStation src="/brand/SyncAi_tech_build_solutions_202607222256.mp4" />
           </Station>
           <Station id="websites" chapterIndex={1}>
-            <ImageScreenStation src="/brand/tour-websites.png" height={3.8} />
+            <VideoScreenStation src="/brand/Screens_scrolling_up_down_mouse_202607222310.mp4" height={3.8} />
+          </Station>
+          <Station id="voice" chapterIndex={2}>
+            <VideoScreenStation src="/brand/AI_voice_assistant_speaking_sound_202607281335.mp4" height={3.8} />
           </Station>
           <Station id="workflow" chapterIndex={3}>
             <ImageScreenStation src="/brand/tour-workflow.png" height={4.0} />
@@ -67,11 +69,6 @@ export default function ExperienceCanvas({ paused = false }: ExperienceCanvasPro
             <ImageScreenStation src="/brand/tour-cta.png" />
           </Station>
         </Suspense>
-
-        {/* Kept as an animated 3D scene */}
-        <Station id="voice" chapterIndex={2}>
-          <VoiceWaveformStation />
-        </Station>
 
         <GatedEffects />
       </QualityProvider>
