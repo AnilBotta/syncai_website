@@ -28,6 +28,17 @@ const SEEK_EPSILON = 1 / 40;
 /** If nothing has painted this long after metadata, fall back to the poster. */
 const FIRST_FRAME_TIMEOUT_MS = 3000;
 
+/**
+ * How the poster and video fill the pinned stage. Both layers share this so
+ * they stay framed identically through the cross-fade.
+ *
+ * The stage is wider than the footage's 16:9, so object-cover already crops
+ * top and bottom to fill it; the scale is a modest zoom on top of that. Tune
+ * the one number here: 1.15 clipped the sides off compositions like the
+ * three-screen shot, 1.0 sat too far back.
+ */
+const MEDIA_FIT = "absolute inset-0 h-full w-full scale-[1.07] object-cover";
+
 type NetworkInformation = {
   saveData?: boolean;
   effectiveType?: string;
@@ -240,21 +251,13 @@ export function ScrubVideo({ paused = false }: ScrubVideoProps) {
   }, []);
 
   return (
-    // No extra scale on the media: the stage is wider than the footage's 16:9,
-    // so object-cover already crops top and bottom to fill it. Zooming further
-    // starts clipping the sides of each composition too.
     <div className="absolute inset-0 overflow-hidden">
       {/* Painted immediately and kept underneath, so the stage is never black.
           Not next/image: this is a plain background layer on a remote host, and
           routing it through the optimizer would mean configuring remotePatterns
           for no benefit. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={TOUR_POSTER}
-        alt=""
-        aria-hidden
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+      <img src={TOUR_POSTER} alt="" aria-hidden className={MEDIA_FIT} />
       <video
         ref={videoRef}
         muted
@@ -264,7 +267,7 @@ export function ScrubVideo({ paused = false }: ScrubVideoProps) {
         disableRemotePlayback
         aria-hidden
         tabIndex={-1}
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+        className={`${MEDIA_FIT} transition-opacity duration-500 ${
           painted && !degraded ? "opacity-100" : "opacity-0"
         }`}
       />
