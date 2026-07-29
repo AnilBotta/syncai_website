@@ -57,10 +57,10 @@ export default function ExperienceCanvas({ paused = false }: ExperienceCanvasPro
             <VideoScreenStation src="/brand/AI_voice_assistant_speaking_sound_202607281335.mp4" height={3.8} />
           </Station>
           <Station id="workflow" chapterIndex={3}>
-            <ImageScreenStation src="/brand/tour-workflow.png" height={4.0} />
+            <VideoScreenStation src="/brand/Animate_n8n_workflow_visualization_202607281352.mp4" height={4.0} />
           </Station>
           <Station id="strategy" chapterIndex={4}>
-            <ImageScreenStation src="/brand/tour-strategy.png" height={3.8} />
+            <VideoScreenStation src="/brand/Animate_AI_strategy_dashboard_UI_202607281406.mp4" height={3.8} />
           </Station>
           <Station id="results" chapterIndex={5}>
             <ImageScreenStation src="/brand/tour-results.png" height={4.0} />
