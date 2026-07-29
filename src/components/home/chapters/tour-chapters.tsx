@@ -51,7 +51,10 @@ const metrics = [
   { value: "-80%", label: "Manual work" },
 ];
 
-/** The 7 overlay chapters of the homepage tour (server-rendered content). */
+/**
+ * The 7 overlay chapters pinned over the scrubbed hero video (server-rendered).
+ * One per segment of the footage — see BEATS in tour-config.
+ */
 export function TourChapters() {
   return (
     <>
@@ -115,7 +118,7 @@ export function TourChapters() {
         </Chapter>
       ))}
 
-      {/* Chapter 6 — Results (copy left, bar columns right) */}
+      {/* Chapter 6 — Results, over the growth-chart footage */}
       <Chapter align="left">
         <p className="text-sm font-black uppercase tracking-[.3em] text-brand-soft">The Payoff</p>
         <h2 className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-5xl">
@@ -136,7 +139,7 @@ export function TourChapters() {
         </div>
       </Chapter>
 
-      {/* Chapter 7 — CTA (copy right, glowing core left) */}
+      {/* Chapter 7 — CTA, over the closing "Ready to sync" frames */}
       <Chapter align="right">
         <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-6xl">
           Ready to <span className="text-gradient-brand">sync</span> your business with AI?
@@ -148,7 +151,12 @@ export function TourChapters() {
           <GlowButton href="/book" size="lg" className="animate-pulse-glow">
             Book Your Free Strategy Call <ArrowRight className="size-4" />
           </GlowButton>
-          <GlowButton href={whatsappHref("Hi SyncAI, I'd like to know more about your AI solutions.")} variant="whatsapp" size="lg" external>
+          <GlowButton
+            href={whatsappHref("Hi SyncAI, I'd like to know more about your AI solutions.")}
+            variant="whatsapp"
+            size="lg"
+            external
+          >
             <WhatsAppIcon className="size-5" />
             Message on WhatsApp
           </GlowButton>

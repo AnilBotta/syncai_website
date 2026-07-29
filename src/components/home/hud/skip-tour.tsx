@@ -8,7 +8,7 @@ type SkipTourProps = {
   targetRef: RefObject<HTMLElement | null>;
 };
 
-/** "Skip tour" pill for impatient visitors — jumps to the final CTA chapter. */
+/** "Skip tour" pill for impatient visitors — jumps past the pinned tour. */
 export function SkipTour({ targetRef }: SkipTourProps) {
   const [visible, setVisible] = useState(true);
   const { scrollYProgress } = useScroll({
@@ -17,7 +17,8 @@ export function SkipTour({ targetRef }: SkipTourProps) {
   });
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
-    setVisible(value < 0.72);
+    // Hide once the closing CTA chapter is coming into frame.
+    setVisible(value < 0.78);
   });
 
   function skip() {
