@@ -106,9 +106,11 @@ export const SCRIM_MIX: ScrimMixes = [
   [0.0, 0.9, 0.05], // strategy  copy right
   [0.9, 0.0, 0.0], //  results   copy left  — footage is already dark here
   // The closing frame has "Ready to sync your business with AI?" burned into it
-  // on the left, duplicating our own CTA. It is too wide to crop out and the
-  // whole beat carries it, so the flat layer sinks it to near-black instead.
-  [0.15, 0.85, 0.62], // cta     copy right
+  // on the left, duplicating our own CTA. A heavy flat layer sank it, but the
+  // flat and side layers compound and the whole frame went black. The left
+  // gradient does the job on its own: it covers the bubble without touching
+  // the lit subject on the right.
+  [0.3, 0.85, 0.1], // cta       copy right
 ];
 
 /**

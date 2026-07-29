@@ -6,8 +6,8 @@ import { progressToTime } from "./tour-config";
 import {
   DESKTOP_RENDITION_QUERY,
   TOUR_POSTER,
-  TOUR_VIDEO_1080,
-  TOUR_VIDEO_720,
+  TOUR_VIDEO_DESKTOP,
+  TOUR_VIDEO_MOBILE,
 } from "./tour-media";
 
 type ScrubVideoProps = {
@@ -32,12 +32,16 @@ const FIRST_FRAME_TIMEOUT_MS = 3000;
  * How the poster and video fill the pinned stage. Both layers share this so
  * they stay framed identically through the cross-fade.
  *
- * The stage is wider than the footage's 16:9, so object-cover already crops
- * top and bottom to fill it; the scale is a modest zoom on top of that. Tune
- * the one number here: 1.15 clipped the sides off compositions like the
- * three-screen shot, 1.0 sat too far back.
+ * `object-contain` from md up, with no scale: a desktop stage runs about 2.2:1
+ * against the footage's 16:9, so `object-cover` was slicing 15-18% off the top
+ * and bottom of every composition — the tops of the tablets, the upper row of
+ * n8n nodes. Contain shows the whole frame and lets the NightSky backdrop fill
+ * the narrow bars at each side.
+ *
+ * Mobile keeps `object-cover`: a portrait stage is far taller than 16:9, so
+ * contain there would leave a small strip floating in a mostly empty screen.
  */
-const MEDIA_FIT = "absolute inset-0 h-full w-full scale-[1.07] object-cover";
+const MEDIA_FIT = "absolute inset-0 h-full w-full object-cover md:object-contain";
 
 type NetworkInformation = {
   saveData?: boolean;
@@ -99,22 +103,59 @@ export function ScrubVideo({ paused = false }: ScrubVideoProps) {
   // Attach the source after hydration so the poster is the LCP element and the
   // video does not compete for bandwidth with the rest of the page. Choosing
   // the rendition here rather than in JSX keeps the markup hydration-safe.
+  //
+  // The file is fetched whole and handed over as a blob rather than pointed at
+  // directly. Scrubbing jumps around the timeline constantly, and a streamed
+  // source stalls on an HTTP range request every time the playhead lands
+  // outside what happens to be buffered — which reads as the video sticking
+  // mid-transition. From a blob every seek is memory-local.
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) {
+    if (!video || lowData) {
       return;
     }
-    if (lowData) {
-      return;
-    }
-    return onIdle(() => {
+
+    let objectUrl = "";
+    let cancelled = false;
+    const abort = new AbortController();
+
+    const cancelIdle = onIdle(async () => {
       video.muted = true; // the JSX prop alone is unreliable through hydration
       video.preload = "auto";
-      video.src = window.matchMedia(DESKTOP_RENDITION_QUERY).matches
-        ? TOUR_VIDEO_1080
-        : TOUR_VIDEO_720;
-      video.load();
+      const src = window.matchMedia(DESKTOP_RENDITION_QUERY).matches
+        ? TOUR_VIDEO_DESKTOP
+        : TOUR_VIDEO_MOBILE;
+      try {
+        const response = await fetch(src, { signal: abort.signal });
+        if (!response.ok) {
+          throw new Error(String(response.status));
+        }
+        const blob = await response.blob();
+        if (cancelled) {
+          return;
+        }
+        objectUrl = URL.createObjectURL(blob);
+        video.src = objectUrl;
+      } catch {
+        // Aborted, offline, or a CORS/CDN hiccup — stream it instead. Seeks
+        // may stall on range requests, but that beats no video at all.
+        if (!cancelled) {
+          video.src = src;
+        }
+      }
+      if (!cancelled) {
+        video.load();
+      }
     });
+
+    return () => {
+      cancelled = true;
+      abort.abort();
+      cancelIdle();
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
   }, [lowData]);
 
   useEffect(() => {
