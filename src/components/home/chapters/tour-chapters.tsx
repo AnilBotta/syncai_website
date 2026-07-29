@@ -73,7 +73,7 @@ export function TourChapters() {
         <h1 className="mt-6 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-tight text-foreground">
           Step Inside the <span className="text-gradient-brand">AI Systems</span> That Run Your Business
         </h1>
-        <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
+        <p className="mt-5 max-w-lg text-lg leading-relaxed text-foreground/90">
           SyncAI builds custom AI websites, voice agents, chatbots, and automations. Scroll to tour
           the machine.
         </p>
@@ -100,7 +100,7 @@ export function TourChapters() {
           <h2 className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-5xl">
             {service.title}
           </h2>
-          <p className="mt-4 text-lg leading-8 text-muted">{service.description}</p>
+          <p className="mt-4 text-lg leading-8 text-foreground/90">{service.description}</p>
           <ul className="mt-6 grid gap-2.5">
             {service.bullets.map((bullet) => (
               <li key={bullet} className="flex items-center gap-3 text-sm font-semibold text-foreground/90">
@@ -124,7 +124,7 @@ export function TourChapters() {
         <h2 className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-5xl">
           Real ROI for real businesses
         </h2>
-        <p className="mt-4 text-lg leading-8 text-muted">
+        <p className="mt-4 text-lg leading-8 text-foreground/90">
           Systems that answer every inquiry, follow up faster, and hand the busywork to machines.
         </p>
         <div className="mt-8 grid max-w-md grid-cols-3 gap-3">
@@ -144,7 +144,7 @@ export function TourChapters() {
         <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-6xl">
           Ready to <span className="text-gradient-brand">sync</span> your business with AI?
         </h2>
-        <p className="mt-5 max-w-md text-lg leading-8 text-muted">
+        <p className="mt-5 max-w-md text-lg leading-8 text-foreground/90">
           A free 30-minute strategy call. Real recommendations, plain language, no pressure.
         </p>
         <div className="mt-9 flex flex-wrap gap-4">
