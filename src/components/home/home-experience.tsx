@@ -14,12 +14,6 @@ import { SkipTour } from "./hud/skip-tour";
 
 type HomeExperienceProps = {
   children: ReactNode;
-  /**
-   * Results + CTA, rendered in normal flow below the pinned tour. Passed in
-   * rather than placed by the page so it can be dropped in reduced-motion
-   * mode, where StaticHome already carries both.
-   */
-  outro?: ReactNode;
 };
 
 /**
@@ -32,7 +26,7 @@ type HomeExperienceProps = {
  * chapters while this wrapper is now five, so re-mounting the canvas would
  * need `layout.ts` revisited.
  */
-export function HomeExperience({ children, outro }: HomeExperienceProps) {
+export function HomeExperience({ children }: HomeExperienceProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const mode = useScrollTourMode();
   const paused = useFrameloopPause(wrapperRef, mode === "scrub");
@@ -70,8 +64,6 @@ export function HomeExperience({ children, outro }: HomeExperienceProps) {
         <ProgressRail targetRef={wrapperRef} />
         <SkipTour targetRef={wrapperRef} />
       </div>
-
-      {outro}
     </>
   );
 }

@@ -14,6 +14,8 @@ const LABELS: Record<ScrubChapterId, string> = {
   voice: "Voice & Chat",
   workflow: "Automation",
   strategy: "Strategy",
+  results: "Results",
+  cta: "Book a Call",
 };
 
 type ProgressRailProps = {

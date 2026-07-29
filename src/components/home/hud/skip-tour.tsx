@@ -17,8 +17,8 @@ export function SkipTour({ targetRef }: SkipTourProps) {
   });
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
-    // Tuned for 5 chapters: hide once the last one is coming into frame.
-    setVisible(value < 0.8);
+    // Hide once the closing CTA chapter is coming into frame.
+    setVisible(value < 0.78);
   });
 
   function skip() {
