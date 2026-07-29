@@ -72,3 +72,66 @@ export function progressToTime(progress: number, duration: number) {
   const time = (BEATS[index] + (BEATS[index + 1] - BEATS[index]) * fraction) * scale;
   return Math.min(Math.max(time, 0), duration);
 }
+
+/** Opacity of the [left, right, flat] scrim layers, one entry per chapter. */
+type ScrimMix = readonly [number, number, number];
+
+/**
+ * How much of each scrim layer a chapter needs, keyed to which side its copy
+ * sits on — keep this index-aligned with SCRUB_CHAPTERS, BEATS, and the `align`
+ * props in chapters/tour-chapters.tsx (left, left, right, left, right, left,
+ * right). The tuple type makes a length mismatch a compile error.
+ *
+ * Weights come from measuring the footage behind each copy column: peak
+ * luminance there runs 117-121 on the first four chapters against a 74 target,
+ * which is why most of them sit at full strength. `results` is already dark
+ * (48) and `cta` carries a flat component instead — see below.
+ */
+/** Exactly one mix per chapter; the fixed arity makes a mismatch a type error. */
+type ScrimMixes = readonly [
+  ScrimMix,
+  ScrimMix,
+  ScrimMix,
+  ScrimMix,
+  ScrimMix,
+  ScrimMix,
+  ScrimMix,
+];
+
+export const SCRIM_MIX: ScrimMixes = [
+  [1.0, 0.0, 0.05], // hero      copy left
+  [1.0, 0.0, 0.15], // websites  copy left  — busiest frame in the clip
+  [0.0, 1.0, 0.05], // voice     copy right
+  [1.0, 0.0, 0.25], // workflow  copy left  — n8n labels need the field pushed down
+  [0.0, 0.9, 0.05], // strategy  copy right
+  [0.9, 0.0, 0.0], //  results   copy left  — footage is already dark here
+  // The closing frame has "Ready to sync your business with AI?" burned into it
+  // on the left, duplicating our own CTA. It is too wide to crop out and the
+  // whole beat carries it, so the flat layer sinks it to near-black instead.
+  [0.15, 0.85, 0.62], // cta     copy right
+];
+
+/**
+ * Blend the scrim mix for a given scroll progress.
+ *
+ * Holds each chapter's mix while its copy is at full opacity and swings only in
+ * between: a chapter's copy is fully opaque across roughly the middle quarter
+ * of its own scroll range, so the crossfade is confined to u 0.3-0.7 within a
+ * segment. Mirrors progressToTime's piecewise walk so the two stay in step.
+ */
+export function scrimMix(progress: number): ScrimMix {
+  const t = Math.min(Math.max(progress, 0), 1);
+  const last = SCRIM_MIX.length - 1;
+  const position = t * last;
+  const index = Math.min(Math.floor(position), last - 1);
+  const u = position - index;
+  const s = Math.min(Math.max((u - 0.3) / 0.4, 0), 1);
+  const eased = s * s * (3 - 2 * s);
+  const from = SCRIM_MIX[index];
+  const to = SCRIM_MIX[index + 1];
+  return [
+    from[0] + (to[0] - from[0]) * eased,
+    from[1] + (to[1] - from[1]) * eased,
+    from[2] + (to[2] - from[2]) * eased,
+  ];
+}

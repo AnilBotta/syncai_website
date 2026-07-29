@@ -7,6 +7,7 @@ import { ScrollProgressBridge } from "@/components/three/experience/scroll-progr
 import { SCRUB_CHAPTER_COUNT } from "./tour-config";
 import { useScrollTourMode } from "./use-scroll-tour-mode";
 import { ScrubVideo } from "./scrub-video";
+import { TourScrim } from "./tour-scrim";
 import { StaticHome } from "./static-home";
 import { NightSky } from "./night-sky";
 import { ProgressRail } from "./hud/progress-rail";
@@ -51,11 +52,7 @@ export function HomeExperience({ children }: HomeExperienceProps) {
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           <NightSky />
           <ScrubVideo paused={paused} />
-          {/* Cinematic vignette for copy legibility */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_48%,rgba(5,7,15,0.55)_100%)]"
-          />
+          <TourScrim paused={paused} />
         </div>
 
         {/* Chapters scroll over the pinned stage */}
