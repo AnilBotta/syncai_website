@@ -2,9 +2,6 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Chapter } from "./chapter";
 import { GlowButton } from "@/components/ui/glow-button";
-import { GlassCard } from "@/components/ui/glass-card";
-import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
-import { whatsappHref } from "@/lib/whatsapp";
 
 const serviceChapters = [
   {
@@ -45,13 +42,10 @@ const serviceChapters = [
   },
 ];
 
-const metrics = [
-  { value: "24/7", label: "Customer response" },
-  { value: "3x", label: "Faster follow-ups" },
-  { value: "-80%", label: "Manual work" },
-];
-
-/** The 7 overlay chapters of the homepage tour (server-rendered content). */
+/**
+ * The 5 overlay chapters pinned over the scrubbed hero video (server-rendered).
+ * Results and the CTA follow the pinned section as normal flow — see TourOutro.
+ */
 export function TourChapters() {
   return (
     <>
@@ -114,46 +108,6 @@ export function TourChapters() {
           </Link>
         </Chapter>
       ))}
-
-      {/* Chapter 6 — Results (copy left, bar columns right) */}
-      <Chapter align="left">
-        <p className="text-sm font-black uppercase tracking-[.3em] text-brand-soft">The Payoff</p>
-        <h2 className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-5xl">
-          Real ROI for real businesses
-        </h2>
-        <p className="mt-4 text-lg leading-8 text-muted">
-          Systems that answer every inquiry, follow up faster, and hand the busywork to machines.
-        </p>
-        <div className="mt-8 grid max-w-md grid-cols-3 gap-3">
-          {metrics.map((metric) => (
-            <GlassCard key={metric.label} className="px-3 py-5">
-              <p className="text-2xl font-black text-brand-glow-text sm:text-3xl">{metric.value}</p>
-              <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
-                {metric.label}
-              </p>
-            </GlassCard>
-          ))}
-        </div>
-      </Chapter>
-
-      {/* Chapter 7 — CTA (copy right, glowing core left) */}
-      <Chapter align="right">
-        <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-6xl">
-          Ready to <span className="text-gradient-brand">sync</span> your business with AI?
-        </h2>
-        <p className="mt-5 max-w-md text-lg leading-8 text-muted">
-          A free 30-minute strategy call. Real recommendations, plain language, no pressure.
-        </p>
-        <div className="mt-9 flex flex-wrap gap-4">
-          <GlowButton href="/book" size="lg" className="animate-pulse-glow">
-            Book Your Free Strategy Call <ArrowRight className="size-4" />
-          </GlowButton>
-          <GlowButton href={whatsappHref("Hi SyncAI, I'd like to know more about your AI solutions.")} variant="whatsapp" size="lg" external>
-            <WhatsAppIcon className="size-5" />
-            Message on WhatsApp
-          </GlowButton>
-        </div>
-      </Chapter>
     </>
   );
 }

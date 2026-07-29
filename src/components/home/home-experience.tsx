@@ -1,36 +1,43 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useRef, type ReactNode } from "react";
 import { ReactLenis } from "lenis/react";
-import { useFrameloopPause, useWebglGate } from "@/components/three/use-webgl-gate";
+import { useFrameloopPause } from "@/components/three/use-webgl-gate";
 import { ScrollProgressBridge } from "@/components/three/experience/scroll-progress-bridge";
-import { CHAPTER_COUNT } from "@/components/three/experience/layout";
+import { SCRUB_CHAPTER_COUNT } from "./tour-config";
+import { useScrollTourMode } from "./use-scroll-tour-mode";
+import { ScrubVideo } from "./scrub-video";
 import { StaticHome } from "./static-home";
 import { NightSky } from "./night-sky";
 import { ProgressRail } from "./hud/progress-rail";
 import { SkipTour } from "./hud/skip-tour";
-import { ChapterSnap } from "./hud/chapter-snap";
-
-const ExperienceCanvas = dynamic(() => import("@/components/three/experience/experience-canvas"), {
-  ssr: false,
-});
 
 type HomeExperienceProps = {
   children: ReactNode;
+  /**
+   * Results + CTA, rendered in normal flow below the pinned tour. Passed in
+   * rather than placed by the page so it can be dropped in reduced-motion
+   * mode, where StaticHome already carries both.
+   */
+  outro?: ReactNode;
 };
 
 /**
- * The cinematic homepage tour: a pinned WebGL canvas with DOM chapters
- * scrolling over it. Mobile / reduced-motion / no-WebGL visitors (and the
- * server render) get the static dark homepage instead.
+ * The cinematic homepage tour: a pinned hero video whose playhead is scrubbed
+ * by scroll, with DOM chapters scrolling over it. Reduced-motion visitors get
+ * the static dark homepage; everyone else — phones included — gets the tour.
+ *
+ * The 3D station/camera stack under `components/three/experience` is no longer
+ * mounted here. It is kept in the tree, but note that its layout assumes seven
+ * chapters while this wrapper is now five, so re-mounting the canvas would
+ * need `layout.ts` revisited.
  */
-export function HomeExperience({ children }: HomeExperienceProps) {
+export function HomeExperience({ children, outro }: HomeExperienceProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const enabled = useWebglGate();
-  const paused = useFrameloopPause(wrapperRef, enabled);
+  const mode = useScrollTourMode();
+  const paused = useFrameloopPause(wrapperRef, mode === "scrub");
 
-  if (!enabled) {
+  if (mode === "reduced") {
     return <StaticHome />;
   }
 
@@ -39,13 +46,17 @@ export function HomeExperience({ children }: HomeExperienceProps) {
       {/* Inertia scrolling for the cinematic scrub feel (window scroll). */}
       <ReactLenis root />
 
-      <div ref={wrapperRef} className="theme-dark relative bg-bg-deep" style={{ height: `${CHAPTER_COUNT * 100}vh` }}>
+      <div
+        ref={wrapperRef}
+        className="theme-dark relative bg-bg-deep"
+        style={{ height: `${SCRUB_CHAPTER_COUNT * 100}vh` }}
+      >
         <ScrollProgressBridge targetRef={wrapperRef} />
 
-        {/* Pinned scene */}
+        {/* Pinned stage */}
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           <NightSky />
-          <ExperienceCanvas paused={paused} />
+          <ScrubVideo paused={paused} />
           {/* Cinematic vignette for copy legibility */}
           <div
             aria-hidden
@@ -53,13 +64,14 @@ export function HomeExperience({ children }: HomeExperienceProps) {
           />
         </div>
 
-        {/* Chapters scroll over the pinned scene */}
+        {/* Chapters scroll over the pinned stage */}
         <div className="absolute inset-0">{children}</div>
 
         <ProgressRail targetRef={wrapperRef} />
         <SkipTour targetRef={wrapperRef} />
-        <ChapterSnap targetRef={wrapperRef} />
       </div>
+
+      {outro}
     </>
   );
 }

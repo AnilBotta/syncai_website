@@ -1,5 +1,6 @@
 import { HomeExperience } from "@/components/home/home-experience";
 import { TourChapters } from "@/components/home/chapters/tour-chapters";
+import { TourOutro } from "@/components/home/tour-outro";
 import { IndustriesGrid } from "@/components/industries-grid";
 import { DemoAnalyzer } from "@/components/demo-analyzer";
 import { TestimonialCarousel } from "@/components/testimonial-carousel";
@@ -14,7 +15,7 @@ export default function Home() {
     <>
       <SiteHeader />
       <main id="main">
-        <HomeExperience>
+        <HomeExperience outro={<TourOutro />}>
           <TourChapters />
         </HomeExperience>
 

@@ -2,16 +2,18 @@
 
 import { useState, type RefObject } from "react";
 import { useMotionValueEvent, useScroll } from "framer-motion";
-import { CHAPTERS, CHAPTER_COUNT } from "@/components/three/experience/layout";
+import {
+  SCRUB_CHAPTERS,
+  SCRUB_CHAPTER_COUNT,
+  type ScrubChapterId,
+} from "@/components/home/tour-config";
 
-const LABELS: Record<(typeof CHAPTERS)[number], string> = {
+const LABELS: Record<ScrubChapterId, string> = {
   hero: "SyncAI",
   websites: "AI Websites",
   voice: "Voice & Chat",
   workflow: "Automation",
   strategy: "Strategy",
-  results: "Results",
-  cta: "Book a Call",
 };
 
 type ProgressRailProps = {
@@ -27,7 +29,7 @@ export function ProgressRail({ targetRef }: ProgressRailProps) {
   });
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
-    setActive(Math.round(value * (CHAPTER_COUNT - 1)));
+    setActive(Math.round(value * (SCRUB_CHAPTER_COUNT - 1)));
   });
 
   function jumpTo(index: number) {
@@ -39,7 +41,7 @@ export function ProgressRail({ targetRef }: ProgressRailProps) {
     const top = window.scrollY + rect.top;
     const scrollable = rect.height - window.innerHeight;
     window.scrollTo({
-      top: top + (index / (CHAPTER_COUNT - 1)) * scrollable,
+      top: top + (index / (SCRUB_CHAPTER_COUNT - 1)) * scrollable,
       behavior: "smooth",
     });
   }
@@ -49,7 +51,7 @@ export function ProgressRail({ targetRef }: ProgressRailProps) {
       aria-label="Tour chapters"
       className="fixed right-5 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-3 lg:flex"
     >
-      {CHAPTERS.map((id, index) => (
+      {SCRUB_CHAPTERS.map((id, index) => (
         <button
           key={id}
           type="button"
