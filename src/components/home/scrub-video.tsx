@@ -240,9 +240,9 @@ export function ScrubVideo({ paused = false }: ScrubVideoProps) {
   }, []);
 
   return (
-    // scale-[1.15] on both layers crops in past what object-cover already
-    // trims, pushing the footage's subject clear of the copy panel. The
-    // wrapper's overflow-hidden keeps the overspill off screen.
+    // No extra scale on the media: the stage is wider than the footage's 16:9,
+    // so object-cover already crops top and bottom to fill it. Zooming further
+    // starts clipping the sides of each composition too.
     <div className="absolute inset-0 overflow-hidden">
       {/* Painted immediately and kept underneath, so the stage is never black.
           Not next/image: this is a plain background layer on a remote host, and
@@ -253,7 +253,7 @@ export function ScrubVideo({ paused = false }: ScrubVideoProps) {
         src={TOUR_POSTER}
         alt=""
         aria-hidden
-        className="absolute inset-0 h-full w-full scale-[1.15] object-cover"
+        className="absolute inset-0 h-full w-full object-cover"
       />
       <video
         ref={videoRef}
@@ -264,7 +264,7 @@ export function ScrubVideo({ paused = false }: ScrubVideoProps) {
         disableRemotePlayback
         aria-hidden
         tabIndex={-1}
-        className={`absolute inset-0 h-full w-full scale-[1.15] object-cover transition-opacity duration-500 ${
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
           painted && !degraded ? "opacity-100" : "opacity-0"
         }`}
       />

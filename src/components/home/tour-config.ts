@@ -34,7 +34,9 @@ export const SOURCE_DURATION = 34.087;
  * Measured off the footage frame by frame, not guessed — the clip is cut into
  * seven segments that match these chapters one for one:
  *
- *   0.0-3.5s   brain / AI hub                    hero
+ *   0.0-3.5s   brain / AI hub                    hero  (pinned to frame 0 so
+ *                                                      the page opens on the
+ *                                                      very start of the clip)
  *   4.0-6.5s   three screens, "Elevate Your..."  websites
  *   8.0-13.5s  voice avatar + waveform           voice
  *   14.0-17.5s n8n workflow diagram              workflow
@@ -47,7 +49,7 @@ export const SOURCE_DURATION = 34.087;
  * progressToTime maps that exactly onto BEATS[i], so the copy lands on its
  * own footage. Nudge a number here to shift when that chapter's text arrives.
  */
-export const BEATS = [1.5, 5.0, 11.0, 15.5, 20.5, 26.0, 31.0];
+export const BEATS = [0, 5.0, 11.0, 15.5, 20.5, 26.0, 31.0];
 
 /**
  * Map scroll progress (0-1) to a video timestamp, piecewise-linear through
