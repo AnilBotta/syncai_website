@@ -101,15 +101,18 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
+          {/* Icon only — the number was the widest thing in the bar and the
+              glyph carries the meaning on its own. Number stays in the mobile
+              drawer and the footer, where there is room to read it. */}
           <a
             href={whatsappHref()}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Message us on WhatsApp at ${contact.phonePrimary}`}
-            className="hidden items-center gap-2 rounded-full border border-border-subtle bg-surface px-4 py-2 text-sm font-semibold text-foreground/90 backdrop-blur-md transition hover:border-[#25D366]/50 hover:text-[#25D366] xl:inline-flex"
+            title={`WhatsApp ${contact.phonePrimary}`}
+            className="grid size-11 shrink-0 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_6px_20px_rgba(37,211,102,0.35)] transition hover:-translate-y-0.5 hover:bg-[#1fb457] hover:shadow-[0_8px_26px_rgba(37,211,102,0.45)]"
           >
-            <WhatsAppIcon className="size-4 text-[#25D366]" />
-            {contact.phonePrimary}
+            <WhatsAppIcon className="size-5" />
           </a>
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
           <button

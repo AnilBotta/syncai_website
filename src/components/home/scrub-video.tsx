@@ -32,16 +32,16 @@ const FIRST_FRAME_TIMEOUT_MS = 3000;
  * How the poster and video fill the pinned stage. Both layers share this so
  * they stay framed identically through the cross-fade.
  *
- * `object-contain` from md up, with no scale: a desktop stage runs about 2.2:1
- * against the footage's 16:9, so `object-cover` was slicing 15-18% off the top
- * and bottom of every composition — the tops of the tablets, the upper row of
- * n8n nodes. Contain shows the whole frame and lets the NightSky backdrop fill
- * the narrow bars at each side.
+ * `object-cover`, no scale: the stage is wider than the footage's 16:9, so this
+ * fills the screen edge to edge and trims roughly 11% off the top and bottom.
  *
- * Mobile keeps `object-cover`: a portrait stage is far taller than 16:9, so
- * contain there would leave a small strip floating in a mostly empty screen.
+ * That trim is only acceptable because the footage is composed for it — the
+ * subject sits low-centre with empty wall above, so the crop takes backdrop
+ * rather than content. `object-contain` was tried to protect the previous,
+ * edge-to-edge footage and is the wrong trade here: it showed the whole frame
+ * but left bars down both sides. Anything shot full-bleed needs contain again.
  */
-const MEDIA_FIT = "absolute inset-0 h-full w-full object-cover md:object-contain";
+const MEDIA_FIT = "absolute inset-0 h-full w-full object-cover";
 
 type NetworkInformation = {
   saveData?: boolean;

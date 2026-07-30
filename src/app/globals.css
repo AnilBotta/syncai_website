@@ -30,6 +30,8 @@ html:not([data-theme]) {
   --border-subtle: rgba(218, 226, 253, 0.1);
   --foreground: #dae2fd;
   --muted: #a9aec9;
+  /* Quiet neutral for eyebrows and labels — see the light theme for why. */
+  --label: #8b91a8;
 
   /* Brand — Luminary lavender-indigo */
   --brand: #8e90ee;
@@ -97,9 +99,17 @@ html:not([data-theme]) {
   --bg-elevated: #ffffff;
   --surface: rgba(255, 255, 255, 0.72);
   --surface-strong: rgba(255, 255, 255, 0.85);
-  --border-subtle: rgba(93, 96, 204, 0.14);
-  --foreground: #1c1f3a;
-  --muted: #474a6d;
+  /* Warm ink scale rather than lavender-tinted greys. The footage supplies the
+     colour; typography stays neutral so the violet reads as deliberate. */
+  --border-subtle: rgba(20, 22, 31, 0.14);
+  --foreground: #14161f;
+  /* Body and label inks are darker than they look like they need to be. The
+     hero footage behind the copy is not evenly bright — measured across the
+     joined tour it runs Y 211 down to Y 121, dipping to Y 71 — so these are
+     set against the dark end of that range, not the average. The old #5a5f6e
+     managed only 1.46:1 on the darker beats. */
+  --muted: #363b48;
+  --label: #474d5c;
 
   --brand: #5d60cc;
   --brand-soft: #8e90ee;
@@ -170,6 +180,7 @@ html:not([data-theme]) {
   --border-subtle: rgba(218, 226, 253, 0.1);
   --foreground: #dae2fd;
   --muted: #a9aec9;
+  --label: #8b91a8;
 
   --brand: #8e90ee;
   --brand-soft: #c0c1ff;
@@ -222,6 +233,7 @@ html:not([data-theme]) ::selection,
   --color-surface-strong: var(--surface-strong);
   --color-border-subtle: var(--border-subtle);
   --color-muted: var(--muted);
+  --color-label: var(--label);
   --color-brand: var(--brand);
   --color-brand-soft: var(--brand-soft);
   --color-brand-glow-text: var(--brand-glow-text);
@@ -286,15 +298,42 @@ body {
   font-family: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
 }
 
-/* Display typeface for headings across the product (Luminary). */
+/* Display typeface for headings across the product (Luminary).
+   Geist rather than Plus Jakarta: a neutral grotesk reads as product, where a
+   geometric at heavy weight reads as marketing. 600 is the default weight, but
+   a `font-black` utility on the element still wins on specificity — heavy
+   weights are removed at the call site rather than fought here. Tracking
+   tightens as size grows. */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", var(--font-inter), system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  font-family: var(--font-geist-sans), "Geist", var(--font-inter), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+
+h1 {
+  letter-spacing: -0.032em;
+}
+
+/* Warm-brown ink for the pinned homepage tour only.
+   Scoped to a class rather than the light theme itself: the header toggle can
+   put the whole site into [data-theme="light"], and that should stay neutral.
+   Declared after the theme blocks so it wins on source order at equal
+   specificity. Both values are set against the darkest point of the footage
+   behind the copy (effective L 0.51 after the white scrim), not the average —
+   heading clears 7.9:1 and body 4.96:1 there. */
+.tour-ink {
+  --foreground: #33241a;
+  --muted: #574334;
+  --label: #574334;
+  /* Deepened from the theme's #474ab0, which measured 3.90:1 here — under the
+     4.5:1 needed at body size. This clears 4.77:1 and covers every violet link
+     inside the tour. */
+  --brand-deep: #3d3f96;
 }
 
 /* Animated Luminary mesh — fixed behind all content; blob colours come from the

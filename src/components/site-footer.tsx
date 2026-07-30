@@ -1,9 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Building2, Cpu, Mail, MapPin, Phone, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
+import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { contact, socials } from "@/lib/site-data";
 import { servicesDropdown } from "@/lib/nav-data";
 import { FooterSubscribe, BackToTop } from "@/components/footer-subscribe";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  XIcon,
+  YouTubeIcon,
+} from "@/components/icons/social-icons";
 
 const companyLinks = [
   { label: "About", href: "/about" },
@@ -24,20 +31,15 @@ const legalLinks = [
   { label: "Accessibility", href: "/accessibility" },
 ];
 
-const trustBadges: { icon: LucideIcon; label: string }[] = [
-  { icon: Cpu, label: "AI Automation Experts" },
-  { icon: MapPin, label: "Canadian Company" },
-  { icon: Building2, label: "Enterprise Solutions" },
-  { icon: ShieldCheck, label: "Secure & Confidential" },
-  { icon: Zap, label: "Fast Deployment" },
-];
+type Platform = (typeof socials)[number]["platform"];
 
-const socialLabels: Record<(typeof socials)[number]["platform"], string> = {
-  linkedin: "LinkedIn",
-  youtube: "YouTube",
-  instagram: "Instagram",
-  x: "X",
-  facebook: "Facebook",
+/** Accessible name plus glyph — the link shows the icon, screen readers get the name. */
+const socialMeta: Record<Platform, { label: string; Icon: (p: { className?: string }) => React.ReactElement }> = {
+  linkedin: { label: "LinkedIn", Icon: LinkedInIcon },
+  youtube: { label: "YouTube", Icon: YouTubeIcon },
+  instagram: { label: "Instagram", Icon: InstagramIcon },
+  x: { label: "X", Icon: XIcon },
+  facebook: { label: "Facebook", Icon: FacebookIcon },
 };
 
 export function SiteFooter() {
@@ -136,6 +138,27 @@ export function SiteFooter() {
               </li>
             </ul>
 
+            {socials.length > 0 ? (
+              <div className="mt-5 flex items-center gap-2">
+                {socials.map(({ platform, href }) => {
+                  const { label, Icon } = socialMeta[platform];
+                  return (
+                    <a
+                      key={platform}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      title={label}
+                      className="grid size-9 place-items-center rounded-full border border-border-subtle bg-[var(--input-bg)] text-muted transition hover:border-brand-soft/50 hover:text-brand-glow-text"
+                    >
+                      <Icon className="size-4" />
+                    </a>
+                  );
+                })}
+              </div>
+            ) : null}
+
             <Link
               href="/book"
               className="mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-electric to-brand-soft px-5 py-2.5 text-sm font-bold text-white shadow-[0_6px_20px_var(--accent-glow)] transition hover:-translate-y-0.5"
@@ -156,20 +179,8 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Trust badges */}
-        <div className="mt-14 grid grid-cols-2 gap-4 border-t border-border-subtle pt-8 sm:grid-cols-3 lg:grid-cols-5">
-          {trustBadges.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
-              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-border-subtle bg-[var(--input-bg)] text-brand-soft">
-                <Icon className="size-4" />
-              </span>
-              {label}
-            </div>
-          ))}
-        </div>
-
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center gap-5 border-t border-border-subtle pt-6 text-xs text-muted lg:flex-row lg:justify-between">
+        <div className="mt-14 flex flex-col items-center gap-5 border-t border-border-subtle pt-6 text-xs text-muted lg:flex-row lg:justify-between">
           <p className="order-2 lg:order-1">© {year} SyncAI Technologies. All rights reserved.</p>
           <nav aria-label="Legal" className="order-1 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:order-2">
             {legalLinks.map((link) => (
@@ -179,21 +190,6 @@ export function SiteFooter() {
             ))}
           </nav>
           <div className="order-3 flex items-center gap-3">
-            {socials.length > 0 ? (
-              <div className="flex items-center gap-2">
-                {socials.map(({ platform, href }) => (
-                  <a
-                    key={platform}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full border border-border-subtle bg-[var(--input-bg)] px-3 py-1.5 font-semibold text-muted transition hover:border-brand-soft/50 hover:text-brand-glow-text"
-                  >
-                    {socialLabels[platform]}
-                  </a>
-                ))}
-              </div>
-            ) : null}
             <BackToTop />
           </div>
         </div>

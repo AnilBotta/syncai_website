@@ -38,6 +38,7 @@ export const contact = {
 export const socials: { platform: "linkedin" | "youtube" | "instagram" | "x" | "facebook"; href: string }[] = [
   { platform: "facebook", href: "https://www.facebook.com/share/1946GqPPfq/?mibextid=wwXIfr" },
   { platform: "instagram", href: "https://www.instagram.com/anilbabubotta?igsh=b2s2ZHl0bWFmbHVs" },
+  { platform: "x", href: "https://x.com/SyncAi_Tech" },
 ];
 
 export const services = [

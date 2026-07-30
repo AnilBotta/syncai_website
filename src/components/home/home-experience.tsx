@@ -43,7 +43,10 @@ export function HomeExperience({ children }: HomeExperienceProps) {
 
       <div
         ref={wrapperRef}
-        className="theme-dark relative bg-bg-deep"
+        // TEST (revert before shipping): light palette so the tour copy renders
+        // dark navy over the bright studio footage. Was `theme-dark`.
+        data-theme="light"
+        className="tour-ink relative bg-bg-deep"
         style={{ height: `${SCRUB_CHAPTER_COUNT * 100}vh` }}
       >
         <ScrollProgressBridge targetRef={wrapperRef} />
