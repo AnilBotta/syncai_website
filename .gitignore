@@ -40,6 +40,13 @@ yarn-error.log*
 # claude code (machine-local overrides only)
 .claude/settings.local.json
 
+# Hero-tour working files. The per-beat clips are masters kept only for
+# re-cutting, and test-* are local staging copies — the tour ships the joined
+# master from Cloudinary (see components/home/tour-media.ts), so none of these
+# belong in the repo or the deploy.
+/public/brand/beat*.mp4
+/public/brand/test-*
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

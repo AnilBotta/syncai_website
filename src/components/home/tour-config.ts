@@ -25,31 +25,35 @@ export function scrubChapterCenter(index: number) {
   return index / (SCRUB_CHAPTER_COUNT - 1);
 }
 
-/** Measured source duration (ffprobe: 34.087007s). Only used to space BEATS. */
-export const SOURCE_DURATION = 34.087;
+/** Measured source duration (ffprobe). Only used to normalise BEATS. */
+export const SOURCE_DURATION = 45.875;
 
 /**
  * Video time each chapter should be centered on, one entry per chapter.
  *
- * Measured off the footage frame by frame, not guessed — the clip is cut into
- * seven segments that match these chapters one for one:
+ * The master is seven bright-studio clips joined with 0.7s crossfades, so each
+ * beat owns a window and the joins are dissolves rather than cuts — a hard cut
+ * scrubbed back and forth reads as a glitch. Windows in the joined timeline:
  *
- *   0.0-3.5s   brain / AI hub                    hero  (pinned to frame 0 so
- *                                                      the page opens on the
- *                                                      very start of the clip)
- *   4.0-6.5s   three screens, "Elevate Your..."  websites
- *   8.0-13.5s  voice avatar + waveform           voice
- *   14.0-17.5s n8n workflow diagram              workflow
- *   19.0-22.5s scoring dashboard + roadmap       strategy
- *   24.0-28.0s bar charts, growth arrow          results
- *   29.0-34.0s "Ready to sync your business"     cta
+ *   clip                  spans         clean      centred on
+ *   sphere + ribbons      0.00-8.00     0.0-7.3    hero      0.0 (opens on frame 0)
+ *   glass panels          7.30-15.30    8.0-14.6   websites  11.3
+ *   sound wave            14.60-22.60   15.3-21.9  voice     18.6
+ *   glass tiles           21.90-29.90   22.6-29.2  workflow  25.9
+ *   glass planes          29.20-37.20   29.9-36.5  strategy  33.2
+ *   ROI columns           36.50-41.54   37.2-40.8  results   39.0
+ *   liquid sphere         40.84-45.88   41.5-45.9  cta       45.0
  *
- * Each value is the middle of its segment, where the visual reads most
- * clearly. A chapter is centered on screen at progress i/(count-1), and
- * progressToTime maps that exactly onto BEATS[i], so the copy lands on its
- * own footage. Nudge a number here to shift when that chapter's text arrives.
+ * Hero is pinned to 0 rather than its window centre so the page opens on the
+ * very first frame. A chapter is centered on screen at progress i/(count-1),
+ * and progressToTime maps that exactly onto BEATS[i], so each block of copy
+ * lands on its own footage. Nudge one number to shift one chapter.
+ *
+ * The last two clips are 5.0s where the rest are 8.0s, so those chapters scrub
+ * through less footage per viewport. Not perceptible, but it is why the later
+ * gaps are shorter.
  */
-export const BEATS = [0, 5.0, 11.0, 15.5, 20.5, 26.0, 31.0];
+export const BEATS = [0, 11.3, 18.6, 25.9, 33.2, 39.0, 45.0];
 
 /**
  * Map scroll progress (0-1) to a video timestamp, piecewise-linear through
@@ -106,9 +110,11 @@ export const SCRIM_MIX: ScrimMixes = [
   [0.0, 0.9, 0.05], // strategy  copy right
   [0.9, 0.0, 0.0], //  results   copy left  — footage is already dark here
   // The closing frame has "Ready to sync your business with AI?" burned into it
-  // on the left, duplicating our own CTA. It is too wide to crop out and the
-  // whole beat carries it, so the flat layer sinks it to near-black instead.
-  [0.15, 0.85, 0.62], // cta     copy right
+  // on the left, duplicating our own CTA. A heavy flat layer sank it, but the
+  // flat and side layers compound and the whole frame went black. The left
+  // gradient does the job on its own: it covers the bubble without touching
+  // the lit subject on the right.
+  [0.3, 0.85, 0.1], // cta       copy right
 ];
 
 /**
