@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { DemoPageShell } from "@/components/demo-page-shell";
-import { PhoneCall, MessageSquareText, Headphones, ArrowRight, Bot } from "lucide-react";
+import { PhoneCall, MessageSquareText, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { InlineChatAgent, InlineVoiceAgent } from "@/components/assistant/inline-agents";
 
 export const metadata: Metadata = {
   title: "AI Voice & Chat Agents",
@@ -16,14 +17,15 @@ export default function AiVoiceChatPage() {
       description="Website chat, missed-call recovery, appointment support, FAQs, intake, and follow-up agents for daily operations."
     >
       {/* Live agents section */}
-      <section className="bg-bg-deep py-20 text-white sm:py-28">
+      <section className="bg-bg-deep py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-black tracking-tight sm:text-5xl">
+            <h2 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
               Try the live agents
             </h2>
             <p className="mt-5 text-lg leading-8 text-muted">
-              These embedded demos show how SyncAI voice and chat agents handle real conversations.
+              These are the real SyncAI agents — the same ones that answer our chat and our phone
+              line. Ask them anything, or let them book your strategy call right here.
             </p>
           </div>
           <div className="mt-12 grid gap-8 md:grid-cols-2">
@@ -31,38 +33,24 @@ export default function AiVoiceChatPage() {
               <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-[#D9A0FF]">
                 <MessageSquareText className="size-6" />
               </span>
-              <h3 className="mt-5 text-xl font-black">Live Chat Agent</h3>
+              <h3 className="mt-5 text-xl font-black text-foreground">Live Chat Agent</h3>
               <p className="mt-3 leading-7 text-muted">
-                AI chatbot that answers FAQs, qualifies visitors, and captures leads in real time.
+                Answers questions about our work, checks real calendar availability, and books the
+                call — start typing below.
               </p>
-              <div className="mt-6 h-[400px] rounded-xl border border-border-subtle bg-bg-deep/80 p-4">
-                <div className="flex h-full items-center justify-center text-center">
-                  <div>
-                    <Bot className="mx-auto size-10 text-brand" />
-                    <p className="mt-4 text-sm text-muted">[Chat agent embed code goes here]</p>
-                    <p className="mt-2 text-xs text-muted">Paste your Botpress / Voiceflow / Tidio embed script</p>
-                  </div>
-                </div>
-              </div>
+              <InlineChatAgent />
             </div>
 
             <div className="rounded-[2rem] border border-border-subtle bg-surface p-6 backdrop-blur-xl">
               <span className="flex size-12 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-[#D9A0FF]">
                 <PhoneCall className="size-6" />
               </span>
-              <h3 className="mt-5 text-xl font-black">Voice Agent Demo</h3>
+              <h3 className="mt-5 text-xl font-black text-foreground">Voice Agent Demo</h3>
               <p className="mt-3 leading-7 text-muted">
-                AI voice agent that handles after-hours calls, appointment bookings, and follow-ups.
+                The same agent that answers our phone after hours. Press start, allow your
+                microphone, and talk to it — it can book your appointment mid-conversation.
               </p>
-              <div className="mt-6 h-[400px] rounded-xl border border-border-subtle bg-bg-deep/80 p-4">
-                <div className="flex h-full items-center justify-center text-center">
-                  <div>
-                    <Headphones className="mx-auto size-10 text-brand" />
-                    <p className="mt-4 text-sm text-muted">[Voice agent embed code goes here]</p>
-                    <p className="mt-2 text-xs text-muted">Paste your Vapi / Bland AI / Retell embed</p>
-                  </div>
-                </div>
-              </div>
+              <InlineVoiceAgent />
             </div>
           </div>
         </div>
@@ -105,9 +93,11 @@ export default function AiVoiceChatPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-bg-deep py-20 text-center text-white">
+      <section className="bg-bg-deep py-20 text-center">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-black sm:text-5xl">Ready to deploy your AI agent?</h2>
+          <h2 className="text-3xl font-black text-foreground sm:text-5xl">
+            Ready to deploy your AI agent?
+          </h2>
           <p className="mt-5 text-lg text-muted">Let&apos;s build a voice or chat agent that works for your business 24/7.</p>
           <Link
             href="/contact"
