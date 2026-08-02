@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowRight, Bot, ClipboardList, Loader2, Sparkles } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
+import { TestimonialCarousel } from "@/components/testimonial-carousel";
 
 type Analysis = {
   summary: string;
@@ -146,6 +147,13 @@ export function DemoAnalyzer() {
               </button>
               {error ? <p className="text-sm text-red-600">{error}</p> : null}
             </form>
+
+            {/* Fills the space this column leaves under the form — the grid is
+                items-start, so the taller results panel opposite used to sit
+                beside dead space. Social proof next to the ask. */}
+            <div className="mt-8">
+              <TestimonialCarousel compact />
+            </div>
           </div>
 
           <div className="rounded-[16px] border border-border-subtle bg-bg-elevated/95 p-4 text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.07)]">

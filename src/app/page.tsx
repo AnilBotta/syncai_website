@@ -2,7 +2,6 @@ import { HomeExperience } from "@/components/home/home-experience";
 import { TourChapters } from "@/components/home/chapters/tour-chapters";
 import { IndustriesGrid } from "@/components/industries-grid";
 import { DemoAnalyzer } from "@/components/demo-analyzer";
-import { TestimonialCarousel } from "@/components/testimonial-carousel";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SectionShell } from "@/components/ui/section-shell";
@@ -20,7 +19,6 @@ export default function Home() {
 
         <IndustriesGrid />
         <DemoAnalyzer />
-        <TestimonialCarousel />
 
         <SectionShell tier="base" glow="center" id="faq">
           <SectionHeading eyebrow="FAQ" title="Clear answers for serious buyers" />
