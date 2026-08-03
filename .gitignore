@@ -47,6 +47,17 @@ yarn-error.log*
 /public/brand/beat*.mp4
 /public/brand/test-*
 
+# Demo-site photography. Delivery is from Cloudinary (see lib/demo-sites/dental.ts),
+# so neither the full-resolution masters in /public/brand nor the resized 2000px
+# copies in /public/demos belong in the repo or the deploy. Both are kept locally
+# for re-cropping and re-uploading — same arrangement as the hero-tour masters.
+/public/brand/hero.jpeg
+/public/brand/treatment.jpeg
+/public/brand/practice team.jpeg
+/public/brand/detail.jpeg
+/public/brand/exterior.jpeg
+/public/demos/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

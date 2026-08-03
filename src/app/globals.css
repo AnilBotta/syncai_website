@@ -211,6 +211,97 @@ html:not([data-theme]) {
   color: var(--foreground);
 }
 
+/*
+ * Demo-site palettes. Each live demo under /demos/live is a DIFFERENT fictional
+ * business, so it gets its own opaque token block rather than SyncAI's theme —
+ * same forced-island mechanism as .theme-dark above. Opaque on purpose: the
+ * root layout paints a fixed lavender mesh behind every page, and these must
+ * cover it completely or the "separate company" illusion collapses.
+ *
+ * Northgate Dental Studio: warm cream, sage, deep slate-green ink.
+ */
+.demo-dental {
+  --bg-base: #f7f5f0;
+  --bg-deep: #efeae1;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-strong: #fffdf9;
+  --border-subtle: rgba(38, 48, 43, 0.14);
+  --foreground: #26302b;
+  --muted: #4d5a52;
+  --label: #5c6b61;
+
+  --brand: #4f6f5e;
+  --brand-soft: #7d9c8a;
+  --brand-glow-text: #3a5346;
+  --brand-deep: #3a5346;
+  --brand-electric: #5f8570;
+  --accent-glow: rgba(79, 111, 94, 0.14);
+
+  --card-bg: #ffffff;
+  --card-bg-elevated: #fffdf9;
+  --input-bg: #ffffff;
+  --overlay: rgba(38, 48, 43, 0.45);
+
+  --success: #1a8a62;
+  --danger: #c5394b;
+
+  background: var(--bg-base);
+  color: var(--foreground);
+}
+
+/* Editorial serif for demo headings — the clearest signal that this is not a
+   SyncAI page. Body copy stays on Geist, already loaded by the root layout. */
+.demo-dental h1,
+.demo-dental h2,
+.demo-dental h3,
+.demo-dental .font-serif {
+  font-family: var(--font-demo-serif), Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+/* Fluid display sizes. The hero has to hold a full viewport on a 27" monitor and
+   still breathe on a phone, which a fixed sm:/lg: ladder never quite manages. */
+.demo-dental h1 {
+  font-size: clamp(2.75rem, 6.2vw, 5.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+.demo-dental h2 {
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
+  line-height: 1.1;
+}
+
+/* Micro-label: the numbered eyebrow that anchors every section. */
+.demo-dental .demo-label {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Hairline that draws itself in as a services row is hovered. */
+.demo-dental .rule-grow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 0;
+  background: var(--brand);
+  transition: width 0.5s cubic-bezier(0.21, 0.47, 0.32, 0.98);
+}
+.demo-dental .rule-grow:hover::after {
+  width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo-dental .rule-grow::after {
+    transition: none;
+  }
+}
+
 /* Selection colours follow the theme. */
 [data-theme="dark"] ::selection,
 html:not([data-theme]) ::selection,

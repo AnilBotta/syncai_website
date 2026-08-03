@@ -28,14 +28,34 @@ const quickReplies = [
   "How does pricing work?",
 ];
 
-const welcome: ChatMessage = {
-  role: "assistant",
-  content:
-    "Hi! I'm the SyncAI assistant. Ask me about our AI websites, chatbots, voice agents, or workflow automation — or I can book you a free strategy call right here.",
+const WELCOME =
+  "Hi! I'm the SyncAI assistant. Ask me about our AI websites, chatbots, voice agents, or workflow automation — or I can book you a free strategy call right here.";
+
+type ChatPanelProps = {
+  /** Streaming ndjson endpoint. Defaults to the SyncAI assistant. */
+  endpoint?: string;
+  /** Opening line from the assistant. */
+  welcome?: string;
+  /** Clickable starters shown before the first reply. */
+  starters?: string[];
+  /**
+   * sessionStorage key for the transcript. Demo sites pass their own so a
+   * fictional clinic's conversation never bleeds into the SyncAI assistant.
+   */
+  storageKey?: string;
+  placeholder?: string;
 };
 
-export function ChatPanel() {
-  const [messages, setMessages] = useState<ChatMessage[]>([welcome]);
+export function ChatPanel({
+  endpoint = "/api/chat",
+  welcome = WELCOME,
+  starters = quickReplies,
+  storageKey = STORAGE_KEY,
+  placeholder = "Ask about our AI services…",
+}: ChatPanelProps = {}) {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { role: "assistant", content: welcome },
+  ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
@@ -43,7 +63,7 @@ export function ChatPanel() {
 
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem(STORAGE_KEY);
+      const saved = sessionStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved) as ChatMessage[];
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -53,16 +73,16 @@ export function ChatPanel() {
     } catch {
       // Ignore malformed storage.
     }
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-40)));
+      sessionStorage.setItem(storageKey, JSON.stringify(messages.slice(-40)));
     } catch {
       // Storage may be unavailable (private mode); the chat still works.
     }
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
+  }, [messages, storageKey]);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -82,7 +102,7 @@ export function ChatPanel() {
       .map((message) => ({ role: message.role, content: message.content }));
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: history }),
@@ -262,7 +282,7 @@ export function ChatPanel() {
 
         {showQuickReplies ? (
           <div className="flex flex-wrap gap-2">
-            {quickReplies.map((reply) => (
+            {starters.map((reply) => (
               <button
                 key={reply}
                 type="button"
@@ -286,7 +306,7 @@ export function ChatPanel() {
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask about our AI services…"
+          placeholder={placeholder}
           className="h-11 flex-1 rounded-full border border-border-subtle bg-bg-elevated px-4 text-sm text-foreground outline-none transition focus:border-brand-deep focus:ring-4 focus:ring-brand/20"
         />
         <button

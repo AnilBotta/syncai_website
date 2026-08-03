@@ -8,6 +8,40 @@ export const metadata: Metadata = {
   description: "Modern AI-powered websites with lead capture, qualification, booking flows, and customer education built in.",
 };
 
+/** `url: null` renders as a non-clickable "Soon" card until the demo is built. */
+const demoSites: {
+  name: string;
+  url: string | null;
+  description: string;
+  features: string[];
+}[] = [
+  {
+    name: "Dental Clinic Demo",
+    url: "/demos/live/dental",
+    description:
+      "Northgate Dental Studio — a full clinic site with an AI receptionist that answers questions and books appointments.",
+    features: ["24/7 lead capture", "Smart booking", "Patient FAQ agent"],
+  },
+  {
+    name: "Real Estate Demo",
+    url: null,
+    description: "Property inquiry system with AI routing, after-hours response, and follow-up automation.",
+    features: ["Instant lead routing", "After-hours capture", "Follow-up sequences"],
+  },
+  {
+    name: "Physiotherapy Demo",
+    url: null,
+    description: "Patient intake automation with AI forms, calendar sync, and admin dashboard.",
+    features: ["Digital intake", "Calendar integration", "Admin dashboard"],
+  },
+  {
+    name: "Service Business Demo",
+    url: null,
+    description: "Full-service AI website with chat, booking, and automated client communication.",
+    features: ["Live chat agent", "Auto-booking", "Client portal"],
+  },
+];
+
 export default function AiWebsitesPage() {
   return (
     <DemoPageShell
@@ -23,44 +57,14 @@ export default function AiWebsitesPage() {
               See it in action
             </h2>
             <p className="mt-5 text-lg leading-8 text-muted">
-              Click the links below to explore live AI-powered websites built by SyncAI.
+              Real working sites for invented businesses. Talk to the AI receptionist, ask it
+              anything, book yourself in — it all runs live.
             </p>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {[
-              {
-                name: "Dental Clinic Demo",
-                url: "#",
-                description: "AI website with lead qualification agent, booking flows, and automated patient intake.",
-                features: ["24/7 lead capture", "Smart booking", "Patient FAQ agent"],
-              },
-              {
-                name: "Real Estate Demo",
-                url: "#",
-                description: "Property inquiry system with AI routing, after-hours response, and follow-up automation.",
-                features: ["Instant lead routing", "After-hours capture", "Follow-up sequences"],
-              },
-              {
-                name: "Physiotherapy Demo",
-                url: "#",
-                description: "Patient intake automation with AI forms, calendar sync, and admin dashboard.",
-                features: ["Digital intake", "Calendar integration", "Admin dashboard"],
-              },
-              {
-                name: "Service Business Demo",
-                url: "#",
-                description: "Full-service AI website with chat, booking, and automated client communication.",
-                features: ["Live chat agent", "Auto-booking", "Client portal"],
-              },
-            ].map((site) => (
-              <a
-                key={site.name}
-                href={site.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-6 shadow-sm transition hover:border-brand-soft/40 hover:shadow-md"
-              >
-                <div className="flex items-start justify-between">
+            {demoSites.map((site) => {
+              const body = (
+                <div className="flex items-start justify-between gap-4">
                   <div>
                     <h3 className="text-xl font-black text-foreground">{site.name}</h3>
                     <p className="mt-3 leading-7 text-muted">{site.description}</p>
@@ -72,10 +76,37 @@ export default function AiWebsitesPage() {
                       ))}
                     </ul>
                   </div>
-                  <ExternalLink className="mt-1 size-5 shrink-0 text-muted transition group-hover:text-brand-glow-text" />
+                  {site.url ? (
+                    <ExternalLink className="mt-1 size-5 shrink-0 text-muted transition group-hover:text-brand-glow-text" />
+                  ) : (
+                    <span className="mt-1 shrink-0 rounded-full border border-border-subtle px-3 py-1 text-xs font-bold text-muted">
+                      Soon
+                    </span>
+                  )}
                 </div>
-              </a>
-            ))}
+              );
+
+              // Only the built ones are links. A card that looks clickable and
+              // goes nowhere is worse than one that says it isn't ready.
+              return site.url ? (
+                <Link
+                  key={site.name}
+                  href={site.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group rounded-[2rem] border border-border-subtle bg-surface backdrop-blur-md p-6 shadow-sm transition hover:border-brand-soft/40 hover:shadow-md"
+                >
+                  {body}
+                </Link>
+              ) : (
+                <div
+                  key={site.name}
+                  className="rounded-[2rem] border border-border-subtle bg-surface/60 p-6 opacity-70 backdrop-blur-md"
+                >
+                  {body}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -119,9 +150,11 @@ export default function AiWebsitesPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-bg-deep py-20 text-center text-white">
+      <section className="bg-bg-deep py-20 text-center">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-black sm:text-5xl">Want a website like these?</h2>
+          <h2 className="text-3xl font-black text-foreground sm:text-5xl">
+            Want a website like these?
+          </h2>
           <p className="mt-5 text-lg text-muted">Let&apos;s build your AI-powered website that captures leads around the clock.</p>
           <Link
             href="/contact"
