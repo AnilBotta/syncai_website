@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
+import { businessInitials } from "@/lib/demo-sites/initials";
 
 /**
  * The demo site's AI receptionist, embedded open in the page rather than hidden
@@ -29,20 +30,28 @@ type DemoReceptionistProps = {
   business: string;
   welcome: string;
   starters: string[];
+  /** e.g. "Reception" for a clinic, "Sales team" for a brokerage. */
+  assistantLabel: string;
 };
 
-export function DemoReceptionist({ slug, business, welcome, starters }: DemoReceptionistProps) {
+export function DemoReceptionist({
+  slug,
+  business,
+  welcome,
+  starters,
+  assistantLabel,
+}: DemoReceptionistProps) {
   return (
-    <div className="flex h-[560px] flex-col overflow-hidden rounded-3xl border border-border-subtle bg-bg-elevated shadow-[0_18px_50px_rgba(38,48,43,0.10)]">
+    <div className="flex h-[560px] flex-col overflow-hidden rounded-3xl border border-border-subtle bg-bg-elevated shadow-[0_18px_50px_var(--accent-glow)]">
       <div className="flex items-center gap-3 border-b border-border-subtle px-5 py-4">
         <span className="grid size-10 place-items-center rounded-full bg-brand text-sm font-bold text-white">
-          {initials(business)}
+          {businessInitials(business)}
         </span>
         <div>
           <p className="text-sm font-bold text-foreground">{business}</p>
           <p className="flex items-center gap-1.5 text-xs text-muted">
             <span className="size-1.5 rounded-full bg-success" />
-            Reception — replies instantly
+            {assistantLabel} — replies instantly
           </p>
         </div>
       </div>
@@ -56,13 +65,4 @@ export function DemoReceptionist({ slug, business, welcome, starters }: DemoRece
       />
     </div>
   );
-}
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
 }

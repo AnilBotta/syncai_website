@@ -250,8 +250,45 @@ html:not([data-theme]) {
   color: var(--foreground);
 }
 
-/* Editorial serif for demo headings — the clearest signal that this is not a
-   SyncAI page. Body copy stays on Geist, already loaded by the root layout. */
+/*
+ * Maple & Vine Realty: warm paper, ink navy, a single deep-navy brand. Chosen to
+ * share nothing with the clinic's sage and cream — two demos that look like one
+ * site recoloured would argue against us, not for us.
+ */
+.demo-realty {
+  --bg-base: #fbfaf7;
+  --bg-deep: #f2efe9;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-strong: #fffdfa;
+  --border-subtle: rgba(27, 34, 48, 0.14);
+  --foreground: #1b2230;
+  --muted: #454f60;
+  --label: #5b6575;
+
+  --brand: #234a72;
+  --brand-soft: #6b8db3;
+  --brand-glow-text: #16324f;
+  --brand-deep: #16324f;
+  --brand-electric: #2d5c8c;
+  --accent-glow: rgba(35, 74, 114, 0.14);
+
+  --card-bg: #ffffff;
+  --card-bg-elevated: #fffdfa;
+  --input-bg: #ffffff;
+  --overlay: rgba(27, 34, 48, 0.45);
+
+  --success: #1a8a62;
+  --danger: #c5394b;
+
+  background: var(--bg-base);
+  color: var(--foreground);
+}
+
+/* Editorial display faces for demo headings — the clearest signal that this is
+   not a SyncAI page, and that the two demos are not the same site. Body copy
+   stays on Geist, already loaded by the root layout. Both families are loaded by
+   the demo layout; each palette picks one. */
 .demo-dental h1,
 .demo-dental h2,
 .demo-dental h3,
@@ -261,20 +298,35 @@ html:not([data-theme]) {
   letter-spacing: -0.015em;
 }
 
+.demo-realty h1,
+.demo-realty h2,
+.demo-realty h3,
+.demo-realty .font-serif {
+  font-family: var(--font-demo-display), Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Everything below is shared demo-site layout, not palette — it applies to every
+   /demos/live site regardless of which brand it is wearing. */
+
 /* Fluid display sizes. The hero has to hold a full viewport on a 27" monitor and
    still breathe on a phone, which a fixed sm:/lg: ladder never quite manages. */
-.demo-dental h1 {
+.demo-dental h1,
+.demo-realty h1 {
   font-size: clamp(2.75rem, 6.2vw, 5.25rem);
   line-height: 1.02;
   letter-spacing: -0.025em;
 }
-.demo-dental h2 {
+.demo-dental h2,
+.demo-realty h2 {
   font-size: clamp(2rem, 3.6vw, 3.25rem);
   line-height: 1.1;
 }
 
 /* Micro-label: the numbered eyebrow that anchors every section. */
-.demo-dental .demo-label {
+.demo-dental .demo-label,
+.demo-realty .demo-label {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 700;
@@ -283,7 +335,8 @@ html:not([data-theme]) {
 }
 
 /* Hairline that draws itself in as a services row is hovered. */
-.demo-dental .rule-grow::after {
+.demo-dental .rule-grow::after,
+.demo-realty .rule-grow::after {
   content: "";
   position: absolute;
   left: 0;
@@ -293,11 +346,13 @@ html:not([data-theme]) {
   background: var(--brand);
   transition: width 0.5s cubic-bezier(0.21, 0.47, 0.32, 0.98);
 }
-.demo-dental .rule-grow:hover::after {
+.demo-dental .rule-grow:hover::after,
+.demo-realty .rule-grow:hover::after {
   width: 100%;
 }
 @media (prefers-reduced-motion: reduce) {
-  .demo-dental .rule-grow::after {
+  .demo-dental .rule-grow::after,
+  .demo-realty .rule-grow::after {
     transition: none;
   }
 }

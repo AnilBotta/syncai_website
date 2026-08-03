@@ -11,8 +11,10 @@ import { DemoHeader } from "@/components/demo-sites/demo-header";
 import { SectionLabel } from "@/components/demo-sites/section-label";
 import { StatCounter } from "@/components/demo-sites/stat-counter";
 import { FaqAccordion } from "@/components/demo-sites/faq-accordion";
+import { PropertyCard } from "@/components/demo-sites/property-card";
 import { Reveal } from "@/components/motion/reveal";
 import { Parallax } from "@/components/motion/parallax";
+import { businessInitials } from "@/lib/demo-sites/initials";
 
 export function generateStaticParams() {
   return demoSiteSlugs().map((industry) => ({ industry }));
@@ -49,7 +51,42 @@ export default async function DemoSitePage({
     notFound();
   }
 
-  const monogram = initials(site.business);
+  const monogram = businessInitials(site.business);
+  const cinematic = site.layout === "cinematic";
+
+  // Section numbers have to stay contiguous even though the running order differs
+  // per layout — a site that jumps 02, 04, 05 looks broken. Derived from what is
+  // actually rendered rather than counted up as we go, so nothing mutates
+  // mid-render. Offset by 2 because the hero is 01 and carries no label.
+  const order: string[] = cinematic
+    ? [
+        // Listings first: a brokerage that buries its stock under an About
+        // section is not behaving like a brokerage.
+        ...(site.properties ? ["properties"] : []),
+        "services",
+        "gallery",
+        ...(site.neighbourhoods ? ["areas"] : []),
+        "story",
+        "faq",
+        "booking",
+      ]
+    : [
+        "services",
+        ...(site.properties ? ["properties"] : []),
+        "gallery",
+        ...(site.neighbourhoods ? ["areas"] : []),
+        "story",
+        "faq",
+        "booking",
+      ];
+  const num = (key: string) => order.indexOf(key) + 2;
+
+  // Gallery: large plate, small offset plate, and a full-width band beneath.
+  // A site with only one wide shot to spare (realty spends its photography on
+  // listing cards) promotes `exterior` into the large plate and drops the band,
+  // which is better than showing the same photograph twice on one page.
+  const galleryPrimary = site.images.wide ?? site.images.exterior;
+  const galleryBand = site.images.wide ? site.images.exterior : undefined;
 
   return (
     // overflow-x-clip: the hero image intentionally bleeds past the right edge on
@@ -64,10 +101,17 @@ export default async function DemoSitePage({
         tagline={site.tagline}
         phone={site.phone}
         monogram={monogram}
+        nav={site.nav}
+        ctaLabel={site.ctaLabel}
+        ctaLabelShort={site.ctaLabelShort}
+        overHero={cinematic}
       />
 
-      {/* 01 — Hero. Asymmetric: copy holds the left seven columns, the photograph
-          runs off the right edge of the viewport. */}
+      {cinematic ? (
+        <CinematicHero site={site} />
+      ) : (
+      /* 01 — Hero. Asymmetric: copy holds the left seven columns, the photograph
+         runs off the right edge of the viewport. */
       <section className="relative mx-auto max-w-6xl px-4 pt-10 pb-20 sm:px-6 lg:px-8 lg:pt-16 lg:pb-28">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-7">
@@ -114,14 +158,14 @@ export default async function DemoSitePage({
             <Reveal delay={0.12}>
               <div className="lg:-mr-[22vw]">
                 <DemoImage
-                  src={site.images.hero}
-                  alt={`Reception at ${site.business}`}
+                  src={site.images.hero.src}
+                  alt={site.images.hero.alt}
                   // 5/4, not portrait: this column is ~460px wide plus a 22vw
                   // bleed, so anything taller than landscape runs to ~950px and
                   // strands the copy in the middle of an empty screen.
                   aspect="aspect-[5/4]"
                   sizes="(min-width: 1024px) 60vw, 100vw"
-                  className="rounded-[2rem] shadow-[0_30px_80px_rgba(38,48,43,0.16)]"
+                  className="rounded-[2rem] shadow-[0_30px_80px_var(--accent-glow)]"
                   priority
                 />
               </div>
@@ -129,39 +173,62 @@ export default async function DemoSitePage({
           </div>
         </div>
       </section>
+      )}
 
-      {/* Trust marks */}
+      {/* Trust marks. Centred with dot separators rather than justify-between:
+          four marks of wildly different lengths left an orphan on a second row
+          that read as a layout bug. */}
       <section className="border-y border-border-subtle">
-        <div className="mx-auto max-w-6xl px-4 py-7 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 sm:justify-between">
-            {site.trustMarks.map((mark) => (
-              <span key={mark} className="demo-label text-label">
-                {mark}
-              </span>
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+          <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
+            {site.trustMarks.map((mark, i) => (
+              <li key={mark} className="flex items-center gap-4">
+                {i > 0 ? (
+                  <span aria-hidden className="size-1 rounded-full bg-current opacity-30" />
+                ) : null}
+                <span className="demo-label text-label">{mark}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
-        <Reveal>
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {site.stats.map((stat) => (
-              <StatCounter key={stat.label} value={stat.value} label={stat.label} />
-            ))}
-          </div>
-        </Reveal>
+      {/* Stats. On the cinematic layout this is a dark band — the one place the
+          page inverts, and the clearest signal it is not the all-light clinic. */}
+      <section
+        className={
+          cinematic
+            ? "bg-[var(--brand-deep)] py-16 text-white lg:py-20"
+            : "mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24"
+        }
+      >
+        <div className={cinematic ? "mx-auto max-w-6xl px-4 sm:px-6 lg:px-8" : ""}>
+          <Reveal>
+            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+              {site.stats.map((stat) => (
+                <StatCounter
+                  key={stat.label}
+                  value={stat.value}
+                  label={stat.label}
+                  inverted={cinematic}
+                />
+              ))}
+            </div>
+          </Reveal>
+        </div>
       </section>
 
-      {/* 02 — Services, as an editorial list rather than a grid of boxes. */}
+      {/* Listings lead on the cinematic layout. */}
+      {cinematic ? <ListingsSection site={site} index={num("properties")} /> : null}
+
+      {/* Services, as an editorial list rather than a grid of boxes. */}
       <section id="services" className="bg-bg-deep py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-4">
               <Reveal>
-                <SectionLabel index={2}>What we do</SectionLabel>
-                <h2 className="mt-6 max-w-xs">Care, without the upsell.</h2>
+                <SectionLabel index={num("services")}>{site.sectionLabels.services}</SectionLabel>
+                <h2 className="mt-6 max-w-sm">{site.servicesHeading}</h2>
               </Reveal>
             </div>
             <div className="lg:col-span-8">
@@ -187,67 +254,135 @@ export default async function DemoSitePage({
         </div>
       </section>
 
-      {/* 03 — Gallery. Deliberately uneven: a tall plate, a short one offset down,
-          then the street view running the full width. */}
+      {/* Listings sit here on the editorial layout. */}
+      {!cinematic ? <ListingsSection site={site} index={num("properties")} /> : null}
+
+      {/* Gallery. Deliberately uneven: a tall plate, a short one offset down,
+          then the wide view running the full width. */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <Reveal>
-          <SectionLabel index={3}>Inside the practice</SectionLabel>
+          <SectionLabel index={num("gallery")}>{site.sectionLabels.gallery}</SectionLabel>
         </Reveal>
         <div className="mt-10 grid gap-6 sm:grid-cols-5">
           <Reveal className="sm:col-span-3">
             <Parallax amount={22}>
               <DemoImage
-                src={site.images.treatment}
-                alt="A treatment room"
+                src={galleryPrimary?.src}
+                alt={galleryPrimary?.alt ?? ""}
                 aspect="aspect-[4/3]"
                 sizes="(min-width: 640px) 60vw, 100vw"
-                className="rounded-[1.75rem] shadow-[0_16px_44px_rgba(38,48,43,0.10)]"
+                className="rounded-[1.75rem] shadow-[0_16px_44px_var(--accent-glow)]"
               />
             </Parallax>
           </Reveal>
           <Reveal className="sm:col-span-2 sm:pt-16" delay={0.1}>
             <Parallax amount={-18}>
               <DemoImage
-                src={site.images.detail}
-                alt="Sterilised instruments laid out before an appointment"
-                // Square rather than portrait — the source is 16:9 and a 4/5 crop
-                // cut the eucalyptus off the right of the composition.
+                src={site.images.detail.src}
+                alt={site.images.detail.alt}
+                // Square rather than portrait — the sources are 16:9 and a 4/5
+                // crop cuts the edges off the composition.
                 aspect="aspect-square"
                 sizes="(min-width: 640px) 40vw, 100vw"
-                className="rounded-[1.75rem] shadow-[0_16px_44px_rgba(38,48,43,0.10)]"
+                className="rounded-[1.75rem] shadow-[0_16px_44px_var(--accent-glow)]"
               />
             </Parallax>
           </Reveal>
         </div>
-        <Reveal delay={0.05}>
-          <DemoImage
-            src={site.images.exterior}
-            alt={`${site.business} from the street`}
-            aspect="aspect-[21/9]"
-            sizes="(min-width: 1152px) 1088px, 100vw"
-            className="mt-6 rounded-[1.75rem] shadow-[0_16px_44px_rgba(38,48,43,0.10)]"
-          />
-        </Reveal>
+        {galleryBand ? (
+          <Reveal delay={0.05}>
+            <DemoImage
+              src={galleryBand.src}
+              alt={galleryBand.alt}
+              aspect="aspect-[21/9]"
+              sizes="(min-width: 1152px) 1088px, 100vw"
+              className="mt-6 rounded-[1.75rem] shadow-[0_16px_44px_var(--accent-glow)]"
+            />
+          </Reveal>
+        ) : null}
       </section>
 
-      {/* 04 — Story, with the photograph overlapping the copy block. */}
-      <section id="practice" className="border-y border-border-subtle bg-bg-deep py-20 lg:py-28">
+      {/* Neighbourhoods — estate agency only. */}
+      {site.neighbourhoods ? (
+        <section id="areas" className="border-y border-border-subtle bg-bg-deep py-20 lg:py-28">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-10 lg:grid-cols-12">
+              <div className="lg:col-span-4">
+                <Reveal>
+                  <SectionLabel index={num("areas")}>{site.neighbourhoods.label}</SectionLabel>
+                  <h2 className="mt-6 max-w-sm">{site.neighbourhoods.heading}</h2>
+                </Reveal>
+              </div>
+              <div className="lg:col-span-8">
+                <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+                  {site.neighbourhoods.items.map((area, i) => (
+                    <Reveal key={area.name} delay={i * 0.06}>
+                      <div className="border-t border-foreground/15 pt-5">
+                        <h3 className="text-xl">{area.name}</h3>
+                        <p className="mt-3 leading-8 text-muted">{area.description}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {cinematic ? (
+        /* Story, half-bleed: the photograph runs off the left edge of the
+           viewport and the copy sits in the right half. No overlapping card —
+           that is the clinic's signature move, and repeating it here is exactly
+           what made the two sites read as one template. */
+        <section id="story" className="border-y border-border-subtle bg-bg-deep">
+          <div className="grid items-stretch lg:grid-cols-2">
+            <div className="relative min-h-[22rem] lg:min-h-[34rem]">
+              <DemoImage
+                src={site.images.team.src}
+                alt={site.images.team.alt}
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+              />
+            </div>
+            <div className="flex items-center px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
+              <div className="max-w-xl">
+                <SectionLabel index={num("story")}>{site.sectionLabels.story}</SectionLabel>
+                <h2 className="mt-6">{site.story.heading}</h2>
+                {site.story.body.map((paragraph) => (
+                  <p key={paragraph} className="mt-5 leading-8 text-muted">
+                    {paragraph}
+                  </p>
+                ))}
+                <blockquote className="mt-8 border-l-2 border-brand pl-6 font-serif text-xl leading-9 text-foreground">
+                  {site.pullQuote}
+                </blockquote>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
+      /* Story, with the copy block overlapping the photograph. */
+      <section
+        id="story"
+        className="border-y border-border-subtle bg-bg-deep py-20 lg:py-28"
+      >
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-0">
             <div className="lg:col-span-6">
               <DemoImage
-                src={site.images.team}
-                alt={`The team at ${site.business}`}
+                src={site.images.team.src}
+                alt={site.images.team.alt}
                 aspect="aspect-[4/3]"
                 sizes="(min-width: 1024px) 50vw, 100vw"
-                className="rounded-[2rem] shadow-[0_24px_60px_rgba(38,48,43,0.14)]"
+                className="rounded-[2rem] shadow-[0_24px_60px_var(--accent-glow)]"
               />
             </div>
             {/* Overlaps the image on lg+ — the single most "designed" moment here.
                 `relative z-10` is load-bearing: DemoImage's root is positioned, so
                 without it the photo paints over this card and clips the copy. */}
-            <div className="relative z-10 lg:col-span-6 lg:-ml-16 lg:rounded-[2rem] lg:bg-bg-base lg:p-12 lg:shadow-[0_20px_60px_rgba(38,48,43,0.10)]">
-              <SectionLabel index={4}>The practice</SectionLabel>
+            <div className="relative z-10 lg:col-span-6 lg:-ml-16 lg:rounded-[2rem] lg:bg-bg-base lg:p-12 lg:shadow-[0_20px_60px_var(--accent-glow)]">
+              <SectionLabel index={num("story")}>{site.sectionLabels.story}</SectionLabel>
               <h2 className="mt-6">{site.story.heading}</h2>
               {site.story.body.map((paragraph) => (
                 <p key={paragraph} className="mt-5 leading-8 text-muted">
@@ -261,6 +396,7 @@ export default async function DemoSitePage({
           </div>
         </div>
       </section>
+      )}
 
       {/* Proof points */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
@@ -277,17 +413,15 @@ export default async function DemoSitePage({
         </div>
       </section>
 
-      {/* 05 — FAQ */}
+      {/* FAQ */}
       <section id="faq" className="bg-bg-deep py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-4">
               <Reveal>
-                <SectionLabel index={5}>Questions</SectionLabel>
-                <h2 className="mt-6 max-w-xs">Before you book.</h2>
-                <p className="mt-5 max-w-xs leading-8 text-muted">
-                  Anything else, ask the receptionist below — she answers instantly.
-                </p>
+                <SectionLabel index={num("faq")}>{site.sectionLabels.faq}</SectionLabel>
+                <h2 className="mt-6 max-w-sm">{site.faqIntro.heading}</h2>
+                <p className="mt-5 max-w-sm leading-8 text-muted">{site.faqIntro.body}</p>
               </Reveal>
             </div>
             <div className="lg:col-span-8">
@@ -299,19 +433,19 @@ export default async function DemoSitePage({
         </div>
       </section>
 
-      {/* 06 — Booking. The payload. */}
+      {/* Booking. The payload. */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28" id="book">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div>
             <Reveal>
-              <SectionLabel index={6}>Booking</SectionLabel>
+              <SectionLabel index={num("booking")}>{site.sectionLabels.booking}</SectionLabel>
               <h2 className="mt-6">{site.booking.heading}</h2>
               <p className="mt-5 text-lg leading-8 text-muted">{site.booking.body}</p>
 
               <dl className="mt-10 divide-y divide-border-subtle border-y border-border-subtle text-sm">
                 <Detail icon={Clock} term="Opening hours" detail={site.hoursLabel} />
                 <Detail icon={MapPin} term="Find us" detail={site.location} />
-                <Detail icon={Phone} term="Call the practice" detail={site.phone} />
+                <Detail icon={Phone} term={site.phoneLabel} detail={site.phone} />
               </dl>
 
               <p className="mt-8 flex items-start gap-2.5 text-sm leading-6 text-muted">
@@ -328,6 +462,7 @@ export default async function DemoSitePage({
               business={site.business}
               welcome={site.booking.welcome}
               starters={site.booking.starters}
+              assistantLabel={site.booking.assistantLabel}
             />
           </Reveal>
         </div>
@@ -387,7 +522,7 @@ function SiteFooter({ site, monogram }: { site: DemoSite; monogram: string }) {
         <p className="mt-14 border-t border-border-subtle pt-6 text-xs leading-5 text-muted">
           {site.business} is a fictional business created by SyncAI Technologies to
           demonstrate an AI-powered website. The address, phone number, and email are not
-          real, and no appointment made here is a real booking.{" "}
+          real, and no {site.appointmentNoun} made here is a real booking.{" "}
           <Link href="/demos/ai-websites-and-apps" className="font-bold underline">
             Back to SyncAI demos
           </Link>
@@ -397,11 +532,92 @@ function SiteFooter({ site, monogram }: { site: DemoSite; monogram: string }) {
   );
 }
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
+/**
+ * Full-bleed hero: the photograph fills the viewport and the copy sits over it
+ * on a dark scrim. Estate agencies lead with property, not with a paragraph.
+ *
+ * The scrim is not decoration — the source images are bright interiors, and
+ * white type over them fails contrast badly without it. Left-weighted so the
+ * gradient is heaviest exactly where the copy sits.
+ */
+function CinematicHero({ site }: { site: DemoSite }) {
+  return (
+    <section className="relative isolate min-h-[38rem] overflow-hidden lg:min-h-[46rem]">
+      <DemoImage src={site.images.hero.src} alt={site.images.hero.alt} fill sizes="100vw" priority />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[linear-gradient(100deg,rgba(12,18,28,0.86)_0%,rgba(12,18,28,0.72)_38%,rgba(12,18,28,0.30)_68%,rgba(12,18,28,0.12)_100%)]"
+      />
+      <div className="relative mx-auto flex min-h-[38rem] max-w-6xl items-end px-4 pb-16 pt-32 sm:px-6 lg:min-h-[46rem] lg:px-8 lg:pb-24">
+        <div className="max-w-2xl text-white">
+          <Reveal>
+            <p className="demo-label text-white/75">{site.hero.eyebrow}</p>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <h1 className="mt-6 text-white">{site.hero.heading}</h1>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <p className="mt-7 max-w-xl text-lg leading-8 text-white/85">{site.hero.body}</p>
+          </Reveal>
+          <Reveal delay={0.24}>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a
+                href="#listings"
+                className="group inline-flex h-14 items-center gap-3 rounded-full bg-white px-8 text-sm font-bold text-[color:var(--brand-deep)] transition hover:bg-white/90"
+              >
+                {site.hero.cta}
+                <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+              <a
+                href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}
+                className="inline-flex items-center gap-2 text-sm font-bold text-white transition hover:text-white/80"
+              >
+                <Phone className="size-4" />
+                {site.phone}
+              </a>
+            </div>
+          </Reveal>
+          <Reveal delay={0.32}>
+            <p className="mt-8 flex items-center gap-2.5 text-sm text-white/75">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+                <span className="relative inline-flex size-2 rounded-full bg-success" />
+              </span>
+              {site.hoursLabel}
+            </p>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Listings grid. Position in the running order differs by layout. */
+function ListingsSection({ site, index }: { site: DemoSite; index: number }) {
+  if (!site.properties) return null;
+
+  return (
+    <section id="listings" className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
+        <div className="lg:col-span-7">
+          <Reveal>
+            <SectionLabel index={index}>{site.properties.label}</SectionLabel>
+            <h2 className="mt-6">{site.properties.heading}</h2>
+          </Reveal>
+        </div>
+        <div className="lg:col-span-5">
+          <Reveal delay={0.08}>
+            <p className="leading-8 text-muted">{site.properties.body}</p>
+          </Reveal>
+        </div>
+      </div>
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {site.properties.items.map((property, i) => (
+          <Reveal key={property.address} delay={i * 0.08}>
+            <PropertyCard property={property} />
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
 }

@@ -1,7 +1,8 @@
 import { dentalSite } from "./dental";
+import { realEstateSite } from "./real-estate";
 import type { DemoSite } from "./types";
 
-export type { DemoSite } from "./types";
+export type { DemoSite, DemoProperty, DemoImageRef } from "./types";
 
 /**
  * Registry of live demo sites. This doubles as the allowlist for the demo chat
@@ -9,6 +10,7 @@ export type { DemoSite } from "./types";
  */
 const SITES: Record<string, DemoSite> = {
   [dentalSite.slug]: dentalSite,
+  [realEstateSite.slug]: realEstateSite,
 };
 
 export function getDemoSite(slug: string): DemoSite | null {

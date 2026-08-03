@@ -24,8 +24,9 @@ const demoSites: {
   },
   {
     name: "Real Estate Demo",
-    url: null,
-    description: "Property inquiry system with AI routing, after-hours response, and follow-up automation.",
+    url: "/demos/live/real-estate",
+    description:
+      "Maple & Vine Realty — a boutique brokerage with live listings and an AI assistant that answers property questions and books viewings.",
     features: ["Instant lead routing", "After-hours capture", "Follow-up sequences"],
   },
   {
