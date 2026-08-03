@@ -17,7 +17,16 @@ import { useInView, useReducedMotion } from "framer-motion";
  * states are *derived* rather than assigned — setState only ever happens inside a
  * rAF callback, never synchronously in the effect body.
  */
-export function StatCounter({ value, label }: { value: string; label: string }) {
+export function StatCounter({
+  value,
+  label,
+  inverted = false,
+}: {
+  value: string;
+  label: string;
+  /** On a dark band the theme's ink tokens would be invisible. */
+  inverted?: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const reduceMotion = useReducedMotion();
@@ -53,10 +62,16 @@ export function StatCounter({ value, label }: { value: string; label: string }) 
 
   return (
     <div ref={ref}>
-      <p className="font-serif text-4xl leading-none text-foreground tabular-nums sm:text-5xl">
+      <p
+        className={`font-serif text-4xl leading-none tabular-nums sm:text-5xl ${
+          inverted ? "text-white" : "text-foreground"
+        }`}
+      >
         {animated ?? resting}
       </p>
-      <p className="mt-3 text-sm leading-6 text-muted">{label}</p>
+      <p className={`mt-3 text-sm leading-6 ${inverted ? "text-white/70" : "text-muted"}`}>
+        {label}
+      </p>
     </div>
   );
 }

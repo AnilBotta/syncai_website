@@ -1,4 +1,5 @@
 import type { DemoSite } from "./types";
+import { demoImageUrl } from "./cloudinary";
 
 /**
  * Northgate Dental Studio — a FICTIONAL clinic. Everything here is invented:
@@ -9,19 +10,7 @@ import type { DemoSite } from "./types";
 /** 555-01xx is the reserved fictional range — it can never reach a real line. */
 const PHONE = "(905) 555-0142";
 
-/**
- * Delivery URL for a demo photograph.
- *
- * No transformation segment: `next/image` already resizes and re-encodes on the
- * way out, so adding `f_auto,q_auto` here would mean two lossy passes over the
- * same pixels for no benefit. Public IDs are versioned (`-v1`) rather than
- * invalidated, because CDN invalidation is not atomic and a half-propagated
- * swap would serve old bytes against new layout.
- */
-function demoImage(id: string) {
-  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "tpwmgjsk";
-  return `https://res.cloudinary.com/${cloud}/image/upload/demos/dental/${id}`;
-}
+const img = (id: string) => demoImageUrl("dental", id);
 
 export const dentalSite: DemoSite = {
   slug: "dental",
@@ -31,13 +20,34 @@ export const dentalSite: DemoSite = {
   phone: PHONE,
   email: "hello@northgatedental.example",
   themeClass: "demo-dental",
+  layout: "editorial",
+
+  nav: [
+    { href: "#services", label: "Services" },
+    { href: "#practice", label: "The practice" },
+    { href: "#faq", label: "FAQ" },
+  ],
+  ctaLabel: "Book a visit",
+  ctaLabelShort: "Book",
+
+  sectionLabels: {
+    services: "What we do",
+    gallery: "Inside the practice",
+    story: "The practice",
+    faq: "Questions",
+    booking: "Booking",
+  },
+  phoneLabel: "Call the practice",
 
   images: {
-    hero: demoImage("hero-v1"),
-    treatment: demoImage("treatment-v1"),
-    detail: demoImage("detail-v1"),
-    team: demoImage("team-v1"),
-    exterior: demoImage("exterior-v1"),
+    hero: { src: img("hero-v1"), alt: "The reception at Northgate Dental Studio" },
+    wide: { src: img("treatment-v1"), alt: "A treatment room" },
+    detail: {
+      src: img("detail-v1"),
+      alt: "Sterilised instruments laid out before an appointment",
+    },
+    team: { src: img("team-v1"), alt: "Two of the team at Northgate Dental Studio" },
+    exterior: { src: img("exterior-v1"), alt: "Northgate Dental Studio from the street" },
   },
 
   stats: [
@@ -56,6 +66,11 @@ export const dentalSite: DemoSite = {
 
   pullQuote:
     "We book longer appointments than we strictly need to. It's the only way to do this work properly.",
+
+  faqIntro: {
+    heading: "Before you book.",
+    body: "Anything else, ask the receptionist below — she answers instantly.",
+  },
 
   faq: [
     {
@@ -92,6 +107,7 @@ export const dentalSite: DemoSite = {
     cta: "Book your visit",
   },
 
+  servicesHeading: "Care, without the upsell.",
   services: [
     {
       title: "Checkups & hygiene",
@@ -151,6 +167,7 @@ export const dentalSite: DemoSite = {
       "I chipped a tooth — how soon can I be seen?",
       "Do you take new patients?",
     ],
+    assistantLabel: "Reception",
   },
 
   hoursLabel: "Mon–Fri 8am–6pm · Sat 9am–4pm · Closed Sunday",
