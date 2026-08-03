@@ -15,8 +15,10 @@ const AssistantWidget = dynamic(
  * The voice-and-chat demo embeds these same panels inline, and two mounted
  * voice panels means two simultaneous Retell calls: two mic captures, audible
  * echo, and double the per-minute billing.
+ * /demos/live pages are other companies' websites — a SyncAI bubble floating
+ * over a fictional dental clinic breaks the whole premise.
  */
-const HIDDEN_ON = ["/admin", "/demos/ai-voice-and-chat-agents"];
+const HIDDEN_ON = ["/admin", "/demos/ai-voice-and-chat-agents", "/demos/live"];
 
 export function AssistantMount() {
   const pathname = usePathname();
