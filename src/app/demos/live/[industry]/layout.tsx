@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Lora, Playfair_Display, Sora } from "next/font/google";
+import { Barlow_Condensed, Lora, Playfair_Display, Sora } from "next/font/google";
 
 /**
  * Demo sites render WITHOUT SyncAI's header, footer, or assistant bubble — each
@@ -33,9 +33,20 @@ const demoSans = Sora({
   weight: ["500", "600", "700"],
 });
 
+/* Genuinely condensed, not just a tight grotesque — Archivo was standing in for
+   this and read as another neutral sans next to Sora. */
+const demoCondensed = Barlow_Condensed({
+  variable: "--font-demo-condensed",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["600", "700"],
+});
+
 export default function DemoSiteLayout({ children }: { children: ReactNode }) {
   return (
-    <div className={`${demoSerif.variable} ${demoDisplay.variable} ${demoSans.variable}`}>
+    <div
+      className={`${demoSerif.variable} ${demoDisplay.variable} ${demoSans.variable} ${demoCondensed.variable}`}
+    >
       {children}
     </div>
   );

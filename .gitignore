@@ -58,6 +58,7 @@ yarn-error.log*
 /public/brand/exterior.jpeg
 /public/brand/realestate/
 /public/brand/Physio/
+/public/brand/trade/
 /public/demos/
 
 # typescript

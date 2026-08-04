@@ -40,6 +40,8 @@ type DemoAssistantProps = {
   assistantLabel: string;
   /** Undefined means this site is chat-only and no tabs are shown. */
   voice?: { invitation: string };
+  /** Omit the outer card when the host already provides one. */
+  bare?: boolean;
 };
 
 export function DemoAssistant({
@@ -49,12 +51,23 @@ export function DemoAssistant({
   starters,
   assistantLabel,
   voice,
+  bare = false,
 }: DemoAssistantProps) {
   const [tab, setTab] = useState<"chat" | "voice">("chat");
 
   return (
-    <div className="flex h-[560px] flex-col overflow-hidden rounded-3xl border border-border-subtle bg-bg-elevated shadow-[0_18px_50px_var(--accent-glow)]">
-      <div className="flex items-center gap-3 border-b border-border-subtle px-5 py-4">
+    <div
+      className={
+        bare
+          ? "flex h-[520px] flex-col overflow-hidden"
+          : "flex h-[560px] flex-col overflow-hidden rounded-3xl border border-border-subtle bg-bg-elevated shadow-[0_18px_50px_var(--accent-glow)]"
+      }
+    >
+      <div
+        className={`flex items-center gap-3 border-b border-border-subtle px-5 py-4 ${
+          bare ? "hidden" : ""
+        }`}
+      >
         <span className="grid size-10 place-items-center rounded-full bg-brand text-sm font-bold text-white">
           {businessInitials(business)}
         </span>

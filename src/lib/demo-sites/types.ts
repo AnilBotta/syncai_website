@@ -61,11 +61,16 @@ export type DemoSite = {
    * "split"      — 50/50 hero, copy on a solid brand panel beside a full-height
    *                photograph. Physio is appointment-led like the clinic, so it
    *                needed a skeleton that is neither of the other two.
+   * "bespoke"    — opts out of the shared system entirely. The page short-
+   *                circuits before any shared section and the site brings its
+   *                own components. Used by the trade demo, because a local
+   *                plumber's website is a different genre from an editorial
+   *                brochure, not a different arrangement of one.
    *
    * Two demos sharing a palette is fine; two demos sharing a skeleton is what
    * makes a prospect think they are looking at one template twice.
    */
-  layout: "editorial" | "cinematic" | "split";
+  layout: "editorial" | "cinematic" | "split" | "bespoke";
 
   /** In-page anchors for the sticky header. */
   nav: { href: string; label: string }[];
