@@ -5,13 +5,15 @@ import { ArrowRight, Clock, MapPin, Phone, Sparkle } from "lucide-react";
 import { demoSiteSlugs, getDemoSite } from "@/lib/demo-sites";
 import type { DemoSite } from "@/lib/demo-sites";
 import { DemoSiteBar } from "@/components/demo-sites/demo-site-bar";
-import { DemoReceptionist } from "@/components/demo-sites/demo-receptionist";
+import { DemoAssistant } from "@/components/demo-sites/demo-assistant";
 import { DemoImage } from "@/components/demo-sites/demo-image";
 import { DemoHeader } from "@/components/demo-sites/demo-header";
 import { SectionLabel } from "@/components/demo-sites/section-label";
 import { StatCounter } from "@/components/demo-sites/stat-counter";
 import { FaqAccordion } from "@/components/demo-sites/faq-accordion";
 import { PropertyCard } from "@/components/demo-sites/property-card";
+import { ConditionChips } from "@/components/demo-sites/condition-chips";
+import { PractitionerRail } from "@/components/demo-sites/practitioner-rail";
 import { Reveal } from "@/components/motion/reveal";
 import { Parallax } from "@/components/motion/parallax";
 import { businessInitials } from "@/lib/demo-sites/initials";
@@ -53,6 +55,18 @@ export default async function DemoSitePage({
 
   const monogram = businessInitials(site.business);
   const cinematic = site.layout === "cinematic";
+  const split = site.layout === "split";
+
+  /*
+   * The two-column sections put a short heading beside a long list, which on the
+   * clinic left a tall empty column once the heading scrolled past. Pinning the
+   * heading so it travels alongside its list fixes that and reads as considered
+   * rather than sparse. Scoped to the split layout: the editorial demos were
+   * approved as they are.
+   */
+  const asideClass = split
+    ? "lg:col-span-4 lg:sticky lg:top-28 lg:self-start"
+    : "lg:col-span-4";
 
   // Section numbers have to stay contiguous even though the running order differs
   // per layout — a site that jumps 02, 04, 05 looks broken. Derived from what is
@@ -70,15 +84,26 @@ export default async function DemoSitePage({
         "faq",
         "booking",
       ]
-    : [
-        "services",
-        ...(site.properties ? ["properties"] : []),
-        "gallery",
-        ...(site.neighbourhoods ? ["areas"] : []),
-        "story",
-        "faq",
-        "booking",
-      ];
+    : split
+      ? [
+          // Physio leads with what it fixes, then who does the fixing.
+          ...(site.conditions ? ["conditions"] : []),
+          "services",
+          ...(site.practitioners ? ["team"] : []),
+          "gallery",
+          "story",
+          "faq",
+          "booking",
+        ]
+      : [
+          "services",
+          ...(site.properties ? ["properties"] : []),
+          "gallery",
+          ...(site.neighbourhoods ? ["areas"] : []),
+          "story",
+          "faq",
+          "booking",
+        ];
   const num = (key: string) => order.indexOf(key) + 2;
 
   // Gallery: large plate, small offset plate, and a full-width band beneath.
@@ -109,6 +134,8 @@ export default async function DemoSitePage({
 
       {cinematic ? (
         <CinematicHero site={site} />
+      ) : split ? (
+        <SplitHero site={site} />
       ) : (
       /* 01 — Hero. Asymmetric: copy holds the left seven columns, the photograph
          runs off the right edge of the viewport. */
@@ -221,11 +248,22 @@ export default async function DemoSitePage({
       {/* Listings lead on the cinematic layout. */}
       {cinematic ? <ListingsSection site={site} index={num("properties")} /> : null}
 
+      {/* What the clinic treats — physio only. */}
+      {site.conditions ? (
+        <ConditionChips
+          index={num("conditions")}
+          label={site.conditions.label}
+          heading={site.conditions.heading}
+          body={site.conditions.body}
+          items={site.conditions.items}
+        />
+      ) : null}
+
       {/* Services, as an editorial list rather than a grid of boxes. */}
       <section id="services" className="bg-bg-deep py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-4">
+            <div className={asideClass}>
               <Reveal>
                 <SectionLabel index={num("services")}>{site.sectionLabels.services}</SectionLabel>
                 <h2 className="mt-6 max-w-sm">{site.servicesHeading}</h2>
@@ -257,11 +295,19 @@ export default async function DemoSitePage({
       {/* Listings sit here on the editorial layout. */}
       {!cinematic ? <ListingsSection site={site} index={num("properties")} /> : null}
 
+      {/* The clinicians — physio only. */}
+      {site.practitioners ? (
+        <PractitionerRail index={num("team")} practitioners={site.practitioners} />
+      ) : null}
+
       {/* Gallery. Deliberately uneven: a tall plate, a short one offset down,
           then the wide view running the full width. */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <Reveal>
           <SectionLabel index={num("gallery")}>{site.sectionLabels.gallery}</SectionLabel>
+          {site.galleryHeading ? (
+            <h2 className="mt-6 max-w-lg">{site.galleryHeading}</h2>
+          ) : null}
         </Reveal>
         <div className="mt-10 grid gap-6 sm:grid-cols-5">
           <Reveal className="sm:col-span-3">
@@ -398,12 +444,19 @@ export default async function DemoSitePage({
       </section>
       )}
 
-      {/* Proof points */}
+      {/* Proof points. Cards on the split layout: a clinic reads as more
+          substantial in bordered panels than as three runs of bare text. */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
-        <div className="grid gap-10 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-3 lg:gap-8">
           {site.proofPoints.map((point, i) => (
             <Reveal key={point.title} delay={i * 0.08}>
-              <div className="border-t border-foreground/15 pt-6">
+              <div
+                className={
+                  split
+                    ? "h-full rounded-2xl border border-border-subtle bg-surface p-7 shadow-[0_2px_12px_var(--accent-glow)]"
+                    : "border-t border-foreground/15 pt-6"
+                }
+              >
                 <span className="demo-label text-brand">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="mt-4 text-xl">{point.title}</h3>
                 <p className="mt-3 leading-8 text-muted">{point.description}</p>
@@ -417,7 +470,7 @@ export default async function DemoSitePage({
       <section id="faq" className="bg-bg-deep py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-4">
+            <div className={asideClass}>
               <Reveal>
                 <SectionLabel index={num("faq")}>{site.sectionLabels.faq}</SectionLabel>
                 <h2 className="mt-6 max-w-sm">{site.faqIntro.heading}</h2>
@@ -457,12 +510,13 @@ export default async function DemoSitePage({
           </div>
 
           <Reveal delay={0.1}>
-            <DemoReceptionist
+            <DemoAssistant
               slug={site.slug}
               business={site.business}
               welcome={site.booking.welcome}
               starters={site.booking.starters}
               assistantLabel={site.booking.assistantLabel}
+              voice={site.voice ? { invitation: site.voice.invitation } : undefined}
             />
           </Reveal>
         </div>
@@ -587,6 +641,66 @@ function CinematicHero({ site }: { site: DemoSite }) {
             </p>
           </Reveal>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Split hero: a solid brand-tinted panel of copy beside a full-height
+ * photograph, 50/50 on desktop and stacked below `lg`.
+ *
+ * Neither the clinic's asymmetric bleed nor the brokerage's overlay — physio is
+ * appointment-led like the clinic, so it needed a skeleton that could not be
+ * mistaken for either. The copy sits on a solid panel rather than over the
+ * image, which means no scrim to tune and no contrast risk from the photograph.
+ */
+function SplitHero({ site }: { site: DemoSite }) {
+  return (
+    <section className="grid items-stretch lg:min-h-[42rem] lg:grid-cols-2">
+      <div className="order-2 flex items-center bg-bg-deep px-4 py-16 sm:px-6 lg:order-1 lg:px-16 lg:py-24">
+        <div className="max-w-lg">
+          <Reveal>
+            <p className="demo-label text-brand-glow-text">{site.hero.eyebrow}</p>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <h1 className="mt-6">{site.hero.heading}</h1>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <p className="mt-7 text-lg leading-8 text-muted">{site.hero.body}</p>
+          </Reveal>
+          <Reveal delay={0.24}>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a
+                href="#book"
+                className="group inline-flex h-14 items-center gap-3 rounded-full bg-brand px-8 text-sm font-bold text-white shadow-[0_12px_32px_var(--accent-glow)] transition hover:bg-brand-deep"
+              >
+                {site.hero.cta}
+                <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+              <a
+                href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}
+                className="inline-flex items-center gap-2 text-sm font-bold transition hover:text-brand-glow-text"
+              >
+                <Phone className="size-4 text-brand" />
+                {site.phone}
+              </a>
+            </div>
+          </Reveal>
+          <Reveal delay={0.32}>
+            <p className="mt-8 flex items-center gap-2.5 text-sm text-muted">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+                <span className="relative inline-flex size-2 rounded-full bg-success" />
+              </span>
+              {site.hoursLabel}
+            </p>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="relative order-1 min-h-[20rem] lg:order-2 lg:min-h-full">
+        <DemoImage src={site.images.hero.src} alt={site.images.hero.alt} fill sizes="(min-width: 1024px) 50vw, 100vw" priority />
       </div>
     </section>
   );

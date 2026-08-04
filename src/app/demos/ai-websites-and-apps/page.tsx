@@ -31,9 +31,10 @@ const demoSites: {
   },
   {
     name: "Physiotherapy Demo",
-    url: null,
-    description: "Patient intake automation with AI forms, calendar sync, and admin dashboard.",
-    features: ["Digital intake", "Calendar integration", "Admin dashboard"],
+    url: "/demos/live/physio",
+    description:
+      "Riverstone Physio — a clinic site whose AI receptionist you can talk to out loud, not just type at.",
+    features: ["Live voice agent", "Digital intake", "Calendar integration"],
   },
   {
     name: "Service Business Demo",
