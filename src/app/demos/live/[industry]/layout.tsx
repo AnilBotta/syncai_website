@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Lora, Playfair_Display } from "next/font/google";
+import { Lora, Playfair_Display, Sora } from "next/font/google";
 
 /**
  * Demo sites render WITHOUT SyncAI's header, footer, or assistant bubble — each
@@ -26,6 +26,17 @@ const demoDisplay = Playfair_Display({
   weight: ["400", "500", "600"],
 });
 
+const demoSans = Sora({
+  variable: "--font-demo-sans",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["500", "600", "700"],
+});
+
 export default function DemoSiteLayout({ children }: { children: ReactNode }) {
-  return <div className={`${demoSerif.variable} ${demoDisplay.variable}`}>{children}</div>;
+  return (
+    <div className={`${demoSerif.variable} ${demoDisplay.variable} ${demoSans.variable}`}>
+      {children}
+    </div>
+  );
 }

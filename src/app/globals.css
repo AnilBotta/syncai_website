@@ -285,9 +285,48 @@ html:not([data-theme]) {
   color: var(--foreground);
 }
 
+/*
+ * Riverstone Physio: bone, warm charcoal, burnt orange. Warmer and more physical
+ * than the clinic's sage or the brokerage's navy — and paired below with a
+ * geometric sans rather than a serif, which is the hardest typographic break
+ * available from the other two.
+ */
+.demo-physio {
+  --bg-base: #faf8f5;
+  --bg-deep: #f0ece5;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-strong: #fffdfa;
+  --border-subtle: rgba(34, 32, 29, 0.14);
+  --foreground: #22201d;
+  --muted: #4d4842;
+  --label: #625c54;
+
+  /* --brand clears 4.5:1 on bone for large text and 5:1 behind white on buttons;
+     --brand-deep is the darker step used wherever brand colour carries body copy. */
+  --brand: #b4532a;
+  --brand-soft: #d98a5f;
+  --brand-glow-text: #8f3f1f;
+  --brand-deep: #8f3f1f;
+  --brand-electric: #c2612f;
+  --accent-glow: rgba(180, 83, 42, 0.14);
+
+  --card-bg: #ffffff;
+  --card-bg-elevated: #fffdfa;
+  --input-bg: #ffffff;
+  --overlay: rgba(34, 32, 29, 0.45);
+
+  --success: #1a8a62;
+  --warn: #b87b22;
+  --danger: #c5394b;
+
+  background: var(--bg-base);
+  color: var(--foreground);
+}
+
 /* Editorial display faces for demo headings — the clearest signal that this is
-   not a SyncAI page, and that the two demos are not the same site. Body copy
-   stays on Geist, already loaded by the root layout. Both families are loaded by
+   not a SyncAI page, and that the demos are not the same site. Body copy stays
+   on Geist, already loaded by the root layout. All three families are loaded by
    the demo layout; each palette picks one. */
 .demo-dental h1,
 .demo-dental h2,
@@ -307,11 +346,44 @@ html:not([data-theme]) {
   letter-spacing: -0.02em;
 }
 
+/* Physio runs a geometric sans. `.font-serif` is a slot name here, not a
+   promise of a serif — it means "the display face", and the pull-quote uses it. */
+.demo-physio h1,
+.demo-physio h2,
+.demo-physio h3,
+.demo-physio .font-serif {
+  font-family: var(--font-demo-sans), var(--font-geist-sans), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+/*
+ * A clinic is not a billboard. The shared display sizes below are tuned for the
+ * two editorial demos, where an enormous serif headline is the point; at those
+ * sizes a sans headline filled a narrow column with five short lines and read as
+ * shouty rather than competent. Physio therefore runs its own, smaller scale —
+ * closer to how real medical practices set type, where the job is to inform.
+ */
+.demo-physio h1 {
+  font-size: clamp(2.25rem, 3.9vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+}
+.demo-physio h2 {
+  font-size: clamp(1.6rem, 2.4vw, 2.25rem);
+  line-height: 1.18;
+  letter-spacing: -0.022em;
+}
+.demo-physio h3 {
+  letter-spacing: -0.018em;
+}
+
 /* Everything below is shared demo-site layout, not palette — it applies to every
    /demos/live site regardless of which brand it is wearing. */
 
 /* Fluid display sizes. The hero has to hold a full viewport on a 27" monitor and
    still breathe on a phone, which a fixed sm:/lg: ladder never quite manages. */
+/* Editorial demos only — physio sets its own, smaller scale above. */
 .demo-dental h1,
 .demo-realty h1 {
   font-size: clamp(2.75rem, 6.2vw, 5.25rem);
@@ -326,7 +398,8 @@ html:not([data-theme]) {
 
 /* Micro-label: the numbered eyebrow that anchors every section. */
 .demo-dental .demo-label,
-.demo-realty .demo-label {
+.demo-realty .demo-label,
+.demo-physio .demo-label {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 700;
@@ -336,7 +409,8 @@ html:not([data-theme]) {
 
 /* Hairline that draws itself in as a services row is hovered. */
 .demo-dental .rule-grow::after,
-.demo-realty .rule-grow::after {
+.demo-realty .rule-grow::after,
+.demo-physio .rule-grow::after {
   content: "";
   position: absolute;
   left: 0;
@@ -347,7 +421,8 @@ html:not([data-theme]) {
   transition: width 0.5s cubic-bezier(0.21, 0.47, 0.32, 0.98);
 }
 .demo-dental .rule-grow:hover::after,
-.demo-realty .rule-grow:hover::after {
+.demo-realty .rule-grow:hover::after,
+.demo-physio .rule-grow:hover::after {
   width: 100%;
 }
 @media (prefers-reduced-motion: reduce) {

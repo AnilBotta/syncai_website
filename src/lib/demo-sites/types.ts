@@ -58,11 +58,14 @@ export type DemoSite = {
    * "cinematic"  — full-bleed hero with copy over the photograph, a dark stats
    *                band, listings promoted above the fold-and-a-half, and a
    *                half-bleed story split.
+   * "split"      — 50/50 hero, copy on a solid brand panel beside a full-height
+   *                photograph. Physio is appointment-led like the clinic, so it
+   *                needed a skeleton that is neither of the other two.
    *
    * Two demos sharing a palette is fine; two demos sharing a skeleton is what
    * makes a prospect think they are looking at one template twice.
    */
-  layout: "editorial" | "cinematic";
+  layout: "editorial" | "cinematic" | "split";
 
   /** In-page anchors for the sticky header. */
   nav: { href: string; label: string }[];
@@ -106,6 +109,11 @@ export type DemoSite = {
   };
   /** Display heading above the services list, e.g. "Care, without the upsell." */
   servicesHeading: string;
+  /**
+   * Optional heading for the gallery. Without one the section is a bare label
+   * over photographs, which looks unfinished next to every other section.
+   */
+  galleryHeading?: string;
   services: { title: string; description: string }[];
   proofPoints: { title: string; description: string }[];
   story: { heading: string; body: string[] };
@@ -134,6 +142,24 @@ export type DemoSite = {
     heading: string;
     items: { name: string; description: string }[];
   };
+  /** Chip grid of what the clinic actually treats. */
+  conditions?: {
+    label: string;
+    heading: string;
+    body: string;
+    items: string[];
+  };
+  /** Horizontal rail of named practitioners. */
+  practitioners?: {
+    label: string;
+    heading: string;
+    items: {
+      name: string;
+      role: string;
+      focus: string;
+      image: DemoImageRef;
+    }[];
+  };
 
   booking: {
     heading: string;
@@ -144,6 +170,18 @@ export type DemoSite = {
     starters: string[];
     /** Who the assistant is, shown in the chat header. "Reception", "Sales team". */
     assistantLabel: string;
+  };
+
+  /**
+   * Live voice via the OpenAI Realtime API. Absent means the site shows chat
+   * only — voice bills per minute of audio on a public endpoint, so it is
+   * opt-in per site rather than on by default.
+   */
+  voice?: {
+    /** Spoken opening line, sent as the first response once connected. */
+    greeting: string;
+    /** Short prompt shown under the orb before the visitor starts. */
+    invitation: string;
   };
   hoursLabel: string;
   hours: DemoHours;
