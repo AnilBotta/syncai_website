@@ -324,9 +324,66 @@ html:not([data-theme]) {
   color: var(--foreground);
 }
 
+/*
+ * Halcyon Plumbing: near-black charcoal, high-vis amber, white. Tool-brand
+ * coding rather than boutique colour — nothing in common with the clinic's
+ * sage, the brokerage's navy or the physio's terracotta.
+ *
+ * This is the only bespoke demo (layout: "bespoke"), so the palette is split in
+ * two on purpose:
+ *
+ *   --brand-*   stays CHARCOAL. The shared ChatPanel paints white type on
+ *               --brand and on the --brand-electric → --brand-soft gradient;
+ *               white on high-vis amber is about 1.7:1 and unreadable. Keeping
+ *               the brand family dark means the one shared component embedded
+ *               in this site is legible without touching it.
+ *   --trade-*   is the bespoke layer's own colour, used only by the components
+ *               under components/demo-sites/trade, always with charcoal type on
+ *               the amber rather than white.
+ */
+.demo-trade {
+  --bg-base: #ffffff;
+  --bg-deep: #f1f2f4;
+  --bg-elevated: #ffffff;
+  --surface: #f7f8f9;
+  --surface-strong: #ffffff;
+  --border-subtle: rgba(22, 24, 29, 0.16);
+  --foreground: #16181d;
+  --muted: #4a4f59;
+  --label: #5a606b;
+
+  --brand: #16181d;
+  --brand-soft: #343a48;
+  --brand-glow-text: #16181d;
+  --brand-deep: #0c0e12;
+  --brand-electric: #22262f;
+  --accent-glow: rgba(22, 24, 29, 0.14);
+
+  --card-bg: #ffffff;
+  --card-bg-elevated: #f7f8f9;
+  --input-bg: #ffffff;
+  --overlay: rgba(22, 24, 29, 0.55);
+
+  --success: #157a53;
+  --warn: #b87b22;
+  --danger: #c5394b;
+
+  /* Bespoke layer only. */
+  --trade-ink: #16181d;
+  --trade-ink-soft: #22262f;
+  --trade-amber: #f0a013;
+  --trade-amber-hot: #ffb52e;
+  /* The darkened step, for the rare piece of amber-coloured text on white —
+     #f0a013 itself is 1.9:1 there. This clears 4.5:1. */
+  --trade-amber-ink: #8a4b00;
+
+  background: var(--bg-base);
+  color: var(--foreground);
+}
+
 /* Editorial display faces for demo headings — the clearest signal that this is
    not a SyncAI page, and that the demos are not the same site. Body copy stays
-   on Geist, already loaded by the root layout. All three families are loaded by
+   on Geist, already loaded by the root layout. All four families are loaded by
    the demo layout; each palette picks one. */
 .demo-dental h1,
 .demo-dental h2,
@@ -378,6 +435,39 @@ html:not([data-theme]) {
   letter-spacing: -0.018em;
 }
 
+/*
+ * The trade site runs a heavy condensed grotesque, set uppercase and tight.
+ * That is not a stylistic flourish — it is the register local trade signage,
+ * van livery and job sheets actually use, and it is the single loudest break
+ * available from the three editorial demos. h3 stays sentence case so the
+ * denser sections (service cards, reviews, FAQ) remain readable.
+ */
+.demo-trade h1,
+.demo-trade h2,
+.demo-trade h3,
+.demo-trade .font-serif {
+  font-family: var(--font-demo-condensed), var(--font-geist-sans), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.demo-trade h1,
+.demo-trade h2 {
+  text-transform: uppercase;
+}
+.demo-trade h1 {
+  font-size: clamp(2.75rem, 5.6vw, 5rem);
+  line-height: 0.95;
+}
+.demo-trade h2 {
+  font-size: clamp(1.85rem, 3.1vw, 2.9rem);
+  line-height: 1;
+}
+.demo-trade h3 {
+  font-size: 1.125rem;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+
 /* Everything below is shared demo-site layout, not palette — it applies to every
    /demos/live site regardless of which brand it is wearing. */
 
@@ -396,7 +486,8 @@ html:not([data-theme]) {
   line-height: 1.1;
 }
 
-/* Micro-label: the numbered eyebrow that anchors every section. */
+/* Micro-label: the numbered eyebrow that anchors every section. Three demos,
+   not four — the trade site is bespoke and uses none of this vocabulary. */
 .demo-dental .demo-label,
 .demo-realty .demo-label,
 .demo-physio .demo-label {

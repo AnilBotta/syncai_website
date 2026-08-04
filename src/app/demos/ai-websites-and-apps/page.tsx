@@ -38,9 +38,10 @@ const demoSites: {
   },
   {
     name: "Service Business Demo",
-    url: null,
-    description: "Full-service AI website with chat, booking, and automated client communication.",
-    features: ["Live chat agent", "Auto-booking", "Client portal"],
+    url: "/demos/live/trade",
+    description:
+      "Halcyon Plumbing — a local trade site, phone-first and built to book the job before you scroll.",
+    features: ["Live chat agent", "Quote widget", "Auto-booking"],
   },
 ];
 

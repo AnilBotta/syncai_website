@@ -1,6 +1,7 @@
 import { dentalSite } from "./dental";
 import { realEstateSite } from "./real-estate";
 import { physioSite } from "./physio";
+import { tradeSite } from "./trade";
 import type { DemoSite } from "./types";
 
 export type { DemoSite, DemoProperty, DemoImageRef } from "./types";
@@ -13,6 +14,7 @@ const SITES: Record<string, DemoSite> = {
   [dentalSite.slug]: dentalSite,
   [realEstateSite.slug]: realEstateSite,
   [physioSite.slug]: physioSite,
+  [tradeSite.slug]: tradeSite,
 };
 
 export function getDemoSite(slug: string): DemoSite | null {
