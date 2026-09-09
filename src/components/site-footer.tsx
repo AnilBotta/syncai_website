@@ -70,8 +70,8 @@ export function SiteFooter() {
         <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr_1fr_1.5fr] lg:gap-12">
           {/* Brand */}
           <div>
-            <Link href="/" className="inline-flex items-center" aria-label="SyncAI Technology home">
-              <Image src="/brand/syncai-logo-dark.png" alt="SyncAI Technology" width={168} height={54} className="h-11 w-auto" />
+            <Link href="/" className="inline-flex items-center" aria-label="SyncAI Technologies home">
+              <Image src="/brand/syncai-logo-dark.png" alt="SyncAI Technologies" width={168} height={54} className="h-11 w-auto" />
             </Link>
             <p className="mt-5 text-base font-semibold text-foreground">AI systems built for measurable ROI.</p>
             <p className="mt-3 max-w-sm text-sm leading-6 text-muted">
