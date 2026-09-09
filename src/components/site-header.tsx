@@ -48,7 +48,7 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="SyncAI Technology home">
+        <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="SyncAI Technologies home">
           {/* Both variants ship in the markup and CSS picks one, so the correct
               logo paints immediately with the anti-FOUC theme — no JS wait. */}
           <Image

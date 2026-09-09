@@ -32,17 +32,17 @@ const plusJakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.syncai.tech"),
   title: {
-    default: "SyncAI Technology | AI Solutions That Deliver ROI",
-    template: "%s | SyncAI Technology",
+    default: "SyncAI Technologies | AI Solutions That Deliver ROI",
+    template: "%s | SyncAI Technologies",
   },
   description:
     "SyncAI builds custom AI systems — smart websites, voice agents, and workflow automation — that cut costs, capture leads, and grow revenue for Canadian businesses.",
   openGraph: {
-    title: "SyncAI Technology",
+    title: "SyncAI Technologies",
     description:
       "AI solutions that actually deliver ROI. Custom websites, agents, and automation for Canadian businesses.",
     url: "https://www.syncai.tech",
-    siteName: "SyncAI Technology",
+    siteName: "SyncAI Technologies",
     locale: "en_CA",
     type: "website",
   },
